@@ -38,30 +38,10 @@ import soil_io3
 import monica_run_lib as Mrunlib
 
 PATHS = {
-    "container": {
-        "path-to-data-dir": "/monica-data/data/", # mounted data dir 
-        "path-to-output-dir": "/monica-output/out/", # mounted out dir
-        "path-to-csv-output-dir": "/monica-output/csv-out/" # mounted output dir for csv files
-    },
-    "ah-local-remote": {
-        "path-to-data-dir": "C:/Users/hampf/Documents/GitHub/agora_natura/monica-data/data/",
-        "path-to-output-dir": "C:/Users/hampf/Documents/GitHub/agora_natura/out/",
-        "path-to-csv-output-dir": "C:/Users/hampf/Documents/GitHub/agora_natura/csv-out/"
-    },
     "mbm-local-remote": {
-        "path-to-data-dir": "C:/Users/berg.ZALF-AD/GitHub/agora_natura/monica-data/data/",
-        "path-to-output-dir": "C:/Users/berg.ZALF-AD/GitHub/agora_natura/out/",
-        "path-to-csv-output-dir": "C:/Users/berg.ZALF-AD/GitHub/agora_natura/csv-out/"
-    },
-    "hpc-remote": {
-        "path-to-data-dir": "/beegfs/hampf/Github/agora_natura/monica-data/data/",
-        "path-to-output-dir": "./out/",
-        "path-to-csv-output-dir": "./csv-out/"
-    },
-    "cs-local-remote": {
-        "path-to-data-dir": "D:/awork/zalf/monica/monica_example/monica-data/data/",
-        "path-to-output-dir": "D:/awork/zalf/monica/monica_example/out/",
-        "path-to-csv-output-dir": "D:/awork/zalf/monica/monica_example/csv-out/"
+        "path-to-data-dir": "monica-data/data/",
+        "path-to-output-dir": "out/",
+        "path-to-csv-output-dir": "csv-out/"
     },
     "remoteConsumer-remoteMonica": {
         "path-to-data-dir": "./monica-data/data/",
@@ -69,8 +49,8 @@ PATHS = {
         "path-to-csv-output-dir": "/out/csv-out/"
     }
 }
-DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" 
-DEFAULT_PORT = "7780"
+DEFAULT_HOST = "localhost" #"login01.cluster.zalf.de" # "localhost" 
+DEFAULT_PORT = "7777"
 TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/BUEK200_1000_gk5.asc"
 TEMPLATE_CORINE_PATH = "{local_path_to_data_dir}germany/landuse_1000_gk5.asc"
 #TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/BUEK250_1000_gk5.asc"
@@ -174,25 +154,19 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=np.float))
 
     output_grids = {
-     #   "Globrad-sum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        #"SowDOY": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        #"HarvDOY": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        #"Cycle-length": {"data" : make_dict_nparr(), "cast-to": "int"},
-        #"LAI-max": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "Stage-harv": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Yield-last": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "TraDef-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "NDef-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "yearly-sum-nleach": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "crop-sum-nleach": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "crop-sum-nfert": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "SOC-upper-soil-layer": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "SOC-lower-soil-layer": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "SumExportedCutBiomass-last": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-     #   "Ra-sum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-     #   "Rh-sum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-     #   "G-iso": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-     #   "G-mono": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        "SowingDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "HarvestDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "emergenceDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "stemElongationDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "anthesisDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "maturityDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+
+        "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+
+        #"TraDef-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        #"NDef-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        #"yearly-sum-nleach": {"data" : make_dict_nparr(), "cast-to": "int"},
+        #"crop-sum-nleach": {"data" : make_dict_nparr(), "cast-to": "int"},
     }
 
     cmc_to_crop = {}
@@ -289,7 +263,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     "collect data from workers"
 
     config = {
-        "mode": "ah-local-remote",
+        "mode": "mbm-local-remote",
         "port": server["port"] if server["port"] else DEFAULT_PORT,
         "server": server["server"] if server["server"] else DEFAULT_HOST, 
         "start-row": "0",
@@ -330,31 +304,6 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     soil_metadata, header = Mrunlib.read_header(path_to_soil_grid)
     soil_grid_template = np.loadtxt(path_to_soil_grid, dtype=int, skiprows=6)
 
-    #set invalid soils / water to no-data
-    #soil_grid_template[soil_grid_template < 1] = -9999
-    #soil_grid_template[soil_grid_template > 71] = -9999
-    
-    #unknown_soil_ids = {}
-    #soil_db_con = sqlite3.connect(paths["path-to-data-dir"] + DATA_SOIL_DB)
-    #for row in range(soil_grid_template.shape[0]):
-    #    print(row)
-    #    for col in range(soil_grid_template.shape[1]):
-    #        soil_id = int(soil_grid_template[row, col])
-    #        if soil_id == -9999:
-    #            continue
-    #        if soil_id in unknown_soil_ids:
-    #            if unknown_soil_ids[soil_id]:
-    #                soil_grid_template[row, col] = -9999
-    #            else:
-    #                continue
-    #        else:
-    #            sp_json = soil_io3.soil_parameters(soil_db_con, soil_id)
-    #            if len(sp_json) == 0:
-    #                unknown_soil_ids[soil_id] = True
-    #                soil_grid_template[row, col] = -9999
-    #            else:
-    #                unknown_soil_ids[soil_id] = False
-    
     if USE_CORINE:
         path_to_corine_grid = TEMPLATE_CORINE_PATH.format(local_path_to_data_dir=paths["path-to-data-dir"])
         corine_meta, _ = Mrunlib.read_header(path_to_corine_grid)
