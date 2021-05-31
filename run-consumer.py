@@ -49,7 +49,7 @@ PATHS = {
         "path-to-csv-output-dir": "/out/csv-out/"
     }
 }
-DEFAULT_HOST = "localhost" #"login01.cluster.zalf.de" # "localhost" 
+DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" 
 DEFAULT_PORT = "7777"
 TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/BUEK200_1000_gk5.asc"
 TEMPLATE_CORINE_PATH = "{local_path_to_data_dir}germany/landuse_1000_gk5.asc"
@@ -57,45 +57,20 @@ TEMPLATE_CORINE_PATH = "{local_path_to_data_dir}germany/landuse_1000_gk5.asc"
 #DATA_SOIL_DB = "germany/buek200.sqlite"
 USE_CORINE = False
 
-def create_output(result):
+def create_output(msg):
     "create output structure for single run"
 
     cm_count_to_vals = defaultdict(dict)
-    if len(result.get("data", [])) > 0 and len(result["data"][0].get("results", [])) > 0:
+    for data in msg.get("data", []):
+        results = data.get("results", [])
 
-        for data in result.get("data", []):
-            results = data.get("results", [])
-            oids = data.get("outputIds", [])
+        is_daily_section = data.get("origSpec", "") == '"daily"'
 
-            #skip empty results, e.g. when event condition haven't been met
-            if len(results) == 0:
-                continue
-
-            assert len(oids) == len(results)
-            for kkk in range(0, len(results[0])):
-                vals = {}
-
-                for iii in range(0, len(oids)):
-                    oid = oids[iii]
-                    val = results[iii][kkk]
-
-                    name = oid["name"] if len(oid["displayName"]) == 0 else oid["displayName"]
-
-                    if isinstance(val, list):
-                        for val_ in val:
-                            vals[name] = val_
-                    else:
-                        vals[name] = val
-
-                if "CM-count" not in vals:
-                    print("Missing CM-count in result section. Skipping results section.")
-                    continue
-
+        for vals in results:
+            if "CM-count" in vals:
                 cm_count_to_vals[vals["CM-count"]].update(vals)
-
-    for cmc in sorted(cm_count_to_vals.keys()):
-        if "last-doy" in cm_count_to_vals[cmc] and cm_count_to_vals[cmc]["last-doy"] >= 365:
-            del cm_count_to_vals[cmc]
+            elif is_daily_section:
+                cm_count_to_vals[vals["Date"]].update(vals)
 
     return cm_count_to_vals
 
@@ -103,7 +78,7 @@ def create_output(result):
 def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id):
     "write grids row by row"
     
-    if row in row_col_data:
+    if False and row in row_col_data:
         is_data_row = len(list(filter(lambda x: x != -9999, row_col_data[row].values()))) > 0
         if is_data_row:
             path_to_row_file = path_to_csv_output_dir + "row-" + str(row) + ".csv" 
@@ -154,19 +129,54 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=np.float))
 
     output_grids = {
-        "SowingDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "HarvestDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "emergenceDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "stemElongationDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "anthesisDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "maturityDOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Sowing-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-1-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-2-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-3-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-4-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-5-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-6-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Stage-7-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Harvest-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "cereal-stem-elongation-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
 
         "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
-        #"TraDef-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        #"NDef-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        #"yearly-sum-nleach": {"data" : make_dict_nparr(), "cast-to": "int"},
-        #"crop-sum-nleach": {"data" : make_dict_nparr(), "cast-to": "int"},
+        "Sowing-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Sowing-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Sowing-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Harvest-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Harvest-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Harvest-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-1-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-1-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-1-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-2-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-2-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-2-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-3-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-3-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-3-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-4-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-4-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-4-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-5-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-5-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-5-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-6-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-6-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-6-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+
+        "Stage-7-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-7-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+        "Stage-7-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
     }
 
     cmc_to_crop = {}
@@ -184,16 +194,18 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                 else:
                     cmc_and_year_to_vals = defaultdict(lambda: defaultdict(list))
                     for cell_data in rcd_val:
+                        # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
                         for cm_count, data in cell_data.items():
-                            for key, val in output_grids.items():
+                            for key, _ in output_grids.items():
+                                # store mapping cm_count to crop name for later file name creation
                                 if cm_count not in cmc_to_crop and "Crop" in data:
                                     cmc_to_crop[cm_count] = data["Crop"]
 
+                                # only further process/store data we actually received
                                 if key in data:
                                     cmc_and_year_to_vals[(cm_count, data["Year"])][key].append(data[key])
-                                #else:
-                                #    cmc_and_year_to_vals[(cm_count, data["Year"])][key] #just make sure at least an empty list is in there
 
+                    # potentially aggregate multiple data per cell and finally store them for this row
                     for (cm_count, year), key_to_vals in cmc_and_year_to_vals.items():
                         for key, vals in key_to_vals.items():
                             output_vals = output_grids[key]["data"]
@@ -201,7 +213,6 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                                 output_vals[(cm_count, year)][col] = sum(vals) / len(vals)
                             else:
                                 output_vals[(cm_count, year)][col] = -9999
-                                #no_data_cols += 1
 
         is_no_data_row = no_data_cols == ncols
 
@@ -213,6 +224,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             rowstr = " ".join(["-9999" for __ in range(ncols)])
             file_.write(rowstr +  "\n")
 
+    # iterate over all prepared data for a single row and write row
     for key, y2d_ in output_grids.items():
         y2d = y2d_["data"]
         cast_to = y2d_["cast-to"]
@@ -223,9 +235,6 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             mold = lambda x: str(round(x, digits))
 
         for (cm_count, year), row_arr in y2d.items():
-            #if int(row_arr.min()) == -9999 and int(row_arr.max() == -9999):
-            #    continue
-
             crop = cmc_to_crop[cm_count] if cm_count in cmc_to_crop else "none"    
             crop = crop.replace("/", "").replace(" ", "")
             path_to_file = path_to_output_dir + crop + "_" + key + "_" + str(year) + "_" + str(cm_count) + ".asc"
@@ -248,8 +257,8 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     # above manner because there won't be any rows with data where they could be written before
     # so add no-data rows simply to all files we've written to before
     if is_no_data_row \
-    and write_row_to_grids.list_of_output_files[setup_id] \
-    and write_row_to_grids.nodata_row_count[setup_id] > 0:
+        and write_row_to_grids.list_of_output_files[setup_id] \
+        and write_row_to_grids.nodata_row_count[setup_id] > 0:
         for path_to_file in write_row_to_grids.list_of_output_files[setup_id]:
             with open(path_to_file, "a") as file_:
                 write_nodata_rows(file_)
@@ -358,6 +367,10 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     })
 
     def process_message(msg):
+        if len(msg["errors"]) > 0:
+            print("There were errors in message:", msg, "\nSkipping message!")
+            return
+
 
         if not hasattr(process_message, "wnof_count"):
             process_message.wnof_count = 0

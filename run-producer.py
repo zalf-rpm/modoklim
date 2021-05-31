@@ -41,7 +41,7 @@ PATHS = {
     "mbm-local-remote": {
         "include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/dwd/cmip_cordex_reklies/", # mounted path to archive or hard drive with climate data 
-        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
+        "monica-path-to-climate-dir": "/monica_data/climate-data/dwd/cmip_cordex_reklies/csv/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./monica-data/data/", # mounted path to archive or hard drive with data 
         "path-to-projects-dir": "./monica-data/data/projects/",
         "path-debug-write-folder": "./debug-out/",
@@ -49,14 +49,14 @@ PATHS = {
     "remoteProducer-remoteMonica": {
         "include-file-base-path": "/project/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/data/", # mounted path to archive or hard drive with climate data 
-        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
+        "monica-path-to-climate-dir": "/monica_data/climate-data/dwd/cmip_cordex_reklies/csv/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./monica-data/data/", # mounted path to archive or hard drive with data 
         "path-to-projects-dir": "./monica-data/data/projects/", # mounted path to archive or hard drive with project data 
         "path-debug-write-folder": "/out/debug-out/",
     }
 }
 
-DEFAULT_HOST = "localhost" #"login01.cluster.zalf.de" # "localhost" #
+DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" #
 DEFAULT_PORT = "6666"
 RUN_SETUP = "[1]"
 SETUP_FILE = "sim_setups.csv"
@@ -71,10 +71,10 @@ TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow
 GEO_TARGET_GRID="epsg:31469" #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
 DEBUG_DONOT_SEND = False
-DEBUG_WRITE = True
+DEBUG_WRITE = False
 DEBUG_ROWS = 10
 DEBUG_WRITE_FOLDER = "./debug_out"
-DEBUG_WRITE_CLIMATE = True
+DEBUG_WRITE_CLIMATE = False
 
 # some values in these templates will be overwritten by the setup 
 TEMPLATE_SIM_JSON="sim.json" 
