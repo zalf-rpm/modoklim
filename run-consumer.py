@@ -75,7 +75,7 @@ def create_output(msg):
     return cm_count_to_vals
 
 
-def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id):
+def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr):
     "write grids row by row"
     
     if False and row in row_col_data:
@@ -127,57 +127,63 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         write_row_to_grids.list_of_output_files = defaultdict(list)
 
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=np.float))
+    
+    if not is_bgr:
+        output_grids = {
+            "Sowing-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            #"Stage-1-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Stage-2-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Stage-3-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Stage-4-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Stage-5-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Stage-6-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Stage-7-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Harvest-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "cereal-stem-elongation-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
 
-    output_grids = {
-        "Sowing-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-1-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-2-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-3-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-4-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-5-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-6-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Stage-7-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "Harvest-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-        "cereal-stem-elongation-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
-        "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Sowing-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Sowing-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Sowing-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Sowing-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Sowing-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Sowing-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Harvest-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Harvest-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Harvest-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Harvest-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Harvest-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Harvest-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            #"Stage-1-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            #"Stage-1-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            #"Stage-1-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Stage-1-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-1-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-1-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Stage-2-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-2-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-2-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Stage-2-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-2-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-2-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Stage-3-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-3-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-3-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Stage-3-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-3-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-3-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Stage-4-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-4-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-4-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Stage-4-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-4-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-4-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Stage-5-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-5-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-5-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Stage-5-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-5-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-5-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Stage-6-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-6-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-6-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-        "Stage-6-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-6-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-6-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-
-        "Stage-7-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-7-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-        "Stage-7-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-    }
+            "Stage-7-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-7-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Stage-7-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+        }
+    else:
+        output_grids = {}
+        for i in range(1,21):
+            output_grids[f'Mois_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
+            output_grids[f'STemp_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
 
     cmc_to_crop = {}
 
@@ -385,6 +391,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
         elif not write_normal_output_files:
             custom_id = msg["customId"]
             setup_id = custom_id["setup_id"]
+            is_bgr = custom_id["bgr"]
 
             data = setup_id_to_data[setup_id]
 
@@ -430,7 +437,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                             print("c: Couldn't create dir:", path_to_csv_out_dir, "! Exiting.")
                             exit(1)
                 
-                write_row_to_grids(data["row-col-data"], data["next-row"], data["ncols"], data["header"], path_to_out_dir, path_to_csv_out_dir, setup_id)
+                write_row_to_grids(data["row-col-data"], data["next-row"], data["ncols"], data["header"], \
+                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr)
                 
                 debug_msg = "wrote row: "  + str(data["next-row"]) + " next-row: " + str(data["next-row"]+1) + " rows unwritten: " + str(list(data["row-col-data"].keys()))
                 print(debug_msg)

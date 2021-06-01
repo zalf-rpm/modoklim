@@ -195,6 +195,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             sim_json["climate.csv-options"]["end-date"] = str(setup["end_year"]) + "-12-31" 
         sim_json["include-file-base-path"] = paths["include-file-base-path"]
 
+        if setup["bgr"]:
+            sim_json["output"]["events"] = sim_json["output"]["bgr-events"]
+
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:
             site_json = json.load(_)
@@ -325,7 +328,10 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 env_template["csvViaHeaderOptions"] = sim_json["climate.csv-options"]
                 
                 subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
-                env_template["pathToClimateCSV"] = paths["monica-path-to-climate-dir"] + subpath_to_csv
+                env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + subpath_to_csv]
+                if setup["incl_hist"]:
+                    hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
+                    env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + hist_subpath_to_csv)
                 print(env_template["pathToClimateCSV"])
                 if DEBUG_WRITE_CLIMATE :
                     listOfClimateFiles.add(subpath_to_csv)
@@ -334,7 +340,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "setup_id": setup_id,
                     "srow": srow, "scol": scol,
                     "crow": int(crow), "ccol": int(ccol),
-                    "soil_id": soil_id
+                    "soil_id": soil_id,
+                    "bgr": setup["bgr"]
                 }
 
                 if not DEBUG_DONOT_SEND :
