@@ -179,11 +179,13 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             "Stage-7-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-7-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
         }
+        output_keys = list(output_grids.keys())
     else:
         output_grids = {}
         for i in range(1,21):
             output_grids[f'Mois_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
             output_grids[f'STemp_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
+        output_keys = ["Mois", "STemp"]
 
     cmc_to_crop = {}
 
@@ -202,14 +204,19 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                     for cell_data in rcd_val:
                         # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
                         for cm_count, data in cell_data.items():
-                            for key, _ in output_grids.items():
+                            for key in output_keys:
                                 # store mapping cm_count to crop name for later file name creation
                                 if cm_count not in cmc_to_crop and "Crop" in data:
                                     cmc_to_crop[cm_count] = data["Crop"]
 
                                 # only further process/store data we actually received
                                 if key in data:
-                                    cmc_and_year_to_vals[(cm_count, data["Year"])][key].append(data[key])
+                                    v = data[key]
+                                    if isinstance(v, list):
+                                        for i, v_ in enumerate(v):
+                                            cmc_and_year_to_vals[(cm_count, data["Year"])][f'{key}_{i+1}'].append(v_)
+                                    else:
+                                        cmc_and_year_to_vals[(cm_count, data["Year"])][key].append(v)
 
                     # potentially aggregate multiple data per cell and finally store them for this row
                     for (cm_count, year), key_to_vals in cmc_and_year_to_vals.items():
