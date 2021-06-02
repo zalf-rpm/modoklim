@@ -131,53 +131,49 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     if not is_bgr:
         output_grids = {
             "Sowing-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            #"Stage-1-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Stage-2-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Stage-3-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Stage-4-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Stage-5-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Stage-6-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Stage-7-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "Harvest-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "cereal-stem-elongation-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
-
-            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-
             "Sowing-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Sowing-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Sowing-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-
-            "Harvest-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-            "Harvest-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-            "Harvest-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-
-            #"Stage-1-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-            #"Stage-1-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-            #"Stage-1-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
-
+            
+            "Stage-2-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Stage-2-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-2-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-2-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
+            "Cereal-stem-elongation-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Cereal-stem-elongation-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Cereal-stem-elongation-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Cereal-stem-elongation-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+
+            "Stage-3-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Stage-3-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-3-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-3-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
+            "Stage-4-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Stage-4-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-4-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-4-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
+            "Stage-5-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Stage-5-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-5-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-5-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
+            "Stage-6-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Stage-6-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-6-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-6-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
+            "Stage-7-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Stage-7-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-7-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "Stage-7-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+
+            "Harvest-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Harvest-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Harvest-avg-sm-30-60": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
+            "Harvest-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
         }
         output_keys = list(output_grids.keys())
     else:
@@ -204,7 +200,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                     for cell_data in rcd_val:
                         # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
                         for cm_count, data in cell_data.items():
-                            for key in output_keys:
+                            for key in output_keys.items():
                                 # store mapping cm_count to crop name for later file name creation
                                 if cm_count not in cmc_to_crop and "Crop" in data:
                                     cmc_to_crop[cm_count] = data["Crop"]

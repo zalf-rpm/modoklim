@@ -58,7 +58,7 @@ PATHS = {
 
 DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" #
 DEFAULT_PORT = "6666"
-RUN_SETUP = "[1]"
+RUN_SETUP = "[3]"
 SETUP_FILE = "sim_setups.csv"
 PROJECT_FOLDER = "monica-germany/"
 DATA_SOIL_DB = "germany/buek200.sqlite"
@@ -196,7 +196,15 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         sim_json["include-file-base-path"] = paths["include-file-base-path"]
 
         if setup["bgr"]:
-            sim_json["output"]["events"] = sim_json["output"]["bgr-events"]
+            if setup["nc_mode"]:
+                sim_json["output"]["events"] = sim_json["output"]["nc-bgr-events"]
+            else:
+                sim_json["output"]["events"] = sim_json["output"]["bgr-events"]
+        else:
+            if setup["nc_mode"]:
+                sim_json["output"]["events"] = sim_json["output"]["nc-events"]
+
+        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"]
 
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:
