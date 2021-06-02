@@ -40,7 +40,7 @@
 				["Mois|Stage-2-avg-sm-30-60", [4, 6, "AVG"]],
 				["Mois|Stage-2-avg-sm-60-90", [7, 9, "AVG"]]
 			],
-			"cereal-stem-elongation", [
+			"stem-elongation", [
 				"DOY|Cereal-stem-elongation-DOY",
 				["Mois|Cereal-stem-elongation-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Cereal-stem-elongation-avg-sm-30-60", [4, 6, "AVG"]],
