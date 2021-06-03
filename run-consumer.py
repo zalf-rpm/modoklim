@@ -200,7 +200,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                     for cell_data in rcd_val:
                         # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
                         for cm_count, data in cell_data.items():
-                            for key in output_keys.items():
+                            for key in output_keys:
                                 # store mapping cm_count to crop name for later file name creation
                                 if cm_count not in cmc_to_crop and "Crop" in data:
                                     cmc_to_crop[cm_count] = data["Crop"]
