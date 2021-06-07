@@ -59,7 +59,7 @@ USE_CORINE = False
 
 def create_output(msg):
     "create output structure for single run"
-
+    print(msg)
     cm_count_to_vals = defaultdict(dict)
     for data in msg.get("data", []):
         results = data.get("results", [])
