@@ -30,7 +30,7 @@ import zmq
 import sqlite3
 import sqlite3 as cas_sq3
 import numpy as np
-from pyproj import Proj, transform
+from pyproj import CRS, transform
 
 import monica_io3
 import soil_io3
@@ -68,10 +68,10 @@ DATA_GRID_LAND_USE = "germany/landuse_1000_gk5.asc"
 DATA_GRID_SOIL = "germany/BUEK200_1000_gk5.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
-GEO_TARGET_GRID="epsg:31469" #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
+GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
 DEBUG_DONOT_SEND = False
-DEBUG_WRITE = False
+DEBUG_WRITE = True
 DEBUG_ROWS = 10
 DEBUG_WRITE_FOLDER = "./debug_out"
 DEBUG_WRITE_CLIMATE = False
@@ -121,14 +121,14 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     socket.connect("tcp://" + config["server"] + ":" + str(config["server-port"]))
 
     # read setup from csv file
-    setups = Mrunlib.read_sim_setups(paths["path-to-projects-dir"] + PROJECT_FOLDER + config["setups-file"])
+    setups = Mrunlib.read_sim_setups(config["setups-file"])
     run_setups = json.loads(config["run-setups"])
-    print("read sim setups: ", paths["path-to-projects-dir"] + PROJECT_FOLDER + config["setups-file"])
+    print("read sim setups: ", config["setups-file"])
 
     #transforms geospatial coordinates from one coordinate reference system to another
     # transform wgs84 into gk5
-    wgs84 = Proj(init="epsg:4326") #proj4 -> (World Geodetic System 1984 https://epsg.io/4326)
-    gk5 = Proj(init=GEO_TARGET_GRID) 
+    wgs84 = CRS.from_epsg(4326) #proj4 -> (World Geodetic System 1984 https://epsg.io/4326)
+    gk5 = CRS.from_epsg(GEO_TARGET_GRID) 
 
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2

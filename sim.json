@@ -27,7 +27,7 @@
 
 		"obj-outputs?": true,
 
-		"nc-events": [			
+		"events": [			
 			"Sowing", [
 				["DOY|Sowing-DOY", "FIRST"],
 				["Mois|Sowing-avg-sm-0-30", [1, 3, "AVG"]],
@@ -91,7 +91,7 @@
 			]
 		],
 
-		"events": [			
+		"events____": [			
 			"crop", [
 				["CM-count", "FIRST"],
 				["Crop", "FIRST"],

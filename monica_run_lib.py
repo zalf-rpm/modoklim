@@ -1,8 +1,25 @@
+#!/usr/bin/python
+# -*- coding: UTF-8
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+# Authors:
+# Susanne Schulz <susanne.schulz@zalf.de>
+#
+# Maintainers:
+# Currently maintained by the authors.
+#
+# This file has been created at the Institute of
+# Landscape Systems Analysis at the ZALF.
+# Copyright (C: Leibniz Centre for Agricultural Landscape Research (ZALF)
+
 import csv
 import json
 import numpy as np
 from scipy.interpolate import NearestNDInterpolator
-from pyproj import transform, Transformer
+from pyproj import Transformer
 from datetime import date, timedelta
 print("local monica_run_lib.py")
 
@@ -110,7 +127,7 @@ def create_seed_harvest_geoGrid_interpolator_and_read_data(path_to_csv_file, wor
         points = [] # climate station position (lat, long transformed to a geoTargetGrid, e.g gk5)
         values = [] # climate station ids
 
-        transformer = Transformer.from_proj(worldGeodeticSys84, geoTargetGrid) 
+        transformer = Transformer.from_crs(worldGeodeticSys84, geoTargetGrid, always_xy=True) 
 
         prev_cs = None
         prev_lat_lon = [None, None]
@@ -184,7 +201,7 @@ def create_climate_geoGrid_interpolator_from_json_file(path_to_latlon_to_rowcol_
         points = []
         values = []
 
-        transformer = Transformer.from_proj(worldGeodeticSys84, geoTargetGrid) 
+        transformer = Transformer.from_crs(worldGeodeticSys84, geoTargetGrid, always_xy=True) 
 
         for latlon, rowcol in json.load(_):
             row, col = rowcol
