@@ -6,38 +6,40 @@
 	}, 	
 
 	"cropRotationTemplates": {
-		"WW": [
-			{ 
-				"type": "AutomaticSowing", 
-				"crop": {
-					"is-winter-crop": true,
-					"cropParams": {
-						"species": ["include-from-file", "crops/wheat.json"],
-						"cultivar": ["include-from-file", "crops/wheat/winter-wheat.json"]
+		"WW": [{
+			"worksteps": [
+				{ 
+					"type": "AutomaticSowing", 
+					"crop": {
+						"is-winter-crop": true,
+						"cropParams": {
+							"species": ["include-from-file", "crops/wheat.json"],
+							"cultivar": ["include-from-file", "crops/wheat/winter-wheat.json"]
+						},
+						"residueParams": ["include-from-file", "crop-residues/wheat.json"]
 					},
-					"residueParams": ["include-from-file", "crop-residues/wheat.json"]
+					"earliest-date": "0000-10-01",
+					"latest-date": "0000-11-10",
+					"min-temp": 18.5,
+					"days-in-temp-window": 14,
+					"min-%-asw": 0,
+					"max-%-asw": 100,
+					"max-3d-precip-sum": 2,
+					"max-curr-day-precip": 0.1,
+					"temp-sum-above-base-temp": 0,
+					"base-temp": 0
 				},
-				"earliest-date": "0000-10-01",
-				"latest-date": "0000-11-10",
-				"min-temp": 18.5,
-				"days-in-temp-window": 14,
-				"min-%-asw": 0,
-				"max-%-asw": 100,
-				"max-3d-precip-sum": 2,
-				"max-curr-day-precip": 0.1,
-				"temp-sum-above-base-temp": 0,
-				"base-temp": 0
-			},
-			{ 
-				"type": "AutomaticHarvest", 
-				"latest-date": "0001-09-31",
-				"min-%-asw": 0,
-				"max-%-asw": 100,
-				"max-3d-precip-sum": 2,
-				"max-curr-day-precip": 0.1,
-				"harvest-time": "maturity"
-			}
-		],
+				{ 
+					"type": "AutomaticHarvest", 
+					"latest-date": "0001-09-31",
+					"min-%-asw": 0,
+					"max-%-asw": 100,
+					"max-3d-precip-sum": 2,
+					"max-curr-day-precip": 0.1,
+					"harvest-time": "maturity"
+				}
+			]
+		}],
 		"WG": [],
 		"WR": [],
 		"WRa": [],
