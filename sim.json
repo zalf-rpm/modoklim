@@ -94,16 +94,14 @@
 		"events": [	
 			"Sowing", [
 				"CM-count",
-				"Year",
 				"Crop",
-				["DOY|Sowing-DOY", "FIRST"],
+				"DOY|Sowing-DOY",
 				["Mois|Sowing-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Sowing-avg-sm-30-60", [4, 6, "AVG"]],
 				["Mois|Sowing-avg-sm-60-90", [7, 9, "AVG"]]
 			],		
 			"Stage-2", [
 				"CM-count",
-				"Year",
 				"DOY|Stage-2-DOY",
 				["Mois|Stage-2-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Stage-2-avg-sm-30-60", [4, 6, "AVG"]],
@@ -111,7 +109,6 @@
 			],
 			"stem-elongation", [
 				"CM-count",
-				"Year",
 				"DOY|Cereal-stem-elongation-DOY",
 				["Mois|Cereal-stem-elongation-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Cereal-stem-elongation-avg-sm-30-60", [4, 6, "AVG"]],
@@ -119,7 +116,6 @@
 			],
 			"Stage-3", [
 				"CM-count",
-				"Year",
 				"DOY|Stage-3-DOY",
 				["Mois|Stage-3-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Stage-3-avg-sm-30-60", [4, 6, "AVG"]],
@@ -127,7 +123,6 @@
 			],
 			"Stage-4", [
 				"CM-count",
-				"Year",
 				"DOY|Stage-4-DOY",
 				["Mois|Stage-4-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Stage-4-avg-sm-30-60", [4, 6, "AVG"]],
@@ -135,7 +130,6 @@
 			],
 			"Stage-5", [
 				"CM-count",
-				"Year",
 				"DOY|Stage-5-DOY",
 				["Mois|Stage-5-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Stage-5-avg-sm-30-60", [4, 6, "AVG"]],
@@ -143,7 +137,6 @@
 			],
 			"Stage-6", [
 				"CM-count",
-				"Year",
 				"DOY|Stage-6-DOY",
 				["Mois|Stage-6-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Stage-6-avg-sm-30-60", [4, 6, "AVG"]],
@@ -151,7 +144,6 @@
 			],
 			"Stage-7", [
 				"CM-count",
-				"Year",
 				"DOY|Stage-7-DOY",
 				["Mois|Stage-7-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Stage-7-avg-sm-30-60", [4, 6, "AVG"]],
@@ -160,7 +152,7 @@
 			"Harvest", [
 				"CM-count",
 				"Year",
-				["DOY|Harvest-DOY", "LAST"],
+				"DOY|Harvest-DOY",
 				["Mois|Harvest-avg-sm-0-30", [1, 3, "AVG"]],
 				["Mois|Harvest-avg-sm-30-60", [4, 6, "AVG"]],
 				["Mois|Harvest-avg-sm-60-90", [7, 9, "AVG"]]

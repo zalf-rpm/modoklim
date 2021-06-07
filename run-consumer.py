@@ -128,7 +128,13 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
 
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=np.float))
     
-    if not is_bgr:
+    if is_bgr:
+        output_grids = {}
+        for i in range(1,21):
+            output_grids[f'Mois_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
+            output_grids[f'STemp_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
+        output_keys = ["Mois", "STemp"]
+    else:
         output_grids = {
             "Sowing-DOY": {"data" : make_dict_nparr(), "cast-to": "int"},
             "Sowing-avg-sm-0-30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
@@ -176,12 +182,6 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             "Harvest-avg-sm-60-90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
         }
         output_keys = list(output_grids.keys())
-    else:
-        output_grids = {}
-        for i in range(1,21):
-            output_grids[f'Mois_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
-            output_grids[f'STemp_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
-        output_keys = ["Mois", "STemp"]
 
     cmc_to_crop = {}
 
