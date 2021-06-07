@@ -58,7 +58,7 @@ TEMPLATE_CORINE_PATH = "{local_path_to_data_dir}germany/landuse_1000_gk5.asc"
 USE_CORINE = False
 
 STAGES = [
-    "Sowing", "Stage-2", "cereal-stem-elongation", "Stage-3", "Stage-4",
+    "Sowing", "Stage-2", "stem-elongation", "Stage-3", "Stage-4",
     "Stage-5", "Stage-6", "Stage-7", "Harvest"
 ]
 
