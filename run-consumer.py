@@ -387,11 +387,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
         leave = False
 
-        if msg["type"] == "finish":
-            print("c: received finish message")
-            leave = True
- 
-        elif not write_normal_output_files:
+        if not write_normal_output_files:
             custom_id = msg["customId"]
             setup_id = custom_id["setup_id"]
             is_bgr = custom_id["bgr"]
