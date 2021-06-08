@@ -149,13 +149,6 @@
 				["Mois|s7sm36", [4, 6, "AVG"]],
 				["Mois|s7sm69", [7, 9, "AVG"]]
 			],
-			"maturity", [
-				"CM-count",
-				"DOY|mdoy",
-				["Mois|msm03", [1, 3, "AVG"]],
-				["Mois|msm36", [4, 6, "AVG"]],
-				["Mois|msm69", [7, 9, "AVG"]]
-			],
 			"Harvest", [
 				"CM-count",
 				"Year",
