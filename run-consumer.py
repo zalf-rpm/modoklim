@@ -70,6 +70,12 @@ def create_output(msg):
             elif is_daily_section:
                 cm_count_to_vals[vals["Date"]].update(vals)
 
+    cmcs = list(cm_count_to_vals.keys())
+    cmcs.sort()
+    last_cmc = cmcs[-1]
+    if "year" not in cm_count_to_vals[last_cmc]:
+        cm_count_to_vals.pop(last_cmc)
+
     return cm_count_to_vals
 
 
