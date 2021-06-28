@@ -349,7 +349,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "srow": srow, "scol": scol,
                     "crow": int(crow), "ccol": int(ccol),
                     "soil_id": soil_id,
-                    "bgr": setup["bgr"]
+                    "bgr": setup["bgr"],
+                    "env_id": sent_env_count
                 }
 
                 if not DEBUG_DONOT_SEND :

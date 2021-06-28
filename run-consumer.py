@@ -466,7 +466,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                 #print "ignoring", result.get("type", "")
                 return
 
-            print("received work result ", process_message.received_env_count, " customId: ", str(list(msg.get("customId", "").values())))
+            print("received work result ", process_message.received_env_count, " customId: ", str(msg.get("customId", "")))
 
             custom_id = msg["customId"]
             setup_id = custom_id["setup_id"]
@@ -488,7 +488,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
             #with open("out/out-" + str(i) + ".csv", 'wb') as _:
             with open(path_to_out_dir + "col-" + str(col) + ".csv", "w", newline='') as _:
-                writer = csv.writer(_, delimiter=";")
+                writer = csv.writer(_, delimiter=",")
 
                 for data_ in msg.get("data", []):
                     results = data_.get("results", [])
