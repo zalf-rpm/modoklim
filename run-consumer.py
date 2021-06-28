@@ -391,7 +391,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
         leave = False
 
-        if not write_normal_output_files:
+        if not write_normal_output_files and not msg["customId"]["bgr"]:
             custom_id = msg["customId"]
             setup_id = custom_id["setup_id"]
             is_bgr = custom_id["bgr"]
@@ -460,7 +460,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                         leave = True
                         break
                 
-        elif write_normal_output_files:
+        elif msg["customId"]["bgr"]:
 
             if msg.get("type", "") in ["jobs-per-cell", "no-data", "setup_data"]:
                 #print "ignoring", result.get("type", "")
@@ -478,8 +478,16 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             
             process_message.wnof_count += 1
 
+            path_to_out_dir = config["out"] + str(setup_id) + "/" + str(row) + "/"
+            if not os.path.exists(path_to_out_dir):
+                try:
+                    os.makedirs(path_to_out_dir)
+                except OSError:
+                    print("c: Couldn't create dir:", path_to_out_dir, "! Exiting.")
+                    exit(1)
+
             #with open("out/out-" + str(i) + ".csv", 'wb') as _:
-            with open("out-normal/out-" + str(process_message.wnof_count) + ".csv", "w", newline='') as _:
+            with open(path_to_out_dir + "col-" + str(col) + ".csv", "w", newline='') as _:
                 writer = csv.writer(_, delimiter=";")
 
                 for data_ in msg.get("data", []):

@@ -204,7 +204,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             if setup["nc_mode"]:
                 sim_json["output"]["events"] = sim_json["output"]["nc-events"]
 
-        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"]
+        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:

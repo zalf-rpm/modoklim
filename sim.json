@@ -163,7 +163,7 @@
 			"daily", [
 				"Date",
 				"DOY",
-				"Year",
+				"Precip",
 				["Mois", [1, 20]],
 				["STemp", [1, 20]]
 			]
