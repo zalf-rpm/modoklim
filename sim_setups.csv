@@ -1,5 +1,5 @@
 run-id,bgr,nc_mode,crop-id,sim.json,crop.json,site.json,incl_hist,gcm,rcm,scenario,ensmem,version,start_year,end_year,groundwater-level,impenetrable-layer,elevation,slope,latitude,landcover,fertilization,NitrogenResponseOn,irrigation,WaterDeficitResponseOn,EmergenceMoistureControlOn,EmergenceFloodingControlOn,LeafExtensionModifier,CO2,O3
-1,false,false,WW,sim.json,crop.json,site.json,false,ICHEC-EC-EARTH,KNMI-RACMO22E,rcp85,r1i1p1,v1,2006,2095,false,false,true,true,true,false,false,false,false,false,false,false,false,500,
+1,false,false,WW,sim.json,crop.json,site.json,true,ICHEC-EC-EARTH,KNMI-RACMO22E,rcp85,r1i1p1,v1,1970,2099,false,false,true,true,true,false,false,false,false,false,false,false,false,500,
 2,true,false,WW,sim.json,crop.json,site.json,false,ICHEC-EC-EARTH,KNMI-RACMO22E,rcp85,r1i1p1,v1,2021,2040,false,false,true,true,true,false,false,false,false,true,false,false,false,360,
 3,false,true,WW,sim.json,crop.json,site.json,false,ICHEC-EC-EARTH,KNMI-RACMO22E,rcp85,r1i1p1,v1,2006,2095,false,false,true,true,true,false,false,false,false,true,false,false,false,360,
 4,false,true,WW,sim.json,crop.json,site.json,true,ICHEC-EC-EARTH,KNMI-RACMO22E,rcp85,r1i1p1,v1,2021,2050,false,false,true,true,true,false,false,false,false,true,false,false,false,360,
