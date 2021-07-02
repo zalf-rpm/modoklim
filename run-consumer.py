@@ -82,50 +82,6 @@ def create_output(msg):
 def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr):
     "write grids row by row"
     
-    if False and row in row_col_data:
-        is_data_row = len(list(filter(lambda x: x != -9999, row_col_data[row].values()))) > 0
-        if is_data_row:
-            path_to_row_file = path_to_csv_output_dir + "row-" + str(row) + ".csv" 
-
-            if not os.path.isfile(path_to_row_file):
-                with open(path_to_row_file, "w") as _:
-                    _.write("CM-count,row,col,Crop,SowYear,SowDOY,HarvDOY,Year,Cycle-length,RelDev,Yield-last,LAI-max,TraDef-avg,NDef-avg,crop-sum-nfert,crop-sum-nleach,Stage-harv\n")
-                    #_.write("CM-count,row,col,yearly-avg-tavg\n")
-
-            with open(path_to_row_file, 'a') as _:
-                writer = csv.writer(_, delimiter=",")
-
-                for col in range(0, ncols):
-                    if col in row_col_data[row]:
-                        rcd_val = row_col_data[row][col]
-                        if rcd_val != -9999 and len(rcd_val) > 0:
-                            cell_data = rcd_val[0]
-
-                            for cm_count, data in cell_data.items():
-                                if "Crop" not in data:
-                                    continue
-                                row_ = [
-                                    cm_count,
-                                    row,
-                                    col,
-                                    data["Crop"],
-                                    data["SowYear"],
-                                    data["SowDOY"],
-                                    data["HarvDOY"],
-                                    data["Year"],
-                                    data["Cycle-length"],
-                                    data["RelDev"],
-                                    data["Yield-last"],
-                                    data["LAI-max"],
-                                    data["TraDef-avg"],
-                                    data["NDef-avg"],
-                                    data["crop-sum-nfert"],
-                                    data["crop-sum-nleach"],
-                                    data["Stage-harv"]
-                                ]
-                                writer.writerow(row_)
-
-
     if not hasattr(write_row_to_grids, "nodata_row_count"):
         write_row_to_grids.nodata_row_count = defaultdict(lambda: 0)
         write_row_to_grids.list_of_output_files = defaultdict(list)
@@ -217,6 +173,10 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                                             cmc_and_year_to_vals[(cm_count, data["Year"])][f'{key}_{i+1}'].append(v_)
                                     else:
                                         cmc_and_year_to_vals[(cm_count, data["Year"])][key].append(v)
+                                # if a key is missing, because that monica event was never raised/reached, create the empty list
+                                # so a no-data value is being produced
+                                else:
+                                    cmc_and_year_to_vals[(cm_count, data["Year"])][key]
 
                     # potentially aggregate multiple data per cell and finally store them for this row
                     for (cm_count, year), key_to_vals in cmc_and_year_to_vals.items():
