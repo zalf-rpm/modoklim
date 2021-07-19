@@ -189,9 +189,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         with open(setup.get("sim.json", config["sim.json"])) as _:
             sim_json = json.load(_)
         # change start and end date acording to setup
-        if setup["start_year"]:
+        if setup["start_date"]:
             sim_json["climate.csv-options"]["start-date"] = str(setup["start_date"])
-        if setup["end_year"]:
+        if setup["end_date"]:
             sim_json["climate.csv-options"]["end-date"] = str(setup["end_date"]) 
         sim_json["include-file-base-path"] = paths["include-file-base-path"]
 
