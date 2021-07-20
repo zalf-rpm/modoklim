@@ -79,7 +79,7 @@ def create_output(msg):
     return cm_count_to_vals
 
 
-def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr):
+def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr, is_yields):
     "write grids row by row"
     
     if not hasattr(write_row_to_grids, "nodata_row_count"):
@@ -94,6 +94,11 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             output_grids[f'Mois_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
             output_grids[f'STemp_{i}'] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4}
         output_keys = ["Mois", "STemp"]
+    elif is_yields:
+        output_grids = {
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        }
+        output_keys = list(output_grids.keys())
     else:
         output_grids = {
             "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
@@ -355,6 +360,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             custom_id = msg["customId"]
             setup_id = custom_id["setup_id"]
             is_bgr = custom_id["bgr"]
+            is_yields = custom_id["yields"]
 
             data = setup_id_to_data[setup_id]
 
@@ -401,7 +407,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                             exit(1)
                 
                 write_row_to_grids(data["row-col-data"], data["next-row"], data["ncols"], data["header"], \
-                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr)
+                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr, is_yields)
                 
                 debug_msg = "wrote row: "  + str(data["next-row"]) + " next-row: " + str(data["next-row"]+1) + " rows unwritten: " + str(list(data["row-col-data"].keys()))
                 print(debug_msg)

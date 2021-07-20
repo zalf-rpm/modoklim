@@ -200,9 +200,10 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 sim_json["output"]["events"] = sim_json["output"]["nc-bgr-events"]
             else:
                 sim_json["output"]["events"] = sim_json["output"]["bgr-events"]
-        else:
-            if setup["nc_mode"]:
-                sim_json["output"]["events"] = sim_json["output"]["nc-events"]
+        elif setup["nc_mode"]:
+            sim_json["output"]["events"] = sim_json["output"]["nc-events"]
+        elif setup["yields"]:
+            sim_json["output"]["events"] = sim_json["output"]["yields-events"]
 
         sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
@@ -350,6 +351,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "crow": int(crow), "ccol": int(ccol),
                     "soil_id": soil_id,
                     "bgr": setup["bgr"],
+                    "yields": setup["yields"],
                     "env_id": sent_env_count
                 }
 
