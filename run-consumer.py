@@ -101,6 +101,8 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = list(output_grids.keys())
     else:
         output_grids = {
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            
             "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "ssm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "ssm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},

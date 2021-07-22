@@ -100,7 +100,12 @@
 			]
 		],
 
-		"events": [	
+		"events": [
+			"crop", [
+				["CM-count", "FIRST"],
+				["Crop", "FIRST"],
+				["Yield", "LAST"]
+			],
 			"Sowing", [
 				"CM-count",
 				"Crop",
