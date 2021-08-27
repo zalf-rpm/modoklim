@@ -71,10 +71,10 @@ TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow
 GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
 DEBUG_DONOT_SEND = False
-DEBUG_WRITE = False
+DEBUG_WRITE = True
 DEBUG_ROWS = 10
 DEBUG_WRITE_FOLDER = "./debug_out"
-DEBUG_WRITE_CLIMATE = False
+DEBUG_WRITE_CLIMATE = True
 
 # some values in these templates will be overwritten by the setup 
 TEMPLATE_SIM_JSON="sim.json" 
@@ -205,7 +205,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         elif setup["yields"]:
             sim_json["output"]["events"] = sim_json["output"]["yields-events"]
 
-        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
+        #sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:
