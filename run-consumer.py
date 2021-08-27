@@ -287,7 +287,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     socket.connect("tcp://" + config["server"] + ":" + config["port"])
     socket.RCVTIMEO = config["timeout"]
     leave = False
-    write_normal_output_files = False
+    write_normal_output_files = True
 
     path_to_soil_grid = TEMPLATE_SOIL_PATH.format(local_path_to_data_dir=paths["path-to-data-dir"])
     soil_metadata, header = Mrunlib.read_header(path_to_soil_grid)
@@ -428,7 +428,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                         leave = True
                         break
                 
-        elif msg["customId"]["bgr"]:
+        elif write_normal_output_files or msg["customId"]["bgr"]:
 
             if msg.get("type", "") in ["jobs-per-cell", "no-data", "setup_data"]:
                 #print "ignoring", result.get("type", "")
