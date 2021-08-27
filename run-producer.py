@@ -47,7 +47,7 @@ PATHS = {
         "path-debug-write-folder": "./debug-out/",
     },
     "remoteProducer-remoteMonica": {
-        "include-file-base-path": "/project/monica-parameters/", # path to monica-parameters
+        "include-file-base-path": "/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/data/dwd_core_ensemble/", # mounted path to archive or hard drive with climate data 
         "monica-path-to-climate-dir": "/monica_data/climate-data/dwd_core_ensemble/csvs_dwd_core_ensemble/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./monica-data/data/", # mounted path to archive or hard drive with data 
@@ -71,10 +71,10 @@ TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow
 GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
 DEBUG_DONOT_SEND = False
-DEBUG_WRITE = True
+DEBUG_WRITE = False
 DEBUG_ROWS = 10
 DEBUG_WRITE_FOLDER = "./debug_out"
-DEBUG_WRITE_CLIMATE = True
+DEBUG_WRITE_CLIMATE = False
 
 # some values in these templates will be overwritten by the setup 
 TEMPLATE_SIM_JSON="sim.json" 
