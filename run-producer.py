@@ -205,7 +205,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         elif setup["yields"]:
             sim_json["output"]["events"] = sim_json["output"]["yields-events"]
 
-        #sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
+        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:
@@ -274,14 +274,10 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     if corine_id not in [2,3,4]:
                         continue
 
-                if not (srow == 514 and scol == 530):
-                    continue
-
                 height_nn = dem_gk5_interpolate(sr_gk5, sh_gk5)
                 slope = slope_gk5_interpolate(sr_gk5, sh_gk5)
 
                 env_template["params"]["userCropParameters"]["__enable_T_response_leaf_expansion__"] = setup["LeafExtensionModifier"]
-
                     
                 #print("soil:", soil_profile)
                 env_template["params"]["siteParameters"]["SoilProfileParameters"] = soil_profile
