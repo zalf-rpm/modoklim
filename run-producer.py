@@ -47,7 +47,7 @@ PATHS = {
         "path-debug-write-folder": "./debug-out/",
     },
     "remoteProducer-remoteMonica": {
-        "include-file-base-path": "/project/monica-parameters/", # path to monica-parameters
+        "include-file-base-path": "/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/data/dwd_core_ensemble/", # mounted path to archive or hard drive with climate data 
         "monica-path-to-climate-dir": "/monica_data/climate-data/dwd_core_ensemble/csvs_dwd_core_ensemble/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./monica-data/data/", # mounted path to archive or hard drive with data 
@@ -58,7 +58,7 @@ PATHS = {
 
 DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" #
 DEFAULT_PORT = "6666"
-RUN_SETUP = "[3]"
+RUN_SETUP = "[2]"
 SETUP_FILE = "sim_setups.csv"
 PROJECT_FOLDER = "monica-germany/"
 DATA_SOIL_DB = "germany/buek200.sqlite"
@@ -128,7 +128,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #transforms geospatial coordinates from one coordinate reference system to another
     # transform wgs84 into gk5
     wgs84 = CRS.from_epsg(4326) #proj4 -> (World Geodetic System 1984 https://epsg.io/4326)
-    gk5 = CRS.from_epsg(GEO_TARGET_GRID) 
+    gk5 = CRS.from_epsg(31469) 
 
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
@@ -278,7 +278,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 slope = slope_gk5_interpolate(sr_gk5, sh_gk5)
 
                 env_template["params"]["userCropParameters"]["__enable_T_response_leaf_expansion__"] = setup["LeafExtensionModifier"]
-
                     
                 #print("soil:", soil_profile)
                 env_template["params"]["siteParameters"]["SoilProfileParameters"] = soil_profile

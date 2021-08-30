@@ -428,7 +428,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                         leave = True
                         break
                 
-        elif msg["customId"]["bgr"]:
+        elif write_normal_output_files or msg["customId"]["bgr"]:
 
             if msg.get("type", "") in ["jobs-per-cell", "no-data", "setup_data"]:
                 #print "ignoring", result.get("type", "")
