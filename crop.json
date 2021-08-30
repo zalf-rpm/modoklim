@@ -47,6 +47,43 @@
 					"type": "AutomaticSowing", 
 					"crop": {
 						"is-winter-crop": true,
+						"_cropParams": {
+							"species": {
+								"=": ["include-from-file", "projects/sustag/barley.json"],
+								"_FieldConditionModifier":1.2
+							},
+							"cultivar": {
+								"=": ["include-from-file", "projects/sustag/winter-barley.json"],
+								"FrostDehardening":5.05,
+								"FrostHardening":0.018,
+								"HeatSumIrrigationEnd":1032,
+								"HeatSumIrrigationStart":560,
+								"LT50cultivar":-15,
+								"LatestHarvestDoy":-1,
+								"LowTemperatureExposure":0.654,
+								"MaxAssimilationRate":30,
+								"OrganIdsForSecondaryYield": [
+									{
+										"organId": 2,
+										"type": "YieldComponent",
+										"yieldDryMatter": 0.86,
+										"yieldPercentage": 1
+									},
+									{
+										"organId": 3,
+										"type": "YieldComponent",
+										"yieldDryMatter": 0.86,
+										"yieldPercentage": 1
+									},
+									{
+										"organId": 4,
+										"type": "YieldComponent",
+										"yieldDryMatter": 0.86,
+										"yieldPercentage": 0.15
+									}
+								]
+							}
+						},
 						"cropParams": {
 							"species": ["include-from-file", "crops/barley.json"],
 							"cultivar": ["include-from-file", "crops/barley/winter-barley.json"]
@@ -218,6 +255,29 @@
 					"crop": {
 						"is-winter-crop": false,
 						"cropParams": {
+							"species": {
+								"=": ["include-from-file", "projects/sustag/maize.json"],
+								"FieldConditionModifier":0.95
+							},
+							"cultivar": {
+								"=": ["include-from-file", "projects/sustag/silage-maize.json"],
+								"OrganIdsForSecondaryYield": [
+									{
+										"organId": 2,
+										"type": "YieldComponent",
+										"yieldDryMatter": 0.32,
+										"yieldPercentage": 0.1
+									},
+									{
+										"organId": 3,
+										"type": "YieldComponent",
+										"yieldDryMatter": 0.32,
+										"yieldPercentage": 0.1
+									}
+								]
+							}
+						},
+						"_cropParams": {
 							"species": ["include-from-file", "crops/maize.json"],
 							"cultivar": ["include-from-file", "crops/maize/silage-maize.json"]
 						},
