@@ -47,7 +47,7 @@
 					"type": "AutomaticSowing", 
 					"crop": {
 						"is-winter-crop": true,
-						"_cropParams": {
+						"cropParams": {
 							"species": {
 								"=": ["include-from-file", "projects/sustag/barley.json"],
 								"_FieldConditionModifier":1.2
@@ -84,7 +84,7 @@
 								]
 							}
 						},
-						"cropParams": {
+						"_cropParams": {
 							"species": ["include-from-file", "crops/barley.json"],
 							"cultivar": ["include-from-file", "crops/barley/winter-barley.json"]
 						},
