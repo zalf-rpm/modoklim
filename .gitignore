@@ -114,3 +114,5 @@ dmypy.json
 .pyre/
 .vscode/launch.json
 .vscode/settings.json
+/test
+/agg_out
