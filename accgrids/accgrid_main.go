@@ -16,9 +16,6 @@ import (
 // Number of grids (N)
 // generate N/aggStep - aggRange files
 
-const StartYear = 1971 // inclusive
-const EndYear = 2099   // inclusive
-
 var crop = map[string]string{
 	"WW_rcp85":  "wheatwinterwheat",
 	"SM_rcp85":  "maizesilagemaize",
@@ -57,6 +54,8 @@ var numConcurrent = 10
 var aggRange uint = 30
 var aggStep uint = 1
 var cropId = "WW"
+var startYear uint = 1971 // inclusive
+var endYear uint = 2099   // inclusive
 
 func main() {
 	inputFolderPtr := flag.String("in", inputFolder, "path to input")
@@ -64,6 +63,8 @@ func main() {
 	concurrentPtr := flag.Int("concurrent", numConcurrent, "max concurrent execution")
 	aggRangePtr := flag.Uint("aggRange", aggRange, "avarage of n years (default 30)")
 	aggStepPtr := flag.Uint("aggStep", aggStep, "year jumps (default 1)")
+	startyearPtr := flag.Uint("start", startYear, "start year (inclusive)")
+	endyearPtr := flag.Uint("end", endYear, "end year (inclusive)")
 	cropIdPtr := flag.String("crop", cropId, "crop id")
 
 	flag.Parse()
@@ -74,6 +75,8 @@ func main() {
 	aggRange = *aggRangePtr
 	aggStep = *aggStepPtr
 	cropId = *cropIdPtr
+	startYear = *startyearPtr
+	endYear = *endyearPtr
 
 	if aggRange%2 > 0 {
 		log.Fatal("aggRange should be an even number")
@@ -88,8 +91,8 @@ func main() {
 		log.Fatal("no setups founf for crop")
 	}
 
-	startIdx := StartYear + aggRange/2
-	endIdx := EndYear - aggRange/2
+	startIdx := startYear + aggRange/2
+	endIdx := endYear - aggRange/2
 
 	gMinMax := newMinMax()
 	outChan := make(chan MinMax)
@@ -173,7 +176,7 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 		// load grid - to grid buffer
 		for imageIdx := imageYear - aggRangeHalf; imageIdx < imageYear+aggRangeHalf; imageIdx++ {
 			// read grid file
-			index := imageIdx - StartYear + 1
+			index := imageIdx - startYear + 1
 			filepath := filepath.Join(inputFolder, strconv.Itoa(setup), fmt.Sprintf(inputFileformat, crop[setupId], imageIdx, index))
 			file, err := os.Open(filepath)
 			if err != nil {
