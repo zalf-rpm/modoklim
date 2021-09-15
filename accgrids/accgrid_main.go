@@ -39,7 +39,7 @@ var scenario = map[string]string{
 
 // hard coded setup map
 var setups = map[string][]int{
-	"WW_rcp85":  {1}, // 41, 65, 81, 121, 129},
+	"WW_rcp85":  {1, 41, 65, 81, 121, 129},
 	"SM_rcp85":  {7, 47, 71, 87, 127, 135},
 	"WRa_rcp85": {4, 44, 68, 84, 124, 132},
 	"WW_rcp26":  {9, 17, 57, 89, 97},
@@ -48,154 +48,207 @@ var setups = map[string][]int{
 }
 
 const inputFileformat = "%s_Yield_%d_%d.asc"
-const outfileTemplate = "%s_avgYield_%s_%d_%d.asc"         // crop[setupId], scenario[setupId], imageYear, index
-const outDiffFileTemplate = "%s_avgYieldDiff_%s_%d_%d.asc" // crop[setupId], scenario[setupId], imageYear, index
+const outfileTemplate = "avgYield_%s_%s_%d_%d.asc"         // crop[setupId], scenario[setupId], imageYear, index
+const outDiffFileTemplate = "avgYieldDiff_%s_%s_%d_%d.asc" // crop[setupId], scenario[setupId], imageYear, index
+
+var inputFolder = "./test"
+var outFolder = "./agg_out"
+var numConcurrent = 10
+var aggRange uint = 30
+var aggStep uint = 1
+var cropId = "WW"
 
 func main() {
-	inputFolderPtr := flag.String("in", "./test", "path to input")
-	outFolderPtr := flag.String("out", "./agg_out", "path to output")
-	concurrentPtr := flag.Int("concurrent", 1, "max concurrent execution")
-	aggRangePtr := flag.Uint("aggRange", 30, "avarage of n years (default 30)")
-	aggStepPtr := flag.Uint("aggStep", 1, "year jumps (default 1)")
-	setupIdPtr := flag.String("setup", "WW_rcp85", "setup id")
+	inputFolderPtr := flag.String("in", inputFolder, "path to input")
+	outFolderPtr := flag.String("out", outFolder, "path to output")
+	concurrentPtr := flag.Int("concurrent", numConcurrent, "max concurrent execution")
+	aggRangePtr := flag.Uint("aggRange", aggRange, "avarage of n years (default 30)")
+	aggStepPtr := flag.Uint("aggStep", aggStep, "year jumps (default 1)")
+	cropIdPtr := flag.String("crop", cropId, "crop id")
 
 	flag.Parse()
-	inputFolder := *inputFolderPtr
-	outFolder := *outFolderPtr
-	numConcurrent := *concurrentPtr
+	inputFolder = *inputFolderPtr
+	outFolder = *outFolderPtr
+	numConcurrent = *concurrentPtr
 
-	aggRange := *aggRangePtr
-	aggStep := *aggStepPtr
-	setupId := *setupIdPtr
+	aggRange = *aggRangePtr
+	aggStep = *aggStepPtr
+	cropId = *cropIdPtr
 
 	if aggRange%2 > 0 {
 		log.Fatal("aggRange should be an even number")
 	}
-	if _, ok := setups[setupId]; !ok {
-		log.Fatal("setup id not found")
+	setupIds := []string{}
+	for key := range setups {
+		if strings.HasPrefix(key, cropId) {
+			setupIds = append(setupIds, key)
+		}
+	}
+	if len(setupIds) == 0 {
+		log.Fatal("no setups founf for crop")
 	}
 
-	aggRangeHalf := aggRange / 2
 	startIdx := StartYear + aggRange/2
 	endIdx := EndYear - aggRange/2
-	imageYearIndex := 0
+
 	gMinMax := newMinMax()
 	outChan := make(chan MinMax)
+	fileNameChan := make(chan string)
+	final := make(chan MinMax)
+	terminate := make(chan bool)
+	go filenameCollector(fileNameChan, final, terminate)
+
 	currRuns := 0
-	var refGrid [][]float64
-	for imageYear := startIdx; imageYear < endIdx; imageYear = imageYear + aggStep {
-		imageYearIndex++
 
-		calcAvgGrid := func(imageYear uint, imageYearIndex int, outC chan MinMax) (currentYearGrid [][]float64, mMinMax MinMax) {
+	for _, setupId := range setupIds {
+		imageYearIndex := 0
+		var refGrid [][]float64
+		for imageYear := startIdx; imageYear < endIdx; imageYear = imageYear + aggStep {
+			imageYearIndex++
 
-			yearCounter := 0
-			var header map[string]float64
-			nodata := -1.0
-			for _, setup := range setups[setupId] {
-				// load grid - to grid buffer
-				for imageIdx := imageYear - aggRangeHalf; imageIdx < imageYear+aggRangeHalf; imageIdx++ {
-					// read grid file
-					index := imageIdx - StartYear + 1
-					filepath := filepath.Join(inputFolder, strconv.Itoa(setup), fmt.Sprintf(inputFileformat, crop[setupId], imageIdx, index))
-					file, err := os.Open(filepath)
+			if imageYearIndex == 1 {
+				// read reference grid (historical data) for diff maps
+				var lMinMax MinMax
+				refGrid, lMinMax = calcAvgGrid(nil, setupId, imageYear, imageYearIndex, fileNameChan, nil)
+				gMinMax.setMax(lMinMax.maxYield)
+				gMinMax.setMin(lMinMax.minYield)
+			} else {
+				go calcAvgGrid(refGrid, setupId, imageYear, imageYearIndex, fileNameChan, outChan)
+
+				currRuns++
+				if currRuns >= numConcurrent {
+					for currRuns >= numConcurrent {
+						mMM := <-outChan
+						currRuns--
+						gMinMax.setMax(mMM.maxYield)
+						gMinMax.setMin(mMM.minYield)
+
+					}
+				}
+			}
+		}
+		for currRuns > 0 {
+			mMM := <-outChan
+			currRuns--
+			gMinMax.setMax(mMM.maxYield)
+			gMinMax.setMin(mMM.minYield)
+		}
+	}
+
+	// send final min max values
+	final <- gMinMax
+	// wait for termination of meta file writing
+	<-terminate
+}
+
+func filenameCollector(in chan string, final chan MinMax, out chan bool) {
+	diffFilenames := []string{}
+	yieldFilenames := []string{}
+
+	for {
+		select {
+		case globalMinMax := <-final:
+			// run finished create meta files
+			createMeta(yieldFilenames, diffFilenames, globalMinMax)
+			// send finish signal to terminate
+			out <- true
+			return
+		case filename := <-in:
+			if strings.HasPrefix(filename, "avgYieldDiff") {
+				diffFilenames = append(diffFilenames, filename)
+			} else {
+				yieldFilenames = append(yieldFilenames, filename)
+			}
+		}
+	}
+}
+
+func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearIndex int, fileNameChan chan string, outC chan MinMax) (currentYearGrid [][]float64, mMinMax MinMax) {
+
+	aggRangeHalf := aggRange / 2
+	yearCounter := 0
+	var header map[string]float64
+	nodata := -1.0
+	for _, setup := range setups[setupId] {
+		// load grid - to grid buffer
+		for imageIdx := imageYear - aggRangeHalf; imageIdx < imageYear+aggRangeHalf; imageIdx++ {
+			// read grid file
+			index := imageIdx - StartYear + 1
+			filepath := filepath.Join(inputFolder, strconv.Itoa(setup), fmt.Sprintf(inputFileformat, crop[setupId], imageIdx, index))
+			file, err := os.Open(filepath)
+			if err != nil {
+				log.Fatal(err)
+			}
+			scanner := bufio.NewScanner(file)
+
+			if yearCounter == 0 {
+				// read header, init currentGrid
+				header = readHeader(scanner, false)
+				cols := int(header["ncols"])
+				rows := int(header["nrows"])
+				nodata = header["nodata_value"]
+				currentYearGrid = make([][]float64, rows)
+				for row := 0; row < rows; row++ {
+					currentYearGrid[row] = make([]float64, cols)
+				}
+			} else {
+				// skip first lines
+				readHeader(scanner, true)
+			}
+			currRow := 0
+			for scanner.Scan() {
+				// sum up grid cells
+				fields := strings.Fields(scanner.Text())
+				for i, field := range fields {
+					val, err := strconv.ParseFloat(field, 32)
 					if err != nil {
 						log.Fatal(err)
 					}
-					scanner := bufio.NewScanner(file)
-
-					if yearCounter == 0 {
-						// read header, init currentGrid
-						header = readHeader(scanner, false)
-						cols := int(header["ncols"])
-						rows := int(header["nrows"])
-						nodata = header["nodata_value"]
-						currentYearGrid = make([][]float64, rows)
-						for row := 0; row < rows; row++ {
-							currentYearGrid[row] = make([]float64, cols)
-						}
+					if val-nodata < 0.001 {
+						currentYearGrid[currRow][i] = nodata
 					} else {
-						// skip first lines
-						readHeader(scanner, true)
-					}
-					currRow := 0
-					for scanner.Scan() {
-						// sum up grid cells
-						fields := strings.Fields(scanner.Text())
-						for i, field := range fields {
-							val, err := strconv.ParseFloat(field, 32)
-							if err != nil {
-								log.Fatal(err)
-							}
-							if val-nodata < 0.001 {
-								currentYearGrid[currRow][i] = nodata
-							} else {
-								currentYearGrid[currRow][i] = currentYearGrid[currRow][i] + val
-							}
-
-						}
-						currRow++
+						currentYearGrid[currRow][i] = currentYearGrid[currRow][i] + val
 					}
 
-					file.Close()
-					yearCounter++
 				}
-			}
-			mMinMax = newMinMax()
-			// calc average
-			for rowIdx, row := range currentYearGrid {
-				for colIdx, col := range row {
-					if currentYearGrid[rowIdx][colIdx] != nodata {
-						currentYearGrid[rowIdx][colIdx] = col / float64(yearCounter)
-						mMinMax.setMax(int(currentYearGrid[rowIdx][colIdx]))
-						mMinMax.setMin(int(currentYearGrid[rowIdx][colIdx]))
-					}
-				}
-			}
-			// save new grid
-			outFileName := filepath.Join(outFolder, fmt.Sprintf(outfileTemplate, crop[setupId], scenario[setupId], imageYear, imageYearIndex))
-			fout := writeAGridHeader(outFileName, header)
-			writeFloatRows(fout, currentYearGrid)
-			fout.Close()
-			if refGrid != nil {
-				diffgrid := createDiff(refGrid, currentYearGrid, nodata)
-
-				outDiffFileName := filepath.Join(outFolder, fmt.Sprintf(outDiffFileTemplate, crop[setupId], scenario[setupId], imageYear, imageYearIndex))
-				fout := writeAGridHeader(outDiffFileName, header)
-				writeIntRows(fout, diffgrid)
-				fout.Close()
-			}
-			if outC != nil {
-				outC <- mMinMax
+				currRow++
 			}
 
-			return currentYearGrid, mMinMax
+			file.Close()
+			yearCounter++
 		}
-
-		if imageYearIndex == 1 {
-			// read reference grid (historical data) for diff maps
-			refGrid, gMinMax = calcAvgGrid(imageYear, imageYearIndex, nil)
-		} else {
-			go calcAvgGrid(imageYear, imageYearIndex, outChan)
-
-			currRuns++
-			if currRuns >= numConcurrent {
-				for currRuns >= numConcurrent {
-					mMM := <-outChan
-					currRuns--
-					gMinMax.setMax(mMM.maxYield)
-					gMinMax.setMin(mMM.minYield)
-
-				}
+	}
+	mMinMax = newMinMax()
+	// calc average
+	for rowIdx, row := range currentYearGrid {
+		for colIdx, col := range row {
+			if currentYearGrid[rowIdx][colIdx] != nodata {
+				currentYearGrid[rowIdx][colIdx] = col / float64(yearCounter)
+				mMinMax.setMax(int(currentYearGrid[rowIdx][colIdx]))
+				mMinMax.setMin(int(currentYearGrid[rowIdx][colIdx]))
 			}
 		}
 	}
-	for currRuns > 0 {
-		mMM := <-outChan
-		currRuns--
-		gMinMax.setMax(mMM.maxYield)
-		gMinMax.setMin(mMM.minYield)
+	// save new grid
+	outFileName := filepath.Join(outFolder, fmt.Sprintf(outfileTemplate, crop[setupId], scenario[setupId], imageYear, imageYearIndex))
+	fout := writeAGridHeader(outFileName, header)
+	writeFloatRows(fout, currentYearGrid)
+	fout.Close()
+	fileNameChan <- outFileName
+	if refGrid != nil {
+		diffgrid := createDiff(refGrid, currentYearGrid, nodata)
 
+		outDiffFileName := filepath.Join(outFolder, fmt.Sprintf(outDiffFileTemplate, crop[setupId], scenario[setupId], imageYear, imageYearIndex))
+		fout := writeAGridHeader(outDiffFileName, header)
+		writeIntRows(fout, diffgrid)
+		fout.Close()
+		fileNameChan <- outDiffFileName
 	}
+	if outC != nil {
+		outC <- mMinMax
+	}
+
+	return currentYearGrid, mMinMax
 }
 
 func createDiff(refGrid, currentYearGrid [][]float64, nodata float64) (diffgrid [][]int) {
@@ -334,7 +387,45 @@ func makeDir(outPath string) {
 	}
 }
 
-func writeMetaFile(gridFilePath, title, labeltext, colormap string, colorlist []string, cbarLabel []string, ticklist []float64, factor float64, maxValue, minValue, nodata int, minColor string) {
+func createMeta(yieldFilelist, diffFileList []string, globalMinMax MinMax) {
+
+	yieldMeta := newYieldMetaSetup(globalMinMax.minYield, globalMinMax.maxYield)
+	diffMeta := newDiffMetaSet()
+	for _, filename := range yieldFilelist {
+		writeMetaFile(filename, yieldMeta)
+	}
+	for _, filename := range diffFileList {
+		writeMetaFile(filename, diffMeta)
+	}
+}
+
+type metaSetup struct {
+	colormap string
+	maxValue int
+	minValue int
+
+	minColor string
+}
+
+func newDiffMetaSet() metaSetup {
+	return metaSetup{
+		colormap: "RdYlGn",
+		maxValue: 101,
+		minValue: -101,
+		minColor: "lightgrey",
+	}
+}
+
+func newYieldMetaSetup(minValue, maxValue int) metaSetup {
+	return metaSetup{
+		colormap: "jet",
+		maxValue: maxValue,
+		minValue: minValue,
+		minColor: "lightgrey",
+	}
+}
+
+func writeMetaFile(gridFilePath string, setup metaSetup) {
 	metaFilePath := gridFilePath + ".meta"
 	makeDir(metaFilePath)
 	file, err := os.OpenFile(metaFilePath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0600)
@@ -342,38 +433,13 @@ func writeMetaFile(gridFilePath, title, labeltext, colormap string, colorlist []
 		log.Fatal(err)
 	}
 	defer file.Close()
-	file.WriteString(fmt.Sprintf("title: '%s'\n", title))
-	file.WriteString(fmt.Sprintf("labeltext: '%s'\n", labeltext))
-	if colormap != "" {
-		file.WriteString(fmt.Sprintf("colormap: '%s'\n", colormap))
+	if setup.colormap != "" {
+		file.WriteString(fmt.Sprintf("colormap: '%s'\n", setup.colormap))
 	}
-	if colorlist != nil {
-		file.WriteString("colorlist: \n")
-		for _, item := range colorlist {
-			file.WriteString(fmt.Sprintf(" - '%s'\n", item))
-		}
-	}
-	if cbarLabel != nil {
-		file.WriteString("cbarLabel: \n")
-		for _, cbarItem := range cbarLabel {
-			file.WriteString(fmt.Sprintf(" - '%s'\n", cbarItem))
-		}
-	}
-	if ticklist != nil {
-		file.WriteString("ticklist: \n")
-		for _, tick := range ticklist {
-			file.WriteString(fmt.Sprintf(" - %f\n", tick))
-		}
-	}
-	file.WriteString(fmt.Sprintf("factor: %f\n", factor))
-	if maxValue != nodata {
-		file.WriteString(fmt.Sprintf("maxValue: %d\n", maxValue))
-	}
-	if minValue != nodata {
-		file.WriteString(fmt.Sprintf("minValue: %d\n", minValue))
-	}
-	if len(minColor) > 0 {
-		file.WriteString(fmt.Sprintf("minColor: %s\n", minColor))
+	file.WriteString(fmt.Sprintf("maxValue: %d\n", setup.maxValue))
+	file.WriteString(fmt.Sprintf("minValue: %d\n", setup.minValue))
+	if len(setup.minColor) > 0 {
+		file.WriteString(fmt.Sprintf("minColor: %s\n", setup.minColor))
 	}
 }
 
