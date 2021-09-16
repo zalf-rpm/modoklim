@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"gonum.org/v1/gonum/stat"
 )
 
 // aggrigate ascii grids over 30 years(aggRange) per 1 year (aggStep)
@@ -47,6 +49,7 @@ var setups = map[string][]int{
 const inputFileformat = "%s_Yield_%d_%d.asc"
 const outfileTemplate = "avgYield_%s_%s_%d_%d.asc"         // crop[setupId], scenario[setupId], imageYear, index
 const outDiffFileTemplate = "avgYieldDiff_%s_%s_%d_%d.asc" // crop[setupId], scenario[setupId], imageYear, index
+const outStdfileTemplate = "avgYieldStd_%s_%s_%d_%d.asc"   // crop[setupId], scenario[setupId], imageYear, index
 
 var inputFolder = "./test"
 var outFolder = "./agg_out"
@@ -115,6 +118,8 @@ func main() {
 				refGrid, lMinMax = calcAvgGrid(nil, setupId, imageYear, imageYearIndex, fileNameChan, nil)
 				gMinMax.setMax(lMinMax.maxYield)
 				gMinMax.setMin(lMinMax.minYield)
+				gMinMax.setStdMax(lMinMax.maxStd)
+				gMinMax.setStdMin(lMinMax.minStd)
 			} else {
 				go calcAvgGrid(refGrid, setupId, imageYear, imageYearIndex, fileNameChan, outChan)
 
@@ -125,6 +130,8 @@ func main() {
 						currRuns--
 						gMinMax.setMax(mMM.maxYield)
 						gMinMax.setMin(mMM.minYield)
+						gMinMax.setStdMax(mMM.maxStd)
+						gMinMax.setStdMin(mMM.minStd)
 
 					}
 				}
@@ -135,6 +142,8 @@ func main() {
 			currRuns--
 			gMinMax.setMax(mMM.maxYield)
 			gMinMax.setMin(mMM.minYield)
+			gMinMax.setStdMax(mMM.maxStd)
+			gMinMax.setStdMin(mMM.minStd)
 		}
 	}
 
@@ -147,18 +156,21 @@ func main() {
 func filenameCollector(in chan string, final chan MinMax, out chan bool) {
 	diffFilenames := []string{}
 	yieldFilenames := []string{}
+	stdFilenames := []string{}
 
 	for {
 		select {
 		case globalMinMax := <-final:
 			// run finished create meta files
-			createMeta(yieldFilenames, diffFilenames, globalMinMax)
+			createMeta(yieldFilenames, diffFilenames, stdFilenames, globalMinMax)
 			// send finish signal to terminate
 			out <- true
 			return
 		case filename := <-in:
 			if strings.Contains(filename, "Diff") {
 				diffFilenames = append(diffFilenames, filename)
+			} else if strings.Contains(filename, "Std") {
+				stdFilenames = append(stdFilenames, filename)
 			} else {
 				yieldFilenames = append(yieldFilenames, filename)
 			}
@@ -172,6 +184,8 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 	yearCounter := 0
 	var header map[string]float64
 	nodata := -1.0
+	var stdYearGrid [][][]float64
+	var stdeviationGrid [][]float64
 	for _, setup := range setups[setupId] {
 		// load grid - to grid buffer
 		for imageIdx := imageYear - aggRangeHalf; imageIdx < imageYear+aggRangeHalf; imageIdx++ {
@@ -191,8 +205,16 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 				rows := int(header["nrows"])
 				nodata = header["nodata_value"]
 				currentYearGrid = make([][]float64, rows)
+				stdeviationGrid = make([][]float64, rows)
+
+				stdYearGrid = make([][][]float64, rows)
 				for row := 0; row < rows; row++ {
 					currentYearGrid[row] = make([]float64, cols)
+					stdeviationGrid[row] = make([]float64, cols)
+					stdYearGrid[row] = make([][]float64, cols)
+					for col := 0; col < cols; col++ {
+						stdYearGrid[row][col] = make([]float64, 0, aggRange*6)
+					}
 				}
 			} else {
 				// skip first lines
@@ -211,8 +233,8 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 						currentYearGrid[currRow][i] = nodata
 					} else {
 						currentYearGrid[currRow][i] = currentYearGrid[currRow][i] + val
+						stdYearGrid[currRow][i] = append(stdYearGrid[currRow][i], val)
 					}
-
 				}
 				currRow++
 			}
@@ -227,6 +249,10 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 		for colIdx, col := range row {
 			if currentYearGrid[rowIdx][colIdx] != nodata {
 				currentYearGrid[rowIdx][colIdx] = col / float64(yearCounter)
+				stdeviationGrid[rowIdx][colIdx] = stat.StdDev(stdYearGrid[rowIdx][colIdx], nil)
+
+				mMinMax.setStdMax(int(stdeviationGrid[rowIdx][colIdx]))
+				mMinMax.setStdMin(int(stdeviationGrid[rowIdx][colIdx]))
 				mMinMax.setMax(int(currentYearGrid[rowIdx][colIdx]))
 				mMinMax.setMin(int(currentYearGrid[rowIdx][colIdx]))
 			}
@@ -247,6 +273,12 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 		fout.Close()
 		fileNameChan <- outDiffFileName
 	}
+	outstdFileName := filepath.Join(outFolder, fmt.Sprintf(outStdfileTemplate, crop[setupId], scenario[setupId], imageYear, imageYearIndex))
+	foutStd := writeAGridHeader(outstdFileName, header)
+	writeFloatRows(foutStd, stdeviationGrid)
+	foutStd.Close()
+	fileNameChan <- outstdFileName
+
 	if outC != nil {
 		outC <- mMinMax
 	}
@@ -390,15 +422,19 @@ func makeDir(outPath string) {
 	}
 }
 
-func createMeta(yieldFilelist, diffFileList []string, globalMinMax MinMax) {
+func createMeta(yieldFilelist, diffFileList, stdFilelist []string, globalMinMax MinMax) {
 
 	yieldMeta := newYieldMetaSetup(globalMinMax.minYield, globalMinMax.maxYield)
 	diffMeta := newDiffMetaSet()
+	stdMeta := newStdMetaSet(globalMinMax.minStd, globalMinMax.maxStd)
 	for _, filename := range yieldFilelist {
 		writeMetaFile(filename, yieldMeta)
 	}
 	for _, filename := range diffFileList {
 		writeMetaFile(filename, diffMeta)
+	}
+	for _, filename := range stdFilelist {
+		writeMetaFile(filename, stdMeta)
 	}
 }
 
@@ -427,6 +463,14 @@ func newYieldMetaSetup(minValue, maxValue int) metaSetup {
 		minColor: "lightgrey",
 	}
 }
+func newStdMetaSet(minValue, maxValue int) metaSetup {
+	return metaSetup{
+		colormap: "cool",
+		maxValue: maxValue,
+		minValue: minValue,
+		minColor: "lightgrey",
+	}
+}
 
 func writeMetaFile(gridFilePath string, setup metaSetup) {
 	metaFilePath := gridFilePath + ".meta"
@@ -449,12 +493,16 @@ func writeMetaFile(gridFilePath string, setup metaSetup) {
 type MinMax struct {
 	minYield int
 	maxYield int
+	minStd   int
+	maxStd   int
 }
 
 func newMinMax() MinMax {
 	return MinMax{
 		minYield: -1,
 		maxYield: -1,
+		minStd:   -1,
+		maxStd:   -1,
 	}
 }
 
@@ -466,5 +514,15 @@ func (m *MinMax) setMin(min int) {
 func (m *MinMax) setMax(max int) {
 	if m.maxYield < max || m.maxYield < 0 {
 		m.maxYield = max
+	}
+}
+func (m *MinMax) setStdMin(min int) {
+	if m.minStd > min || m.minStd < 0 {
+		m.minStd = min
+	}
+}
+func (m *MinMax) setStdMax(max int) {
+	if m.maxStd < max || m.maxStd < 0 {
+		m.maxStd = max
 	}
 }
