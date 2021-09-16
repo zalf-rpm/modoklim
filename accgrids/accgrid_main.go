@@ -157,7 +157,7 @@ func filenameCollector(in chan string, final chan MinMax, out chan bool) {
 			out <- true
 			return
 		case filename := <-in:
-			if strings.HasPrefix(filename, "avgYieldDiff") {
+			if strings.Contains(filename, "Diff") {
 				diffFilenames = append(diffFilenames, filename)
 			} else {
 				yieldFilenames = append(yieldFilenames, filename)
