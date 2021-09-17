@@ -95,7 +95,7 @@ func main() {
 	}
 
 	startIdx := startYear + aggRange/2
-	endIdx := endYear - aggRange/2
+	endIdx := endYear - aggRange/2 + 1
 
 	gMinMax := newMinMax()
 	outChan := make(chan MinMax)
