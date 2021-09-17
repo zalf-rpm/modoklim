@@ -184,9 +184,10 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 	yearCounter := 0
 	var header map[string]float64
 	nodata := -1.0
-	var stdYearGrid [][][]float64
+	var stdScenGrid [][][]float64
 	var stdeviationGrid [][]float64
 	for _, setup := range setups[setupId] {
+
 		// load grid - to grid buffer
 		for imageIdx := imageYear - aggRangeHalf; imageIdx < imageYear+aggRangeHalf; imageIdx++ {
 			// read grid file
@@ -207,14 +208,11 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 				currentYearGrid = make([][]float64, rows)
 				stdeviationGrid = make([][]float64, rows)
 
-				stdYearGrid = make([][][]float64, rows)
+				stdScenGrid = make([][][]float64, rows)
 				for row := 0; row < rows; row++ {
 					currentYearGrid[row] = make([]float64, cols)
 					stdeviationGrid[row] = make([]float64, cols)
-					stdYearGrid[row] = make([][]float64, cols)
-					for col := 0; col < cols; col++ {
-						stdYearGrid[row][col] = make([]float64, 0, aggRange*6)
-					}
+					stdScenGrid[row] = make([][]float64, cols)
 				}
 			} else {
 				// skip first lines
@@ -233,7 +231,10 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 						currentYearGrid[currRow][i] = nodata
 					} else {
 						currentYearGrid[currRow][i] = currentYearGrid[currRow][i] + val
-						stdYearGrid[currRow][i] = append(stdYearGrid[currRow][i], val)
+						if stdScenGrid[currRow][i] == nil {
+							stdScenGrid[currRow][i] = make([]float64, 0, aggRange)
+						}
+						stdScenGrid[currRow][i] = append(stdScenGrid[currRow][i], val)
 					}
 				}
 				currRow++
@@ -242,6 +243,12 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 			file.Close()
 			yearCounter++
 		}
+		for rowIdx, row := range stdScenGrid {
+			for colIdx := range row {
+				stdeviationGrid[rowIdx][colIdx] = stat.StdDev(stdScenGrid[rowIdx][colIdx], nil)
+				stdScenGrid[rowIdx][colIdx] = nil
+			}
+		}
 	}
 	mMinMax = newMinMax()
 	// calc average
@@ -249,7 +256,7 @@ func calcAvgGrid(refGrid [][]float64, setupId string, imageYear uint, imageYearI
 		for colIdx, col := range row {
 			if currentYearGrid[rowIdx][colIdx] != nodata {
 				currentYearGrid[rowIdx][colIdx] = col / float64(yearCounter)
-				stdeviationGrid[rowIdx][colIdx] = stat.StdDev(stdYearGrid[rowIdx][colIdx], nil)
+				stdeviationGrid[rowIdx][colIdx] = stdeviationGrid[rowIdx][colIdx] / float64(len(setups[setupId]))
 
 				mMinMax.setStdMax(int(stdeviationGrid[rowIdx][colIdx]))
 				mMinMax.setStdMin(int(stdeviationGrid[rowIdx][colIdx]))
