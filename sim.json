@@ -92,6 +92,22 @@
 		],
 
 		"yields-events": [
+			{"from": "xxxx-04-01", "to": "xxxx-07-31"}, [
+				["CM-count", "FIRST"],
+				["Year", "LAST"],
+				["Crop", "FIRST"],
+				["Tavg|tavg-avg", "AVG"],
+				["Tmin|tmin-avg", "AVG"],
+				["Tmin|tmin-min", "MIN"],
+				["Tmax|tmax-avg", "AVG"],
+				["Tmax|tmax-max", "MAX"],
+				["Pot_ET", "AVG"],
+				["Precip|precip-sum", "SUM"],
+				["Yield", "LAST"]
+			]
+		],
+
+		"_yields-events": [
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
