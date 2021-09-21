@@ -97,6 +97,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     elif is_yields:
         output_grids = {
             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Yield-31-7": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             "tavg-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             "tmin-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             "tmin-min": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
