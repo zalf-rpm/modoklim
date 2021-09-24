@@ -119,8 +119,8 @@
 				["Crop", "FIRST"],
 				["Yield", "LAST"],
 				["TraDef", "AVG"],
-				["HeatRed", "AVG"],
-				["FrostRed", "AVG"]
+				["HeatRed", "LAST"],
+				["FrostRed", "LAST"]
 			]
 		],
 
