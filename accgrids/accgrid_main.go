@@ -6,9 +6,9 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -110,7 +110,7 @@ var aggStep uint = 1
 var cropId = "WW"
 var startYear uint = 1971 // inclusive
 var endYear uint = 2099   // inclusive
-var withClimate = true
+var withClimate = false
 
 func main() {
 	inputFolderPtr := flag.String("in", inputFolder, "path to input")
@@ -153,7 +153,7 @@ func main() {
 
 	gMinMax := newMinMax()
 	outChan := make(chan MinMax)
-	fileNameChan := make(chan string)
+	fileNameChan := make(chan fileMatch)
 	final := make(chan MinMax)
 	terminate := make(chan bool)
 	go filenameCollector(fileNameChan, final, terminate)
@@ -162,7 +162,7 @@ func main() {
 
 	for _, setupId := range setupIds {
 		imageYearIndex := 0
-		var refGrids map[refGridName][][]float64
+		refGrids := map[refGridName][][]float64{}
 
 		for imageYear := startIdx; imageYear < endIdx; imageYear = imageYear + aggStep {
 			imageYearIndex++
@@ -170,10 +170,7 @@ func main() {
 			if imageYearIndex == 1 {
 				// read reference grid (historical data) for diff maps
 				lMinMax := calcAvgGrid(refGrids, withClimate, setupId, imageYear, imageYearIndex, fileNameChan, nil)
-				gMinMax.setMaxV(int64(lMinMax.maxYield), "maxYield")
-				gMinMax.setMinV(int64(lMinMax.minYield), "minYield")
-				gMinMax.setMaxV(int64(lMinMax.maxStd), "maxStd")
-				gMinMax.setMinV(int64(lMinMax.minStd), "minStd")
+				gMinMax.setMinMax(&lMinMax)
 			} else {
 				go calcAvgGrid(refGrids, withClimate, setupId, imageYear, imageYearIndex, fileNameChan, outChan)
 
@@ -182,10 +179,7 @@ func main() {
 					for currRuns >= numConcurrent {
 						mMM := <-outChan
 						currRuns--
-						gMinMax.setMaxV(int64(mMM.maxYield), "maxYield")
-						gMinMax.setMinV(int64(mMM.minYield), "minYield")
-						gMinMax.setMaxV(int64(mMM.maxStd), "maxStd")
-						gMinMax.setMinV(int64(mMM.minStd), "minStd")
+						gMinMax.setMinMax(&mMM)
 
 					}
 				}
@@ -194,11 +188,7 @@ func main() {
 		for currRuns > 0 {
 			mMM := <-outChan
 			currRuns--
-			gMinMax.setMaxV(int64(mMM.maxYield), "maxYield")
-			gMinMax.setMinV(int64(mMM.minYield), "minYield")
-			gMinMax.setMaxV(int64(mMM.maxStd), "maxStd")
-			gMinMax.setMinV(int64(mMM.minStd), "minStd")
-
+			gMinMax.setMinMax(&mMM)
 		}
 	}
 
@@ -208,26 +198,32 @@ func main() {
 	<-terminate
 }
 
-func filenameCollector(in chan string, final chan MinMax, out chan bool) {
+type fileMatch struct {
+	ref      refGridName
+	filename string
+}
+
+func filenameCollector(in chan fileMatch, final chan MinMax, out chan bool) {
 	diffFilenames := []string{}
-	yieldFilenames := []string{}
-	stdFilenames := []string{}
+	yieldFilenames := map[refGridName][]string{}
 
 	for {
 		select {
 		case globalMinMax := <-final:
 			// run finished create meta files
-			createMeta(yieldFilenames, diffFilenames, stdFilenames, globalMinMax)
+			createMeta(yieldFilenames, diffFilenames, globalMinMax)
 			// send finish signal to terminate
 			out <- true
 			return
-		case filename := <-in:
-			if strings.Contains(filename, "Diff") {
-				diffFilenames = append(diffFilenames, filename)
-			} else if strings.Contains(filename, "Std") {
-				stdFilenames = append(stdFilenames, filename)
-			} else {
-				yieldFilenames = append(yieldFilenames, filename)
+		case filenameMatch := <-in:
+
+			if filenameMatch.ref != numRefGridName {
+				if _, ok := yieldFilenames[filenameMatch.ref]; !ok {
+					yieldFilenames[filenameMatch.ref] = make([]string, 0, 100)
+				}
+				yieldFilenames[filenameMatch.ref] = append(yieldFilenames[filenameMatch.ref], filenameMatch.filename)
+			} else if strings.Contains(filenameMatch.filename, "Diff") {
+				diffFilenames = append(diffFilenames, filenameMatch.filename)
 			}
 		}
 	}
@@ -237,27 +233,31 @@ type refGridName int
 
 const (
 	yields refGridName = iota
+	stdYields
 	potET
 	precipSum
 	tavgAvg
 	tmaxAvg
 	tminAvg
+	numRefGridName
 )
 
-func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId string, imageYear uint, imageYearIndex int, fileNameChan chan string, outC chan MinMax) (mMinMax MinMax) {
-
-	var currentYearGrid [][]float64
-	var currPotETGRid [][]float64
-	var currPrecipSumGRid [][]float64
-	var currTavgAvgGrid [][]float64
-	var currTmaxAvgGrid [][]float64
-	var currTminAvgGrid [][]float64
+func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId string, imageYear uint, imageYearIndex int, fileNameChan chan fileMatch, outC chan MinMax) (mMinMax MinMax) {
+	type gridRefs struct {
+		grid    [][]float64
+		stdGrid [][][]float64
+	}
+	currentYearGrid := gridRefs{}
+	currPotETGRid := gridRefs{}
+	currPrecipSumGRid := gridRefs{}
+	currTavgAvgGrid := gridRefs{}
+	currTmaxAvgGrid := gridRefs{}
+	currTminAvgGrid := gridRefs{}
 
 	aggRangeHalf := aggRange / 2
 	yearCounter := 0
 	var header map[string]float64
 	nodata := -1.0
-	var stdScenGrid [][][]float64
 	var stdeviationGrid [][]float64
 	for _, setup := range setups[setupId] {
 
@@ -266,7 +266,7 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 			// read grid file
 			index := imageIdx - startYear + 1
 
-			readFile := func(inFileformat string, grid [][]float64, stdGrid [][][]float64) {
+			readFile := func(inFileformat string, grids *gridRefs) {
 				filepath := filepath.Join(inputFolder, strconv.Itoa(setup), fmt.Sprintf(inFileformat, crop[setupId], imageIdx, index))
 				file, err := os.Open(filepath)
 				if err != nil {
@@ -277,18 +277,20 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 
 				if header == nil {
 					header = readHeader(scanner, false)
-					cols := int(header["ncols"])
-					rows := int(header["nrows"])
 					nodata = header["nodata_value"]
-					grid = make([][]float64, rows)
-					stdGrid = make([][][]float64, rows)
-					for row := 0; row < rows; row++ {
-						grid[row] = make([]float64, cols)
-						stdGrid[row] = make([][]float64, cols)
-					}
 				} else {
 					// skip first lines
 					readHeader(scanner, true)
+				}
+				if len(grids.grid) == 0 {
+					cols := int(header["ncols"])
+					rows := int(header["nrows"])
+					grids.grid = make([][]float64, rows)
+					grids.stdGrid = make([][][]float64, rows)
+					for row := 0; row < rows; row++ {
+						grids.grid[row] = make([]float64, cols)
+						grids.stdGrid[row] = make([][]float64, cols)
+					}
 				}
 				currRow := 0
 				for scanner.Scan() {
@@ -300,151 +302,95 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 							log.Fatal(err)
 						}
 						if val-nodata < 0.001 {
-							grid[currRow][i] = nodata
+							grids.grid[currRow][i] = nodata
 						} else {
-							grid[currRow][i] = grid[currRow][i] + val
-							if stdGrid[currRow][i] == nil {
-								stdGrid[currRow][i] = make([]float64, 0, aggRange)
+							grids.grid[currRow][i] = grids.grid[currRow][i] + val
+							if grids.stdGrid[currRow][i] == nil {
+								grids.stdGrid[currRow][i] = make([]float64, 0, aggRange)
 							}
-							stdGrid[currRow][i] = append(stdGrid[currRow][i], val)
+							grids.stdGrid[currRow][i] = append(grids.stdGrid[currRow][i], val)
 						}
 					}
 					currRow++
 				}
 			}
-			readFile(inputFileformat, currentYearGrid, stdScenGrid)
+			readFile(inputFileformat, &currentYearGrid)
 
-			stdeviationGrid = make([][]float64, int(header["nrows"]))
-
-			for rowIdx, row := range stdScenGrid {
-				if stdeviationGrid[rowIdx] == nil {
-					stdeviationGrid[rowIdx] = make([]float64, len(stdScenGrid[rowIdx]))
-				}
-				for colIdx := range row {
-					stdeviationGrid[rowIdx][colIdx] = stdeviationGrid[rowIdx][colIdx] + stat.StdDev(stdScenGrid[rowIdx][colIdx], nil)
-				}
-			}
-			cleanStdDev := func() {
-				for rowIdx, row := range stdScenGrid {
-					for colIdx := range row {
-						stdScenGrid[rowIdx][colIdx] = nil
-					}
-				}
-			}
-			cleanStdDev()
 			if withClimate {
-				readFile(inputFileformatPotET, currPotETGRid, stdScenGrid)
-				cleanStdDev()
-				readFile(inputFileformatPrecipSum, currPrecipSumGRid, stdScenGrid)
-				cleanStdDev()
-				readFile(inputFileformatTavgAvg, currTavgAvgGrid, stdScenGrid)
-				cleanStdDev()
-				readFile(inputFileformatTmaxAvg, currTmaxAvgGrid, stdScenGrid)
-				cleanStdDev()
-				readFile(inputFileformatTminAvg, currTminAvgGrid, stdScenGrid)
-				cleanStdDev()
+				readFile(inputFileformatPotET, &currPotETGRid)
+				readFile(inputFileformatPrecipSum, &currPrecipSumGRid)
+				readFile(inputFileformatTavgAvg, &currTavgAvgGrid)
+				readFile(inputFileformatTmaxAvg, &currTmaxAvgGrid)
+				readFile(inputFileformatTminAvg, &currTminAvgGrid)
 			}
-
 			yearCounter++
-			// 	filepath := filepath.Join(inputFolder, strconv.Itoa(setup), fmt.Sprintf(inputFileformat, crop[setupId], imageIdx, index))
-			// 	file, err := os.Open(filepath)
-			// 	if err != nil {
-			// 		log.Fatal(err)
-			// 	}
-			// 	scanner := bufio.NewScanner(file)
-
-			// 	if yearCounter == 0 {
-			// 		// read header, init currentGrid
-			// 		header = readHeader(scanner, false)
-			// 		cols := int(header["ncols"])
-			// 		rows := int(header["nrows"])
-			// 		nodata = header["nodata_value"]
-			// 		currentYearGrid = make([][]float64, rows)
-			// 		stdeviationGrid = make([][]float64, rows)
-
-			// 		currPotETGRid = make([][]float64, rows)
-			// 		currPrecipSumGRid = make([][]float64, rows)
-			// 		currTavgAvgGrid = make([][]float64, rows)
-			// 		currTmaxAvgGrid = make([][]float64, rows)
-			// 		currTminAvgGrid = make([][]float64, rows)
-
-			// 		stdScenGrid = make([][][]float64, rows)
-			// 		for row := 0; row < rows; row++ {
-			// 			currentYearGrid[row] = make([]float64, cols)
-			// 			currPotETGRid[row] = make([]float64, cols)
-			// 			currPrecipSumGRid[row] = make([]float64, cols)
-			// 			currTavgAvgGrid[row] = make([]float64, cols)
-			// 			currTmaxAvgGrid[row] = make([]float64, cols)
-			// 			currTminAvgGrid[row] = make([]float64, cols)
-			// 			stdeviationGrid[row] = make([]float64, cols)
-			// 			stdScenGrid[row] = make([][]float64, cols)
-			// 		}
-			// 	} else {
-			// 		// skip first lines
-			// 		readHeader(scanner, true)
-			// 	}
-			// 	currRow := 0
-			// 	for scanner.Scan() {
-			// 		// sum up grid cells
-			// 		fields := strings.Fields(scanner.Text())
-			// 		for i, field := range fields {
-			// 			val, err := strconv.ParseFloat(field, 32)
-			// 			if err != nil {
-			// 				log.Fatal(err)
-			// 			}
-			// 			if val-nodata < 0.001 {
-			// 				currentYearGrid[currRow][i] = nodata
-			// 			} else {
-			// 				currentYearGrid[currRow][i] = currentYearGrid[currRow][i] + val
-			// 				if stdScenGrid[currRow][i] == nil {
-			// 					stdScenGrid[currRow][i] = make([]float64, 0, aggRange)
-			// 				}
-			// 				stdScenGrid[currRow][i] = append(stdScenGrid[currRow][i], val)
-			// 			}
-			// 		}
-			// 		currRow++
-			// 	}
-
-			// 	file.Close()
-			// 	yearCounter++
-			// }
-			// for rowIdx, row := range stdScenGrid {
-			// 	for colIdx := range row {
-			// 		stdeviationGrid[rowIdx][colIdx] = stat.StdDev(stdScenGrid[rowIdx][colIdx], nil)
-			// 		stdScenGrid[rowIdx][colIdx] = nil
-			// 	}
 		}
+		if stdeviationGrid == nil {
+			stdeviationGrid = make([][]float64, int(header["nrows"]))
+		}
+
+		for rowIdx, row := range currentYearGrid.stdGrid {
+			if stdeviationGrid[rowIdx] == nil {
+				stdeviationGrid[rowIdx] = make([]float64, len(currentYearGrid.stdGrid[rowIdx]))
+			}
+			for colIdx := range row {
+				if currentYearGrid.stdGrid[rowIdx][colIdx] != nil {
+					val := stat.StdDev(currentYearGrid.stdGrid[rowIdx][colIdx], nil)
+					if !math.IsNaN(val) {
+						stdeviationGrid[rowIdx][colIdx] = stdeviationGrid[rowIdx][colIdx] + val
+					} else {
+						stdeviationGrid[rowIdx][colIdx] = nodata
+					}
+				} else {
+					stdeviationGrid[rowIdx][colIdx] = nodata
+				}
+			}
+		}
+		cleanStdDev := func(gridRef *gridRefs) {
+			for rowIdx, row := range gridRef.stdGrid {
+				for colIdx := range row {
+					gridRef.stdGrid[rowIdx][colIdx] = nil
+				}
+			}
+		}
+		cleanStdDev(&currentYearGrid)
+		cleanStdDev(&currPotETGRid)
+		cleanStdDev(&currPrecipSumGRid)
+		cleanStdDev(&currTavgAvgGrid)
+		cleanStdDev(&currTmaxAvgGrid)
+		cleanStdDev(&currTminAvgGrid)
 	}
 	mMinMax = newMinMax()
 	// calc average
-	for rowIdx, row := range currentYearGrid {
+	for rowIdx, row := range currentYearGrid.grid {
 		for colIdx, col := range row {
-			if currentYearGrid[rowIdx][colIdx] != nodata {
-				currentYearGrid[rowIdx][colIdx] = col / float64(yearCounter)
-				stdeviationGrid[rowIdx][colIdx] = stdeviationGrid[rowIdx][colIdx] / float64(len(setups[setupId]))
+			if currentYearGrid.grid[rowIdx][colIdx] != nodata {
+				currentYearGrid.grid[rowIdx][colIdx] = col / float64(yearCounter)
+				if stdeviationGrid[rowIdx][colIdx] != nodata {
+					stdeviationGrid[rowIdx][colIdx] = stdeviationGrid[rowIdx][colIdx] / float64(len(setups[setupId]))
 
-				mMinMax.setMaxV(int64(stdeviationGrid[rowIdx][colIdx]), "maxStd")
-				mMinMax.setMinV(int64(stdeviationGrid[rowIdx][colIdx]), "minStd")
-				mMinMax.setMaxV(int64(currentYearGrid[rowIdx][colIdx]), "maxYield")
-				mMinMax.setMinV(int64(currentYearGrid[rowIdx][colIdx]), "minYield")
+					mMinMax.setMaxV(int(stdeviationGrid[rowIdx][colIdx]), stdYields)
+					mMinMax.setMinV(int(stdeviationGrid[rowIdx][colIdx]), stdYields)
+				}
+				mMinMax.setMaxV(int(currentYearGrid.grid[rowIdx][colIdx]), yields)
+				mMinMax.setMinV(int(currentYearGrid.grid[rowIdx][colIdx]), yields)
 				if withClimate {
-					currPotETGRid[rowIdx][colIdx] = currPotETGRid[rowIdx][colIdx] / float64(yearCounter)
-					currPrecipSumGRid[rowIdx][colIdx] = currPrecipSumGRid[rowIdx][colIdx] / float64(yearCounter)
-					currTavgAvgGrid[rowIdx][colIdx] = currTavgAvgGrid[rowIdx][colIdx] / float64(yearCounter)
-					currTmaxAvgGrid[rowIdx][colIdx] = currTmaxAvgGrid[rowIdx][colIdx] / float64(yearCounter)
-					currTminAvgGrid[rowIdx][colIdx] = currTminAvgGrid[rowIdx][colIdx] / float64(yearCounter)
+					currPotETGRid.grid[rowIdx][colIdx] = currPotETGRid.grid[rowIdx][colIdx] / float64(yearCounter)
+					currPrecipSumGRid.grid[rowIdx][colIdx] = currPrecipSumGRid.grid[rowIdx][colIdx] / float64(yearCounter)
+					currTavgAvgGrid.grid[rowIdx][colIdx] = currTavgAvgGrid.grid[rowIdx][colIdx] / float64(yearCounter)
+					currTmaxAvgGrid.grid[rowIdx][colIdx] = currTmaxAvgGrid.grid[rowIdx][colIdx] / float64(yearCounter)
+					currTminAvgGrid.grid[rowIdx][colIdx] = currTminAvgGrid.grid[rowIdx][colIdx] / float64(yearCounter)
 
-					mMinMax.setMaxV(int64(currPotETGRid[rowIdx][colIdx]), "potET")
-					mMinMax.setMaxV(int64(currPrecipSumGRid[rowIdx][colIdx]), "precipSum")
-					mMinMax.setMaxV(int64(currTavgAvgGrid[rowIdx][colIdx]), "tavgAvg")
-					mMinMax.setMaxV(int64(currTmaxAvgGrid[rowIdx][colIdx]), "tmaxAvg")
-					mMinMax.setMaxV(int64(currTminAvgGrid[rowIdx][colIdx]), "tminAvg")
-
-					mMinMax.setMinV(int64(currPotETGRid[rowIdx][colIdx]), "potET")
-					mMinMax.setMinV(int64(currPrecipSumGRid[rowIdx][colIdx]), "precipSum")
-					mMinMax.setMinV(int64(currTavgAvgGrid[rowIdx][colIdx]), "tavgAvg")
-					mMinMax.setMinV(int64(currTmaxAvgGrid[rowIdx][colIdx]), "tmaxAvg")
-					mMinMax.setMinV(int64(currTminAvgGrid[rowIdx][colIdx]), "tminAvg")
+					mMinMax.setMaxV(int(currPotETGRid.grid[rowIdx][colIdx]), potET)
+					mMinMax.setMaxV(int(currPrecipSumGRid.grid[rowIdx][colIdx]), precipSum)
+					mMinMax.setMaxV(int(currTavgAvgGrid.grid[rowIdx][colIdx]), tavgAvg)
+					mMinMax.setMaxV(int(currTmaxAvgGrid.grid[rowIdx][colIdx]), tmaxAvg)
+					mMinMax.setMaxV(int(currTminAvgGrid.grid[rowIdx][colIdx]), tminAvg)
+					mMinMax.setMinV(int(currPotETGRid.grid[rowIdx][colIdx]), potET)
+					mMinMax.setMinV(int(currPrecipSumGRid.grid[rowIdx][colIdx]), precipSum)
+					mMinMax.setMinV(int(currTavgAvgGrid.grid[rowIdx][colIdx]), tavgAvg)
+					mMinMax.setMinV(int(currTmaxAvgGrid.grid[rowIdx][colIdx]), tmaxAvg)
+					mMinMax.setMinV(int(currTminAvgGrid.grid[rowIdx][colIdx]), tminAvg)
 				}
 			}
 		}
@@ -455,30 +401,20 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 		fout := writeAGridHeader(outFileName, header)
 		writeFloatRows(fout, grid)
 		fout.Close()
-		fileNameChan <- outFileName
+		fileNameChan <- fileMatch{
+			ref:      name,
+			filename: outFileName,
+		}
 	}
-	writeGrid(yields, currentYearGrid)
+	writeGrid(yields, currentYearGrid.grid)
 
 	if withClimate {
-		writeGrid(potET, currPotETGRid)
-		writeGrid(precipSum, currPrecipSumGRid)
-		writeGrid(tavgAvg, currTavgAvgGrid)
-		writeGrid(tmaxAvg, currTmaxAvgGrid)
-		writeGrid(tminAvg, currTminAvgGrid)
+		writeGrid(potET, currPotETGRid.grid)
+		writeGrid(precipSum, currPrecipSumGRid.grid)
+		writeGrid(tavgAvg, currTavgAvgGrid.grid)
+		writeGrid(tmaxAvg, currTmaxAvgGrid.grid)
+		writeGrid(tminAvg, currTminAvgGrid.grid)
 	}
-
-	// save diff grid
-	// if refGrid, ok := refGrids[yields]; ok {
-	// 	diffgrid := createDiff(refGrid, currentYearGrid, nodata)
-
-	// 	outDiffFileName := filepath.Join(outFolder, fmt.Sprintf(outDiffFileTemplate, crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
-	// 	fout := writeAGridHeader(outDiffFileName, header)
-	// 	writeIntRows(fout, diffgrid)
-	// 	fout.Close()
-	// 	fileNameChan <- outDiffFileName
-	// } else {
-	// 	refGrids[yields] = currentYearGrid
-	// }
 
 	writeDiffGrid := func(name refGridName, grid [][]float64) {
 		if refGrid, ok := refGrids[name]; ok {
@@ -488,26 +424,32 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 			fout := writeAGridHeader(outDiffFileName, header)
 			writeIntRows(fout, diffgrid)
 			fout.Close()
-			fileNameChan <- outDiffFileName
+			fileNameChan <- fileMatch{
+				ref:      numRefGridName,
+				filename: outDiffFileName,
+			}
 		} else {
 			refGrids[name] = grid
 		}
 	}
-	writeDiffGrid(yields, currentYearGrid)
+	writeDiffGrid(yields, currentYearGrid.grid)
 
 	if withClimate {
-		writeDiffGrid(potET, currPotETGRid)
-		writeDiffGrid(precipSum, currPrecipSumGRid)
-		writeDiffGrid(tavgAvg, currTavgAvgGrid)
-		writeDiffGrid(tmaxAvg, currTmaxAvgGrid)
-		writeDiffGrid(tminAvg, currTminAvgGrid)
+		writeDiffGrid(potET, currPotETGRid.grid)
+		writeDiffGrid(precipSum, currPrecipSumGRid.grid)
+		writeDiffGrid(tavgAvg, currTavgAvgGrid.grid)
+		writeDiffGrid(tmaxAvg, currTmaxAvgGrid.grid)
+		writeDiffGrid(tminAvg, currTminAvgGrid.grid)
 	}
 	// save std grid
 	outstdFileName := filepath.Join(outFolder, fmt.Sprintf(outStdfileTemplate, crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 	foutStd := writeAGridHeader(outstdFileName, header)
 	writeFloatRows(foutStd, stdeviationGrid)
 	foutStd.Close()
-	fileNameChan <- outstdFileName
+	fileNameChan <- fileMatch{
+		ref:      stdYields,
+		filename: outstdFileName,
+	}
 
 	if outC != nil {
 		outC <- mMinMax
@@ -652,19 +594,25 @@ func makeDir(outPath string) {
 	}
 }
 
-func createMeta(yieldFilelist, diffFileList, stdFilelist []string, globalMinMax MinMax) {
+func createMeta(yieldFilelist map[refGridName][]string, diffFileList []string, globalMinMax MinMax) {
 
-	yieldMeta := newYieldMetaSetup(globalMinMax.minYield, globalMinMax.maxYield)
+	metaMap := make(map[refGridName]metaSetup, numRefGridName)
+	for i := yields; i < numRefGridName; i++ {
+		if i == stdYields {
+			metaMap[i] = newStdMetaSet(globalMinMax.minVal[i], globalMinMax.maxVal[i])
+		} else {
+			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i])
+		}
+	}
+
 	diffMeta := newDiffMetaSet()
-	stdMeta := newStdMetaSet(globalMinMax.minStd, globalMinMax.maxStd)
-	for _, filename := range yieldFilelist {
-		writeMetaFile(filename, yieldMeta)
+	for ref, filenames := range yieldFilelist {
+		for _, filename := range filenames {
+			writeMetaFile(filename, metaMap[ref])
+		}
 	}
 	for _, filename := range diffFileList {
 		writeMetaFile(filename, diffMeta)
-	}
-	for _, filename := range stdFilelist {
-		writeMetaFile(filename, stdMeta)
 	}
 }
 
@@ -721,66 +669,40 @@ func writeMetaFile(gridFilePath string, setup metaSetup) {
 }
 
 type MinMax struct {
-	minYield int
-	maxYield int
-	minStd   int
-	maxStd   int
-
-	potET     int
-	precipSum int
-	tavgAvg   int
-	tmaxAvg   int
-	tminAvg   int
+	minVal map[refGridName]int
+	maxVal map[refGridName]int
 }
 
 func newMinMax() MinMax {
-	return MinMax{
-		minYield:  -1,
-		maxYield:  -1,
-		minStd:    -1,
-		maxStd:    -1,
-		potET:     -1,
-		precipSum: -1,
-		tavgAvg:   -1,
-		tmaxAvg:   -1,
-		tminAvg:   -1,
+
+	mm := MinMax{
+		minVal: make(map[refGridName]int, numRefGridName),
+		maxVal: make(map[refGridName]int, numRefGridName),
+	}
+	for i := yields; i < numRefGridName; i++ {
+		mm.minVal[i] = -1
+		mm.maxVal[i] = -1
+	}
+	return mm
+}
+
+func (m *MinMax) setMinV(min int, fieldName refGridName) {
+	curValue := m.minVal[fieldName]
+	if curValue > min || curValue < 0 {
+		m.minVal[fieldName] = min
 	}
 }
 
-func (m *MinMax) setMinV(min int64, fieldName string) {
-	v := reflect.ValueOf(m).Elem()
-	f := v.FieldByName(fieldName)
-	curValue := f.Int()
-	if curValue > (min) || curValue < 0 {
-		f.SetInt((min))
-	}
-}
-func (m *MinMax) setMaxV(max int64, fieldName string) {
-	v := reflect.ValueOf(m).Elem()
-	f := v.FieldByName(fieldName)
-	curValue := f.Int()
-	if curValue < (max) {
-		f.SetInt((max))
+func (m *MinMax) setMaxV(max int, fieldName refGridName) {
+	curValue := m.maxVal[fieldName]
+	if curValue < max {
+		m.maxVal[fieldName] = max
 	}
 }
 
-// func (m *MinMax) setMin(min int) {
-// 	if m.minYield > min || m.minYield < 0 {
-// 		m.minYield = min
-// 	}
-// }
-// func (m *MinMax) setMax(max int) {
-// 	if m.maxYield < max || m.maxYield < 0 {
-// 		m.maxYield = max
-// 	}
-// }
-// func (m *MinMax) setStdMin(min int) {
-// 	if m.minStd > min || m.minStd < 0 {
-// 		m.minStd = min
-// 	}
-// }
-// func (m *MinMax) setStdMax(max int) {
-// 	if m.maxStd < max || m.maxStd < 0 {
-// 		m.maxStd = max
-// 	}
-// }
+func (m *MinMax) setMinMax(other *MinMax) {
+	for i := yields; i < numRefGridName; i++ {
+		m.setMinV(other.minVal[i], i)
+		m.setMaxV(other.maxVal[i], i)
+	}
+}
