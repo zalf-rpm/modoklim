@@ -694,6 +694,14 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
                     xTicklist.append(float(i))
     maxValue *= factor
     minValue *= factor
+
+    if colormap == "temperature" :
+    # add ticklist, add colorlist if not already given
+        if cMap == None :
+            cMap = temphexMap
+        if ticklist == None :
+            ticklist = tempMap
+
     return Meta(title, label, colormap, minColor, cMap,
                 cbarLabel, factor, ticklist,yTicklist,xTicklist, maxValue, maxLoaded, minValue, minLoaded, 
                 showbars, mintransparent, renderAs, transparencyfactor, lineLabel, lineColor, xLabel, yLabel,
@@ -702,6 +710,66 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
                 densityReduction, densityFactor, 
                 yTitle,xTitle,removeEmptyColumns, border)
 
+# temperature color map
+temphexMap = [
+"#5e003e", # 56
+"#5e3566", # 54
+"#803596", # 52
+"#9a3596", # 50
+"#8c274f", # 48
+"#9d3e4f", # 46
+"#b54479", # 44
+"#c75197", # 42
+"#c0609e", # 40
+"#dc5581", # 38
+"#dd573f", # 36
+"#dc4b42", # 34
+"#e37947", # 32
+"#e68b4b", # 30
+"#f3bf54", # 28
+"#f7d65c", # 26
+"#f4e75f", # 24
+"#f5ee61", # 22
+"#e1eab8", # 20
+"#c9d968", # 18
+"#a2c96b", # 16
+"#75b360", # 14
+"#4e8d59", # 12
+"#65947f", # 10
+"#6dbb95", # 8
+"#71b973", # 6
+"#7dbc74", # 4
+"#83c18c", # 2
+"#c0e2f0", # 0
+"#addbef", # -2
+"#8dd0f3", # -4
+"#84bde6", # -6
+"#759fd1", # -8
+"#617bb8", # -10
+"#5562a8", # -12
+"#51559f", # -14
+"#6b549e", # -16
+"#7d569d", # -18
+"#8e579d", # -20
+"#a05a9d", # -22
+"#985198", # -24
+"#884593", # -26
+"#724184", # -28
+"#593e6e", # -30
+"#595582", # -32
+"#596990", # -34
+"#5a7a9e", # -36
+"#5e8caa", # -38
+"#5f9cb6", # -40
+"#62afc4", # -42
+"#69c0d1", # -44
+"#83c9d8", # -46
+]
+tempMap = [56, 54, 52, 50, 48, 46, 44, 42, 40, 38, 
+           36, 34, 32, 30, 28, 26, 24, 22, 20, 18,
+           16, 14, 12, 10, 8, 6, 4, 2, 0, -2, -4, 
+           -6, -8, -10, -12, -14, -16, -18, -20, -22, -24, 
+           -26, -28, -30, -32, -34, -36, -38, -40, -42, -44, -46]
 
 def createSubPlot(image, out_path, png_dpi, pdf=None) :
         
