@@ -117,3 +117,4 @@ dmypy.json
 /test
 /agg_out
 /agg_grids
+/agg_grids_clim

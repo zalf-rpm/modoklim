@@ -50,6 +50,9 @@ var co2 = map[string]string{
 	"WW_rcp85_420":  "420",
 	"WRa_rcp85_420": "420",
 	"SM_rcp85_420":  "420",
+	"WW_rcp26":      "-",
+	"SM_rcp26":      "-",
+	"WRa_rcp26":     "-",
 }
 
 // hard coded setup map
@@ -110,7 +113,7 @@ var aggStep uint = 1
 var cropId = "WW"
 var startYear uint = 1971 // inclusive
 var endYear uint = 2099   // inclusive
-var withClimate = false
+var withClimate = true
 
 func main() {
 	inputFolderPtr := flag.String("in", inputFolder, "path to input")

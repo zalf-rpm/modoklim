@@ -6,6 +6,8 @@
 #SBATCH --job-name=go_ascii
 #SBATCH --time=10:00:00
 
+SUB=$1
+
 IMAGE_DIR_PYTHON=~/singularity/python
 SINGULARITY_PYTHON_IMAGE=python3.7_2.0.sif
 IMAGE_PYTHON_PATH=${IMAGE_DIR_PYTHON}/${SINGULARITY_PYTHON_IMAGE}
@@ -17,7 +19,9 @@ singularity pull docker://zalfrpm/python3.7:2.0
 cd ~
 fi
 
-FOLDER=../agg_grids/
+FOLDER=../agg_grids_clim/$SUB
 mkdir -p $FOLDER/img
 IMG=~/singularity/python/python3.7_2.0.sif
-singularity run -B $FOLDER:/source,$FOLDER/img:/out $IMG python create_image_from_ascii.py path=cluster
+singularity run -B $FOLDER:/source,$FOLDER/img:/out $IMG python create_image_from_ascii.py path=cluster 
+
+wait
