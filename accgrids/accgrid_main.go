@@ -585,17 +585,19 @@ func writeFloatRows(fout Fout, round int, useIrrgLookup bool, grid [][]float64) 
 	for irow, row := range grid {
 		for icol, col := range row {
 			val := col
-			if useIrrgLookup {
-				if irrg, ok := rainfedLookup[GridCoord{irow, icol}]; ok {
-					if !irrg {
+			if val-(-9999) < 0.001 {
+				fout.Write(strconv.Itoa(int(val)))
+			} else {
+				if useIrrgLookup {
+					if _, ok := rainfedLookup[GridCoord{irow, icol}]; !ok {
 						val = -1
 					}
 				}
-			}
-			if round == 0 || val-(-9999) < 0.001 {
-				fout.Write(strconv.Itoa(int(math.Round(val))))
-			} else {
-				fout.Write(strconv.FormatFloat(val, 'f', round, 64))
+				if round == 0 {
+					fout.Write(strconv.Itoa(int(math.Round(val))))
+				} else {
+					fout.Write(strconv.FormatFloat(val, 'f', round, 64))
+				}
 			}
 			fout.Write(" ")
 
@@ -609,15 +611,13 @@ func writeIntRows(fout Fout, useIrrgLookup bool, grid [][]int) {
 	for irow, row := range grid {
 		for icol, col := range row {
 			val := col
-			if useIrrgLookup {
-				if irrg, ok := rainfedLookup[GridCoord{irow, icol}]; ok {
-					if !irrg {
-						val = -1
-					}
+			if val != -9999 && useIrrgLookup {
+				if _, ok := rainfedLookup[GridCoord{irow, icol}]; !ok {
+					val = -1
 				}
 			}
-
 			fout.Write(strconv.Itoa(val))
+
 			fout.Write(" ")
 		}
 		fout.Write("\n")
@@ -642,7 +642,7 @@ func createMeta(yieldFilelist map[refGridName][]string, diffFileList []string, g
 		} else if i == precipSum {
 			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "jet_r")
 		} else if i == tavgAvg || i == tmaxAvg || i == tminAvg {
-			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "temperature")
+			metaMap[i] = newTempMetaSetup()
 		} else if i == potET {
 			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "coolwarm")
 		} else if i == yields {
@@ -679,7 +679,14 @@ func newDiffMetaSet() metaSetup {
 		minColor: "lightgrey",
 	}
 }
-
+func newTempMetaSetup() metaSetup {
+	return metaSetup{
+		colormap: "temperature",
+		maxValue: 56,
+		minValue: -46,
+		minColor: "lightgrey",
+	}
+}
 func newYieldMetaSetup(minValue, maxValue int, colorMap string) metaSetup {
 	return metaSetup{
 		colormap: colorMap,
