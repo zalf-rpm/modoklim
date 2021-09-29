@@ -31,6 +31,12 @@ var crop = map[string]string{
 	"SM_rcp85_420":  "maizesilagemaize",
 }
 
+var cropMask = map[string]string{
+	"WW":  "de_grid_Rainfed_Wheat_GrowingArea_EU.csv",
+	"WRa": "de_grid_Rainfed_Maize_GrowingArea_EU.csv",
+	"SM":  "de_grid_Rainfed_Rapeseed_GrowingArea_EU.csv",
+}
+
 var scenario = map[string]string{
 	"WW_rcp85":      "rcp85",
 	"SM_rcp85":      "rcp85",
@@ -107,6 +113,7 @@ var outfileTemplate = map[refGridName]string{
 
 var inputFolder = "./test"
 var outFolder = "./agg_out"
+var projectFolder = "."
 var numConcurrent = 1
 var aggRange uint = 30
 var aggStep uint = 1
@@ -114,10 +121,12 @@ var cropId = "WW"
 var startYear uint = 1971 // inclusive
 var endYear uint = 2099   // inclusive
 var withClimate = true
+var rainfedLookup map[GridCoord]bool
 
 func main() {
 	inputFolderPtr := flag.String("in", inputFolder, "path to input")
 	outFolderPtr := flag.String("out", outFolder, "path to output")
+	projectFolderPtr := flag.String("project", projectFolder, "path to output")
 	concurrentPtr := flag.Int("concurrent", numConcurrent, "max concurrent execution")
 	aggRangePtr := flag.Uint("aggRange", aggRange, "avarage of n years (default 30)")
 	aggStepPtr := flag.Uint("aggStep", aggStep, "year jumps (default 1)")
@@ -129,6 +138,7 @@ func main() {
 	flag.Parse()
 	inputFolder = *inputFolderPtr
 	outFolder = *outFolderPtr
+	projectFolder = *projectFolderPtr
 	numConcurrent = *concurrentPtr
 	withClimate = *withClimPtr
 
@@ -145,11 +155,14 @@ func main() {
 	for key := range setups {
 		if strings.HasPrefix(key, cropId) {
 			setupIds = append(setupIds, key)
+
 		}
 	}
 	if len(setupIds) == 0 {
 		log.Fatal("no setups founf for crop")
 	}
+	rainfedSource := filepath.Join(projectFolder, cropMask[cropId])
+	rainfedLookup = getMaskGridLookup(rainfedSource)
 
 	startIdx := startYear + aggRange/2
 	endIdx := endYear - aggRange/2 + 1
@@ -398,34 +411,35 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 			}
 		}
 	}
-	writeGrid := func(name refGridName, grid [][]float64) {
+	writeGrid := func(name refGridName, round int, useLookup bool, grid [][]float64) {
 		// save new grid
 		outFileName := filepath.Join(outFolder, fmt.Sprintf(outfileTemplate[name], crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 		fout := writeAGridHeader(outFileName, header)
-		writeFloatRows(fout, grid)
+		writeFloatRows(fout, round, useLookup, grid)
 		fout.Close()
 		fileNameChan <- fileMatch{
 			ref:      name,
 			filename: outFileName,
 		}
 	}
-	writeGrid(yields, currentYearGrid.grid)
+	writeGrid(yields, 0, true, currentYearGrid.grid)
 
+	// no diff grid for climate files
 	if withClimate {
-		writeGrid(potET, currPotETGRid.grid)
-		writeGrid(precipSum, currPrecipSumGRid.grid)
-		writeGrid(tavgAvg, currTavgAvgGrid.grid)
-		writeGrid(tmaxAvg, currTmaxAvgGrid.grid)
-		writeGrid(tminAvg, currTminAvgGrid.grid)
+		writeGrid(potET, 2, false, currPotETGRid.grid)
+		writeGrid(precipSum, 0, false, currPrecipSumGRid.grid)
+		writeGrid(tavgAvg, 0, false, currTavgAvgGrid.grid)
+		writeGrid(tmaxAvg, 0, false, currTmaxAvgGrid.grid)
+		writeGrid(tminAvg, 0, false, currTminAvgGrid.grid)
 	}
 
-	writeDiffGrid := func(name refGridName, grid [][]float64) {
+	writeDiffGrid := func(name refGridName, useLookup bool, grid [][]float64) {
 		if refGrid, ok := refGrids[name]; ok {
 			diffgrid := createDiff(refGrid, grid, nodata)
 
 			outDiffFileName := filepath.Join(outFolder, fmt.Sprintf(outDiffFileTemplate[name], crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 			fout := writeAGridHeader(outDiffFileName, header)
-			writeIntRows(fout, diffgrid)
+			writeIntRows(fout, useLookup, diffgrid)
 			fout.Close()
 			fileNameChan <- fileMatch{
 				ref:      numRefGridName,
@@ -435,19 +449,19 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 			refGrids[name] = grid
 		}
 	}
-	writeDiffGrid(yields, currentYearGrid.grid)
+	writeDiffGrid(yields, true, currentYearGrid.grid)
 
-	if withClimate {
-		writeDiffGrid(potET, currPotETGRid.grid)
-		writeDiffGrid(precipSum, currPrecipSumGRid.grid)
-		writeDiffGrid(tavgAvg, currTavgAvgGrid.grid)
-		writeDiffGrid(tmaxAvg, currTmaxAvgGrid.grid)
-		writeDiffGrid(tminAvg, currTminAvgGrid.grid)
-	}
+	// if withClimate {
+	// 	writeDiffGrid(potET, currPotETGRid.grid)
+	// 	writeDiffGrid(precipSum, currPrecipSumGRid.grid)
+	// 	writeDiffGrid(tavgAvg, currTavgAvgGrid.grid)
+	// 	writeDiffGrid(tmaxAvg, currTmaxAvgGrid.grid)
+	// 	writeDiffGrid(tminAvg, currTminAvgGrid.grid)
+	// }
 	// save std grid
 	outstdFileName := filepath.Join(outFolder, fmt.Sprintf(outStdfileTemplate, crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 	foutStd := writeAGridHeader(outstdFileName, header)
-	writeFloatRows(foutStd, stdeviationGrid)
+	writeFloatRows(foutStd, 0, true, stdeviationGrid)
 	foutStd.Close()
 	fileNameChan <- fileMatch{
 		ref:      stdYields,
@@ -566,22 +580,44 @@ func writeAGridHeader(name string, header map[string]float64) (fout Fout) {
 	return fout
 }
 
-func writeFloatRows(fout Fout, grid [][]float64) {
+func writeFloatRows(fout Fout, round int, useIrrgLookup bool, grid [][]float64) {
 
-	for _, row := range grid {
-		for _, col := range row {
-			fout.Write(strconv.Itoa(int(col)))
+	for irow, row := range grid {
+		for icol, col := range row {
+			val := col
+			if useIrrgLookup {
+				if irrg, ok := rainfedLookup[GridCoord{irow, icol}]; ok {
+					if !irrg {
+						val = -1
+					}
+				}
+			}
+			if round == 0 || val-(-9999) < 0.001 {
+				fout.Write(strconv.Itoa(int(math.Round(val))))
+			} else {
+				fout.Write(strconv.FormatFloat(val, 'f', round, 64))
+			}
 			fout.Write(" ")
+
 		}
 		fout.Write("\n")
 	}
 }
 
-func writeIntRows(fout Fout, grid [][]int) {
+func writeIntRows(fout Fout, useIrrgLookup bool, grid [][]int) {
 
-	for _, row := range grid {
-		for _, col := range row {
-			fout.Write(strconv.Itoa(col))
+	for irow, row := range grid {
+		for icol, col := range row {
+			val := col
+			if useIrrgLookup {
+				if irrg, ok := rainfedLookup[GridCoord{irow, icol}]; ok {
+					if !irrg {
+						val = -1
+					}
+				}
+			}
+
+			fout.Write(strconv.Itoa(val))
 			fout.Write(" ")
 		}
 		fout.Write("\n")
@@ -603,8 +639,16 @@ func createMeta(yieldFilelist map[refGridName][]string, diffFileList []string, g
 	for i := yields; i < numRefGridName; i++ {
 		if i == stdYields {
 			metaMap[i] = newStdMetaSet(globalMinMax.minVal[i], globalMinMax.maxVal[i])
+		} else if i == precipSum {
+			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "jet_r")
+		} else if i == tavgAvg || i == tmaxAvg || i == tminAvg {
+			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "temperature")
+		} else if i == potET {
+			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "coolwarm")
+		} else if i == yields {
+			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "YlOrBr")
 		} else {
-			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i])
+			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "jet")
 		}
 	}
 
@@ -636,9 +680,9 @@ func newDiffMetaSet() metaSetup {
 	}
 }
 
-func newYieldMetaSetup(minValue, maxValue int) metaSetup {
+func newYieldMetaSetup(minValue, maxValue int, colorMap string) metaSetup {
 	return metaSetup{
-		colormap: "jet",
+		colormap: colorMap,
 		maxValue: maxValue,
 		minValue: minValue,
 		minColor: "lightgrey",
@@ -708,4 +752,52 @@ func (m *MinMax) setMinMax(other *MinMax) {
 		m.setMinV(other.minVal[i], i)
 		m.setMaxV(other.maxVal[i], i)
 	}
+}
+
+// GridCoord tuple of positions
+type GridCoord struct {
+	row int
+	col int
+}
+
+func getMaskGridLookup(gridsource string) map[GridCoord]bool {
+	lookup := make(map[GridCoord]bool)
+
+	sourcefile, err := os.Open(gridsource)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer sourcefile.Close()
+	firstLine := true
+	colID := -1
+	rowID := -1
+	irrID := -1
+	scanner := bufio.NewScanner(sourcefile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		tokens := strings.Split(line, ",")
+		if firstLine {
+			firstLine = false
+			// Column,Row,latitude,longitude,irrigation
+			for index, token := range tokens {
+				if token == "Column" {
+					colID = index
+				}
+				if token == "Row" {
+					rowID = index
+				}
+				if token == "irrigation" {
+					irrID = index
+				}
+			}
+		} else {
+			col, _ := strconv.ParseInt(tokens[colID], 10, 64)
+			row, _ := strconv.ParseInt(tokens[rowID], 10, 64)
+			irr, _ := strconv.ParseInt(tokens[irrID], 10, 64)
+			if irr > 0 {
+				lookup[GridCoord{int(row), int(col)}] = true
+			}
+		}
+	}
+	return lookup
 }
