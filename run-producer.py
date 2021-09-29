@@ -30,7 +30,7 @@ import zmq
 import sqlite3
 import sqlite3 as cas_sq3
 import numpy as np
-from pyproj import CRS, transform
+from pyproj import CRS, Transformer
 
 import monica_io3
 import soil_io3
@@ -39,19 +39,17 @@ import monica_run_lib as Mrunlib
 PATHS = {
     # adjust the local path to your environment
     "mbm-local-remote": {
-        "include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
+        #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/dwd_core_ensemble/", # mounted path to archive or hard drive with climate data 
         "monica-path-to-climate-dir": "/monica_data/climate-data/dwd_core_ensemble/csvs_dwd_core_ensemble/", # mounted path to archive accessable by monica executable
-        "path-to-data-dir": "./monica-data/data/", # mounted path to archive or hard drive with data 
-        "path-to-projects-dir": "./monica-data/data/projects/",
+        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "./debug-out/",
     },
     "remoteProducer-remoteMonica": {
-        "include-file-base-path": "/monica-parameters/", # path to monica-parameters
+        #"include-file-base-path": "/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/data/dwd_core_ensemble/", # mounted path to archive or hard drive with climate data 
         "monica-path-to-climate-dir": "/monica_data/climate-data/dwd_core_ensemble/csvs_dwd_core_ensemble/", # mounted path to archive accessable by monica executable
-        "path-to-data-dir": "./monica-data/data/", # mounted path to archive or hard drive with data 
-        "path-to-projects-dir": "./monica-data/data/projects/", # mounted path to archive or hard drive with project data 
+        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "/out/debug-out/",
     }
 }
@@ -65,7 +63,7 @@ DATA_SOIL_DB = "germany/buek200.sqlite"
 DATA_GRID_HEIGHT = "germany/dem_1000_gk5.asc" 
 DATA_GRID_SLOPE = "germany/slope_1000_gk5.asc"
 DATA_GRID_LAND_USE = "germany/landuse_1000_gk5.asc"
-DATA_GRID_SOIL = "germany/BUEK200_1000_gk5.asc"
+DATA_GRID_SOIL = "germany/buek200_1000_gk5.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
 GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
@@ -130,6 +128,34 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     wgs84 = CRS.from_epsg(4326) #proj4 -> (World Geodetic System 1984 https://epsg.io/4326)
     gk5 = CRS.from_epsg(31469) 
 
+    """
+    wgs84_to_gk5_transformer = Transformer.from_crs(wgs84, gk5, always_xy=True)
+    gk5_to_wgs84_transformer = Transformer.from_crs(gk5, wgs84, always_xy=True)
+
+    ip_points = []
+    ip_values = []
+
+    for lon_ in range(400, 1500):
+        print(lon_, " ", end="")
+        for lat_ in range(4000, 6000):
+            try:
+                lon = lon_ / 100.0
+                lat = lat_ / 100.0
+                r, h = wgs84_to_gk5_transformer.transform(lon, lat)
+                lng, la = gk5_to_wgs84_transformer.transform(r, h, errcheck=True)
+                int(lng)
+                int(la)
+            except Exception as e:
+                ip_points.append([r, h])
+                ip_values.append((lon, lat))
+                #print((lon, lat), " ", end="")
+                pass
+        #print()
+    
+    from scipy.interpolate import NearestNDInterpolator
+    wgs84_ip = NearestNDInterpolator(np.array(ip_points), np.array(ip_values))
+    """
+
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
     
@@ -193,7 +219,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             sim_json["climate.csv-options"]["start-date"] = str(setup["start_date"])
         if setup["end_date"]:
             sim_json["climate.csv-options"]["end-date"] = str(setup["end_date"]) 
-        sim_json["include-file-base-path"] = paths["include-file-base-path"]
+        #sim_json["include-file-base-path"] = paths["include-file-base-path"]
 
         if setup["bgr"]:
             if setup["nc_mode"]:
@@ -238,6 +264,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         #unknown_soil_ids = set()
         soil_id_cache = {}
         print("All Rows x Cols: " + str(srows) + "x" + str(scols))
+        cs__ = open("coord_mapping.csv", "w")
+        cs__.write("row,col,center_gk5_r,center_gk5_h,center_lat,center_lon\n")
         for srow in range(0, srows):
             print(srow,)
             
@@ -251,6 +279,22 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 if soil_id == -9999:
                     continue
 
+                #get coordinate of clostest climate element of real soil-cell
+                sh_gk5 = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
+                sr_gk5 = xllcorner + (scellsize / 2) + scol * scellsize
+                
+                """
+                lon, lat = gk5_to_wgs84_transformer.transform(sr_gk5, sh_gk5)
+                try:
+                    int(lon)
+                    int(lat)
+                except Exception as e:
+                    lon, lat = wgs84_ip(sr_gk5, sh_gk5)
+
+                cs__.write(str(srow) + "," + str(scol) + "," + str(sr_gk5) + "," + str(sh_gk5) + "," + str(lat) + "," + str(lon) + "\n")
+                continue
+                """    
+
                 if soil_id in soil_id_cache:
                     soil_profile = soil_id_cache[soil_id]
                 else:
@@ -262,9 +306,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     #unknown_soil_ids.add(soil_id)
                     continue
                 
-                #get coordinate of clostest climate element of real soil-cell
-                sh_gk5 = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
-                sr_gk5 = xllcorner + (scellsize / 2) + scol * scellsize
                 #inter = crow/ccol encoded into integer
                 crow, ccol = climate_data_gk5_interpolator(sr_gk5, sh_gk5)
 
@@ -377,6 +418,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             #print("unknown_soil_ids:", unknown_soil_ids)
 
             #print("crows/cols:", crows_cols)
+        cs__.close()
         stop_setup_time = time.perf_counter()
         print("Setup ", (sent_env_count-1), " envs took ", (stop_setup_time - start_setup_time), " seconds")
 

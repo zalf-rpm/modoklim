@@ -39,21 +39,20 @@ import monica_run_lib as Mrunlib
 
 PATHS = {
     "mbm-local-remote": {
-        "path-to-data-dir": "monica-data/data/",
+        "path-to-data-dir": "data/",
         "path-to-output-dir": "out/",
         "path-to-csv-output-dir": "csv-out/"
     },
     "remoteConsumer-remoteMonica": {
-        "path-to-data-dir": "./monica-data/data/",
+        "path-to-data-dir": "./data/",
         "path-to-output-dir": "/out/out/",
         "path-to-csv-output-dir": "/out/csv-out/"
     }
 }
 DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" 
 DEFAULT_PORT = "7777"
-TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/BUEK200_1000_gk5.asc"
+TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/buek200_1000_gk5.asc"
 TEMPLATE_CORINE_PATH = "{local_path_to_data_dir}germany/landuse_1000_gk5.asc"
-#TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/BUEK250_1000_gk5.asc"
 #DATA_SOIL_DB = "germany/buek200.sqlite"
 USE_CORINE = False
 
@@ -97,9 +96,9 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     elif is_yields:
         output_grids = {
             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            "TraDef": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            "HeatRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            "FrostRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            #"TraDef": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            #"HeatRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            #"FrostRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             #"Yield-31-7": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             #"tavg-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             #"tmin-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},

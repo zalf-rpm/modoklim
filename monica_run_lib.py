@@ -212,7 +212,8 @@ def create_climate_geoGrid_interpolator_from_json_file(path_to_latlon_to_rowcol_
                 points.append([cr_geoTargetGrid, ch_geoTargetGrid])
                 values.append((row, col))
                 #print "row:", row, "col:", col, "clat:", clat, "clon:", clon, "h:", h, "r:", r, "val:", values[i]
-            except:
+            except Exception as e:
+                print("row/col:", (row,col), "clat/clon:", (clat, clon), "cr/ch:", (cr_geoTargetGrid, ch_geoTargetGrid), "Exception:", e)
                 continue
 
         return NearestNDInterpolator(np.array(points), np.array(values))
