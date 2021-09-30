@@ -644,7 +644,10 @@ func createMeta(yieldFilelist map[refGridName][]string, diffFileList []string, g
 		} else if i == tavgAvg || i == tmaxAvg || i == tminAvg {
 			metaMap[i] = newTempMetaSetup()
 		} else if i == potET {
-			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "coolwarm")
+			mm := newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "coolwarm")
+			mm.colorList = append(metaMap[i].colorList, "royalblue", "mediumslateblue", "crimson")
+			mm.colorListType = "LinearSegmented"
+			metaMap[i] = mm
 		} else if i == yields {
 			metaMap[i] = newYieldMetaSetup(globalMinMax.minVal[i], globalMinMax.maxVal[i], "YlOrBr")
 		} else {
@@ -668,39 +671,49 @@ type metaSetup struct {
 	maxValue int
 	minValue int
 
-	minColor string
+	colorList     []string
+	colorListType string
+	minColor      string
 }
 
 func newDiffMetaSet() metaSetup {
 	return metaSetup{
-		colormap: "RdYlGn",
-		maxValue: 101,
-		minValue: -101,
-		minColor: "lightgrey",
+		colormap:      "RdYlGn",
+		maxValue:      101,
+		minValue:      -101,
+		colorList:     []string{},
+		colorListType: "",
+		minColor:      "lightgrey",
 	}
 }
 func newTempMetaSetup() metaSetup {
 	return metaSetup{
-		colormap: "temperature",
-		maxValue: 56,
-		minValue: -46,
-		minColor: "lightgrey",
+		colormap:      "temperature",
+		maxValue:      56,
+		minValue:      -46,
+		colorList:     []string{},
+		colorListType: "",
+		minColor:      "lightgrey",
 	}
 }
 func newYieldMetaSetup(minValue, maxValue int, colorMap string) metaSetup {
 	return metaSetup{
-		colormap: colorMap,
-		maxValue: maxValue,
-		minValue: minValue,
-		minColor: "lightgrey",
+		colormap:      colorMap,
+		maxValue:      maxValue,
+		minValue:      minValue,
+		colorList:     []string{},
+		colorListType: "",
+		minColor:      "lightgrey",
 	}
 }
 func newStdMetaSet(minValue, maxValue int) metaSetup {
 	return metaSetup{
-		colormap: "cool",
-		maxValue: maxValue,
-		minValue: minValue,
-		minColor: "lightgrey",
+		colormap:      "cool",
+		maxValue:      maxValue,
+		minValue:      minValue,
+		colorList:     []string{},
+		colorListType: "",
+		minColor:      "lightgrey",
 	}
 }
 
@@ -719,6 +732,15 @@ func writeMetaFile(gridFilePath string, setup metaSetup) {
 	file.WriteString(fmt.Sprintf("minValue: %d\n", setup.minValue))
 	if len(setup.minColor) > 0 {
 		file.WriteString(fmt.Sprintf("minColor: %s\n", setup.minColor))
+	}
+	if len(setup.colorList) > 0 {
+		file.WriteString("colorlist: \n")
+		for _, item := range setup.colorList {
+			file.WriteString(fmt.Sprintf(" - '%s'\n", item))
+		}
+	}
+	if len(setup.colorListType) > 0 {
+		file.WriteString(fmt.Sprintf("colorlisttype: %s\n", setup.colorListType))
 	}
 }
 

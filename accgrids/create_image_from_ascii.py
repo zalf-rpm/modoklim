@@ -355,6 +355,7 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, projectionID, pd
     colormap = 'viridis'
     minColor = ""
     cMap = None
+    colorlisttype = None
     cbarLabel = None
     factor = 1
     ticklist = None
@@ -392,6 +393,8 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, projectionID, pd
                     minColor = doc
                 elif item == "colorlist" :
                     cMap = doc
+                elif item == "colorlisttype" :
+                    colorlisttype = doc
                 elif item == "cbarLabel" :
                     cbarLabel = doc
                 elif item == "ticklist" :
@@ -406,8 +409,10 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, projectionID, pd
     # add ticklist, add colorlist if not already given
         if cMap == None :
             cMap = temphexMap
+            cMap.reverse()
         if ticklist == None :
             ticklist = tempMap
+            ticklist.reverse()
 
 
     # Read in the ascii data array
@@ -461,7 +466,12 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, projectionID, pd
 
     # Get the img object in order to pass it to the colorbar function
     elif cMap :
-        colorM = ListedColormap(cMap)
+        if colorlisttype == "LinearSegmented":
+            colorM = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", cMap)
+        else :
+            colorM = ListedColormap(cMap)
+
+
         if minLoaded and maxLoaded:
             img_plot = ax.imshow(ascii_data_array, cmap=colorM, extent=image_extent, interpolation='none', vmin=minValue, vmax=maxValue)
         elif minLoaded :
@@ -548,6 +558,7 @@ class Meta:
     colormap: str
     minColor: str
     cMap : list
+    colorlisttype : str
     cbarLabel: str
     factor: float
     ticklist: list
@@ -617,6 +628,7 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
     xTitle = 1
     removeEmptyColumns = False
     border = False
+    colorlisttype = None
 
     with open(meta_path, 'rt', encoding='utf-8') as meta:
        # documents = yaml.load(meta, Loader=yaml.FullLoader)
@@ -652,6 +664,8 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
                 transparencyfactor = float(doc)
             elif item == "colorlist" :
                 cMap = doc
+            elif item == "colorlisttype" :
+                colorlisttype = doc
             elif item == "renderAs" :
                 renderAs = doc
             elif item == "cbarLabel" :
@@ -709,10 +723,12 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
     # add ticklist, add colorlist if not already given
         if cMap == None :
             cMap = temphexMap
+            cMap.reverse()
         if ticklist == None :
             ticklist = tempMap
+            ticklist.reverse()
 
-    return Meta(title, label, colormap, minColor, cMap,
+    return Meta(title, label, colormap, minColor, cMap, colorlisttype,
                 cbarLabel, factor, ticklist,yTicklist,xTicklist, maxValue, maxLoaded, minValue, minLoaded, 
                 showbars, mintransparent, renderAs, transparencyfactor, lineLabel, lineColor, xLabel, yLabel,
                 YaxisMappingFile,YaxisMappingRefColumn,YaxisMappingTarColumn,YaxisMappingFormat,
@@ -969,7 +985,10 @@ def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, projectionID, font
     # Get the img object in order to pass it to the colorbar function
     elif meta.cMap :
         if meta.transparencyfactor < 1.0 or meta.mintransparent < 1.0:
-            newColorMap = ListedColormap(meta.cMap)
+            if meta.colorlisttype == "LinearSegmented":
+                newColorMap = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", meta.cMap)
+            else :
+                newColorMap = ListedColormap(meta.cMap)
             newcolors = newColorMap(np.linspace(0, 1, len(meta.cMap)))
             for idC in range(len(meta.cMap)) :
                 alpha = meta.transparencyfactor
@@ -979,7 +998,10 @@ def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, projectionID, font
                 newcolors[idC:idC+1, :] = np.array([rgba])
             colorM = ListedColormap(newcolors)
         else :
-            colorM = ListedColormap(meta.cMap)
+            if meta.colorlisttype == "LinearSegmented":
+                colorM = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", meta.cMap)
+            else :
+                colorM = ListedColormap(meta.cMap)
     else :
     # use color map name 
         newColorMap = matplotlib.cm.get_cmap(meta.colormap, 256)
