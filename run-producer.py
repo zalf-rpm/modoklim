@@ -15,22 +15,20 @@
 # Landscape Systems Analysis at the ZALF.
 # Copyright (C: Leibniz Centre for Agricultural Landscape Research (ZALF)
 
-import time
-import os
-import math
-import json
-import csv
-import copy
-#from io import StringIO
-from datetime import date, timedelta
 from collections import defaultdict
-import sys
-import zmq
-
+import copy
+import csv
+from datetime import date, timedelta
+import json
+import math
+import numpy as np
+import os
+from pyproj import CRS, Transformer
 import sqlite3
 import sqlite3 as cas_sq3
-import numpy as np
-from pyproj import CRS, Transformer
+import sys
+import time
+import zmq
 
 import monica_io3
 import soil_io3
@@ -54,16 +52,11 @@ PATHS = {
     }
 }
 
-DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" #
-DEFAULT_PORT = "6666"
-RUN_SETUP = "[2]"
-SETUP_FILE = "sim_setups.csv"
-PROJECT_FOLDER = "monica-germany/"
 DATA_SOIL_DB = "germany/buek200.sqlite"
-DATA_GRID_HEIGHT = "germany/dem_1000_gk5.asc" 
-DATA_GRID_SLOPE = "germany/slope_1000_gk5.asc"
-DATA_GRID_LAND_USE = "germany/landuse_1000_gk5.asc"
-DATA_GRID_SOIL = "germany/buek200_1000_gk5.asc"
+DATA_GRID_HEIGHT = "germany/dem_1000_25832_etrs89-utm32n.asc" 
+DATA_GRID_SLOPE = "germany/slope_1000_25832_etrs89-utm32n.asc"
+DATA_GRID_LAND_USE = "germany/landuse_1000_31469_gk5.asc"
+DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
 GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
@@ -73,11 +66,6 @@ DEBUG_WRITE = False
 DEBUG_ROWS = 10
 DEBUG_WRITE_FOLDER = "./debug_out"
 DEBUG_WRITE_CLIMATE = False
-
-# some values in these templates will be overwritten by the setup 
-TEMPLATE_SIM_JSON="sim.json" 
-TEMPLATE_CROP_JSON="crop.json"
-TEMPLATE_SITE_JSON="site.json"
 
 # commandline parameters e.g "server=localhost port=6666 shared_id=2"
 def run_producer(server = {"server": None, "port": None}, shared_id = None):
@@ -89,15 +77,16 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     config = {
         "mode": "mbm-local-remote",
-        "server-port": server["port"] if server["port"] else DEFAULT_PORT,
-        "server": server["server"] if server["server"] else DEFAULT_HOST,
+        "server-port": server["port"] if server["port"] else "6666",
+        "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1",
-        "sim.json": TEMPLATE_SIM_JSON,
-        "crop.json": TEMPLATE_CROP_JSON,
-        "site.json": TEMPLATE_SITE_JSON,
-        "setups-file": SETUP_FILE,
-        "run-setups": RUN_SETUP,
+        "path_to_dem_grid": "",
+        "sim.json": "sim.json",
+        "crop.json": "crop.json",
+        "site.json": "site.json",
+        "setups-file": "sim_setups.csv",
+        "run-setups": "[1]",
         "shared_id": shared_id
     }
     
@@ -125,12 +114,14 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     #transforms geospatial coordinates from one coordinate reference system to another
     # transform wgs84 into gk5
-    wgs84 = CRS.from_epsg(4326) #proj4 -> (World Geodetic System 1984 https://epsg.io/4326)
-    gk5 = CRS.from_epsg(31469) 
+    soil_crs_to_x_transformers = {}
+    wgs84_crs = CRS.from_epsg(4326)
+    #gk5_crs = CRS.from_epsg(31469)
+    #transformers[wgs84] = Transformer.from_crs(wgs84_crs, gk5_crs, always_xy=True)
 
     """
-    wgs84_to_gk5_transformer = Transformer.from_crs(wgs84, gk5, always_xy=True)
-    gk5_to_wgs84_transformer = Transformer.from_crs(gk5, wgs84, always_xy=True)
+    wgs84_to_gk5_transformer = Transformer.from_crs(wgs84_crs, gk5, always_xy=True)
+    gk5_to_wgs84_transformer = Transformer.from_crs(gk5, wgs84_crs, always_xy=True)
 
     ip_points = []
     ip_values = []
@@ -159,37 +150,53 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
     
-    # height data for germany
-    path_to_dem_grid = paths["path-to-data-dir"] + DATA_GRID_HEIGHT 
-    dem_metadata, _ = Mrunlib.read_header(path_to_dem_grid)
-    dem_grid = np.loadtxt(path_to_dem_grid, dtype=int, skiprows=6)
-    dem_gk5_interpolate = Mrunlib.create_ascii_grid_interpolator(dem_grid, dem_metadata)
-    print("read: ", path_to_dem_grid)
-    
-    # slope data
-    path_to_slope_grid = paths["path-to-data-dir"] + DATA_GRID_SLOPE
-    slope_metadata, _ = Mrunlib.read_header(path_to_slope_grid)
-    slope_grid = np.loadtxt(path_to_slope_grid, dtype=float, skiprows=6)
-    slope_gk5_interpolate = Mrunlib.create_ascii_grid_interpolator(slope_grid, slope_metadata)
-    print("read: ", path_to_slope_grid)
-
-    # land use data
-    path_to_corine_grid = paths["path-to-data-dir"] + DATA_GRID_LAND_USE
-    corine_meta, _ = Mrunlib.read_header(path_to_corine_grid)
-    corine_grid = np.loadtxt(path_to_corine_grid, dtype=int, skiprows=6)
-    corine_gk5_interpolate = Mrunlib.create_ascii_grid_interpolator(corine_grid, corine_meta)
-    print("read: ", path_to_corine_grid)
-
     # soil data
     path_to_soil_grid = paths["path-to-data-dir"] + DATA_GRID_SOIL
+    soil_epsg_code = int(path_to_soil_grid.split("/")[-1].split("_")[2])
+    soil_crs = CRS.from_epsg(soil_epsg_code)
+    if wgs84_crs not in soil_crs_to_x_transformers:
+        soil_crs_to_x_transformers[wgs84_crs] = Transformer.from_crs(soil_crs, wgs84_crs)
     soil_metadata, _ = Mrunlib.read_header(path_to_soil_grid)
     soil_grid = np.loadtxt(path_to_soil_grid, dtype=int, skiprows=6)
     print("read: ", path_to_soil_grid)
 
+    # height data for germany
+    path_to_dem_grid = paths["path-to-data-dir"] + DATA_GRID_HEIGHT 
+    dem_epsg_code = int(path_to_dem_grid.split("/")[-1].split("_")[2])
+    dem_crs = CRS.from_epsg(dem_epsg_code)
+    if dem_crs not in soil_crs_to_x_transformers:
+        soil_crs_to_x_transformers[dem_crs] = Transformer.from_crs(soil_crs, dem_crs)
+    dem_metadata, _ = Mrunlib.read_header(path_to_dem_grid)
+    dem_grid = np.loadtxt(path_to_dem_grid, dtype=float, skiprows=6)
+    dem_interpolate = Mrunlib.create_ascii_grid_interpolator(dem_grid, dem_metadata)
+    print("read: ", path_to_dem_grid)
+
+    # slope data
+    path_to_slope_grid = paths["path-to-data-dir"] + DATA_GRID_SLOPE
+    slope_epsg_code = int(path_to_slope_grid.split("/")[-1].split("_")[2])
+    slope_crs = CRS.from_epsg(slope_epsg_code)
+    if slope_crs not in soil_crs_to_x_transformers:
+        soil_crs_to_x_transformers[slope_crs] = Transformer.from_crs(soil_crs, slope_crs)
+    slope_metadata, _ = Mrunlib.read_header(path_to_slope_grid)
+    slope_grid = np.loadtxt(path_to_slope_grid, dtype=float, skiprows=6)
+    slope_interpolate = Mrunlib.create_ascii_grid_interpolator(slope_grid, slope_metadata)
+    print("read: ", path_to_slope_grid)
+
+    # land use data
+    path_to_landuse_grid = paths["path-to-data-dir"] + DATA_GRID_LAND_USE
+    landuse_epsg_code = int(path_to_landuse_grid.split("/")[-1].split("_")[2])
+    landuse_crs = CRS.from_epsg(landuse_epsg_code)
+    if landuse_crs not in soil_crs_to_x_transformers:
+        soil_crs_to_x_transformers[landuse_crs] = Transformer.from_crs(soil_crs, landuse_crs)
+    landuse_meta, _ = Mrunlib.read_header(path_to_landuse_grid)
+    landuse_grid = np.loadtxt(path_to_landuse_grid, dtype=int, skiprows=6)
+    landuse_interpolate = Mrunlib.create_ascii_grid_interpolator(landuse_grid, landuse_meta)
+    print("read: ", path_to_landuse_grid)
+
     cdict = {}
     # path to latlon-to-rowcol.json
     path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"])
-    climate_data_gk5_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84, gk5, cdict)
+    climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
     print("created climate_data to gk5 interpolator: ", path)
 
     sent_env_count = 1
@@ -240,6 +247,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         with open(setup.get("crop.json", config["crop.json"])) as _:
             crop_json = json.load(_)
 
+        crop_json["CropParameters"]["__enable_vernalisation_factor_fix__"] = setup["use_vernalisation_fix"] if "use_vernalisation_fix" in setup else False
+
         # set the current crop used for this run id
         crop_json["cropRotation"][2] = crop_id
 
@@ -260,12 +269,13 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         scellsize = int(soil_metadata["cellsize"])
         xllcorner = int(soil_metadata["xllcorner"])
         yllcorner = int(soil_metadata["yllcorner"])
+        nodata_value = int(soil_metadata["nodata_value"])
 
         #unknown_soil_ids = set()
         soil_id_cache = {}
         print("All Rows x Cols: " + str(srows) + "x" + str(scols))
-        cs__ = open("coord_mapping.csv", "w")
-        cs__.write("row,col,center_gk5_r,center_gk5_h,center_lat,center_lon\n")
+        #cs__ = open("coord_mapping_etrs89-utm32n_to_wgs84-latlon.csv", "w")
+        #cs__.write("row,col,center_25832_etrs89-utm32n_r,center_25832_etrs89-utm32n_h,center_lat,center_lon\n")
         for srow in range(0, srows):
             print(srow,)
             
@@ -276,24 +286,26 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
             for scol in range(0, scols):
                 soil_id = int(soil_grid[srow, scol])
-                if soil_id == -9999:
+                if soil_id == nodata_value:
                     continue
 
                 #get coordinate of clostest climate element of real soil-cell
-                sh_gk5 = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
-                sr_gk5 = xllcorner + (scellsize / 2) + scol * scellsize
+                sh = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
+                sr = xllcorner + (scellsize / 2) + scol * scellsize
                 
+                tcoords = {}
+
                 """
-                lon, lat = gk5_to_wgs84_transformer.transform(sr_gk5, sh_gk5)
+                lon, lat = soil_crs_to_x_transformers[wgs84_crs].transform(sr, sh)
                 try:
                     int(lon)
                     int(lat)
                 except Exception as e:
-                    lon, lat = wgs84_ip(sr_gk5, sh_gk5)
+                    lon, lat = wgs84_ip(sr, sh)
 
-                cs__.write(str(srow) + "," + str(scol) + "," + str(sr_gk5) + "," + str(sh_gk5) + "," + str(lat) + "," + str(lon) + "\n")
+                cs__.write(str(srow) + "," + str(scol) + "," + str(sr) + "," + str(sh) + "," + str(lat) + "," + str(lon) + "\n")
                 continue
-                """    
+                """
 
                 if soil_id in soil_id_cache:
                     soil_profile = soil_id_cache[soil_id]
@@ -304,19 +316,44 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 if len(soil_profile) == 0:
                     print("row/col:", srow, "/", scol, "has unknown soil_id:", soil_id)
                     #unknown_soil_ids.add(soil_id)
+
+                    env_template["customId"] = {
+                        "setup_id": setup_id,
+                        "srow": srow, "scol": scol,
+                        "crow": int(crow), "ccol": int(ccol),
+                        "soil_id": soil_id,
+                        "bgr": setup["bgr"],
+                        "yields": setup["yields"],
+                        "env_id": sent_env_count,
+                        "nodata": True
+                    }
+                    if not DEBUG_DONOT_SEND:
+                        socket.send_json(env_template)
+                        print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
+                        sent_env_count += 1
                     continue
                 
                 #inter = crow/ccol encoded into integer
-                crow, ccol = climate_data_gk5_interpolator(sr_gk5, sh_gk5)
+                crow, ccol = climate_data_interpolator(sr, sh)
 
                 # check if current grid cell is used for agriculture                
                 if setup["landcover"]:
-                    corine_id = corine_gk5_interpolate(sr_gk5, sh_gk5)
-                    if corine_id not in [2,3,4]:
+                    if landuse_crs not in tcoords:
+                        tcoords[landuse_crs] = soil_crs_to_x_transformers[landuse_crs].transform(sr, sh)
+                    lur, luh = tcoords[landuse_crs]
+                    landuse_id = landuse_interpolate(lur, luh)
+                    if landuse_id not in [2,3,4]:
                         continue
 
-                height_nn = dem_gk5_interpolate(sr_gk5, sh_gk5)
-                slope = slope_gk5_interpolate(sr_gk5, sh_gk5)
+                if dem_crs not in tcoords:
+                    tcoords[dem_crs] = soil_crs_to_x_transformers[dem_crs].transform(sr, sh)
+                demr, demh = tcoords[dem_crs]
+                height_nn = dem_interpolate(demr, demh)
+
+                if slope_crs not in tcoords:
+                    tcoords[slope_crs] = soil_crs_to_x_transformers[slope_crs].transform(sr, sh)
+                slr, slh = tcoords[slope_crs]
+                slope = slope_interpolate(slr, slh)
 
                 env_template["params"]["userCropParameters"]["__enable_T_response_leaf_expansion__"] = setup["LeafExtensionModifier"]
                     
@@ -392,7 +429,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "soil_id": soil_id,
                     "bgr": setup["bgr"],
                     "yields": setup["yields"],
-                    "env_id": sent_env_count
+                    "env_id": sent_env_count,
+                    "nodata": False
                 }
 
                 if not DEBUG_DONOT_SEND :
@@ -418,7 +456,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             #print("unknown_soil_ids:", unknown_soil_ids)
 
             #print("crows/cols:", crows_cols)
-        cs__.close()
+        #cs__.close()
         stop_setup_time = time.perf_counter()
         print("Setup ", (sent_env_count-1), " envs took ", (stop_setup_time - start_setup_time), " seconds")
 

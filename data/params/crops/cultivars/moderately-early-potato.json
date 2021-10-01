@@ -1,44 +1,44 @@
-{  
-  "AssimilatePartitioningCoeff":[  
-    [  
+{
+  "AssimilatePartitioningCoeff": [
+    [
       0.5,
       0.5,
       0,
       0
     ],
-    [  
+    [
       0.20000000000000001,
       0.58999999999999997,
       0.20999999999999999,
       0
     ],
-    [  
+    [
       0.01,
       0.25,
       0.23999999999999999,
       0.5
     ],
-    [  
+    [
       0,
       0.070000000000000007,
       0.11,
       0.81999999999999995
     ],
-    [  
+    [
       0,
       0,
       0.01,
       0.98999999999999999
     ],
-    [  
+    [
       0,
       0,
       0,
       1
     ]
   ],
-  "BaseDaylength":[  
-    [  
+  "BaseDaylength": [
+    [
       0,
       0,
       0,
@@ -48,20 +48,20 @@
     ],
     "h"
   ],
-  "BeginSensitivePhaseHeatStress":[  
+  "BeginSensitivePhaseHeatStress": [
     0,
     "°C d"
   ],
-  "CriticalTemperatureHeatStress":[  
+  "CriticalTemperatureHeatStress": [
     31,
     "°C"
   ],
-  "CropHeightP1":9,
-  "CropHeightP2":0.34999999403953552,
-  "CropSpecificMaxRootingDepth":1.1000000238418579,
-  "CultivarName":"moderately early potato",
-  "DaylengthRequirement":[  
-    [  
+  "CropHeightP1": 9,
+  "CropHeightP2": 0.34999999403953552,
+  "CropSpecificMaxRootingDepth": 1.1000000238418579,
+  "CultivarName": "moderately early potato",
+  "DaylengthRequirement": [
+    [
       0,
       0,
       0,
@@ -71,8 +71,8 @@
     ],
     "h"
   ],
-  "Description":"",
-  "DroughtStressThreshold":[  
+  "Description": "",
+  "DroughtStressThreshold": [
     0.20000000000000001,
     0.20000000000000001,
     0.80000000000000004,
@@ -80,24 +80,24 @@
     0.69999999999999996,
     0.69999999999999996
   ],
-  "EndSensitivePhaseHeatStress":[  
+  "EndSensitivePhaseHeatStress": [
     0,
     "°C d"
   ],
-  "FrostDehardening":5.0500001907348633,
-  "FrostHardening":0.014000000432133675,
-  "HeatSumIrrigationEnd":900,
-  "HeatSumIrrigationStart":113,
-  "LT50cultivar":-5,
-  "LatestHarvestDoy":-1,
-  "LowTemperatureExposure":0.65399998426437378,
-  "MaxAssimilationRate":33,
-  "MaxCropHeight":[  
+  "FrostDehardening": 5.0500001907348633,
+  "FrostHardening": 0.014000000432133675,
+  "HeatSumIrrigationEnd": 900,
+  "HeatSumIrrigationStart": 113,
+  "LT50cultivar": -5,
+  "LatestHarvestDoy": -1,
+  "LowTemperatureExposure": 0.65399998426437378,
+  "MaxAssimilationRate": 33,
+  "MaxCropHeight": [
     0.5,
     "m"
   ],
-  "OptimumTemperature":[  
-    [  
+  "OptimumTemperature": [
+    [
       30,
       30,
       30,
@@ -107,63 +107,59 @@
     ],
     "°C"
   ],
-  "OrganIdsForCutting":[  
-
-  ],
-  "OrganIdsForPrimaryYield":[  
-    {  
-      "organId":4,
-      "type":"YieldComponent",
-      "yieldDryMatter":0.22,
-      "yieldPercentage":0.94999999999999996
+  "OrganIdsForCutting": [],
+  "OrganIdsForPrimaryYield": [
+    {
+      "organId": 4,
+      "type": "YieldComponent",
+      "yieldDryMatter": 0.22,
+      "yieldPercentage": 0.94999999999999996
     }
   ],
-  "OrganIdsForSecondaryYield":[  
-
-  ],
-  "OrganSenescenceRate":[  
-    [  
+  "OrganIdsForSecondaryYield": [],
+  "OrganSenescenceRate": [
+    [
       0,
       0,
       0,
       0
     ],
-    [  
+    [
       0,
       0,
       0,
       0
     ],
-    [  
+    [
       0,
       0,
       0,
       0
     ],
-    [  
+    [
       0,
       0,
       0,
       0
     ],
-    [  
+    [
       0.080000000000000002,
       0.029999999999999999,
       0,
       0
     ],
-    [  
+    [
       0.080000000000000002,
       0.029999999999999999,
       0,
       0
     ]
   ],
-  "Perennial":false,
-  "ResidueNRatio":1.8999999761581421,
-  "RespiratoryStress":0.54000002145767212,
-  "SpecificLeafArea":[  
-    [  
+  "Perennial": false,
+  "ResidueNRatio": 1.8999999761581421,
+  "RespiratoryStress": 0.54000002145767212,
+  "SpecificLeafArea": [
+    [
       0.0030000000000000001,
       0.002,
       0.0015,
@@ -173,8 +169,8 @@
     ],
     "ha kg-1"
   ],
-  "StageKcFactor":[  
-    [  
+  "StageKcFactor": [
+    [
       0.40000000000000002,
       0.59999999999999998,
       1,
@@ -184,8 +180,8 @@
     ],
     "1;0"
   ],
-  "StageTemperatureSum":[  
-    [  
+  "StageTemperatureSum": [
+    [
       148,
       300,
       300,
@@ -195,7 +191,7 @@
     ],
     "°C d"
   ],
-  "VernalisationRequirement":[  
+  "VernalisationRequirement": [
     0,
     0,
     0,
@@ -203,5 +199,5 @@
     0,
     0
   ],
-  "type":"CultivarParameters"
+  "type": "CultivarParameters"
 }

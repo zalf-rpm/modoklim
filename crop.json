@@ -9,7 +9,7 @@
 						"is-winter-crop": true,
 						"cropParams": {
 							"species": ["include-from-file", "crops/species/wheat.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/winter-wheat.json"]
+							"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs.json"]
 						},
 						"residueParams": ["include-from-file", "crops/residues/wheat.json"]
 					},
@@ -43,7 +43,7 @@
 						"is-winter-crop": true,
 						"cropParams": {
 							"species": ["include-from-file", "crops/species/barley.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/winter-barley.json"]
+							"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs.json"]
 						},
 						"residueParams": ["include-from-file", "crops/residues/barley.json"]
 					},
@@ -214,7 +214,7 @@
 						"is-winter-crop": false,
 						"cropParams": {
 							"species": ["include-from-file", "crops/species/maize.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/silage-maize.json"]
+							"cultivar": ["include-from-file", "crops/cultivars/silage-maize_bs.json"]
 						},
 						"residueParams": ["include-from-file", "crops/residues/maize.json"]
 					},
@@ -278,5 +278,8 @@
 
 	"cropRotation": ["ref", "cropRotationTemplates", "WW"],
 	
-	"CropParameters": ["include-from-file", "general/crop.json"]
+	"CropParameters": {
+		"=": ["include-from-file", "general/crop.json"],
+		"__enable_vernalisation_factor_fix__": false
+	}
 }

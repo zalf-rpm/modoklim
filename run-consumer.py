@@ -15,26 +15,22 @@
 # Landscape Systems Analysis at the ZALF.
 # Copyright (C: Leibniz Centre for Agricultural Landscape Research (ZALF)
 
-import sys
-#print sys.path
-
-import gc
-import csv
-import types
-import os
-import json
-import timeit
-from datetime import datetime
 from collections import defaultdict, OrderedDict
+import csv
+from datetime import datetime
+import gc
+import json
 import numpy as np
+import os
+from pyproj import CRS, Transformer
 import sqlite3
-
+import sys
+import timeit
+import types
 import zmq
-#print "pyzmq version: ", zmq.pyzmq_version(), " zmq version: ", zmq.zmq_version()
 
 import monica_io3
 import soil_io3
-#print "path to monica_io: ", monica_io.__file__
 import monica_run_lib as Mrunlib
 
 PATHS = {
@@ -49,12 +45,10 @@ PATHS = {
         "path-to-csv-output-dir": "/out/csv-out/"
     }
 }
-DEFAULT_HOST = "login01.cluster.zalf.de" # "localhost" 
-DEFAULT_PORT = "7777"
-TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/buek200_1000_gk5.asc"
-TEMPLATE_CORINE_PATH = "{local_path_to_data_dir}germany/landuse_1000_gk5.asc"
+TEMPLATE_SOIL_PATH = "{local_path_to_data_dir}germany/buek200_1000_25832_etrs89-utm32n.asc"
+TEMPLATE_LANDUSE_PATH = "{local_path_to_data_dir}germany/landuse_1000_31469_gk5.asc"
 #DATA_SOIL_DB = "germany/buek200.sqlite"
-USE_CORINE = False
+USE_LANDUSE = False
 
 def create_output(msg):
     cm_count_to_vals = defaultdict(dict)
@@ -263,8 +257,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
     config = {
         "mode": "mbm-local-remote",
-        "port": server["port"] if server["port"] else DEFAULT_PORT,
-        "server": server["server"] if server["server"] else DEFAULT_HOST, 
+        "port": server["port"] if server["port"] else "7777",
+        "server": server["server"] if server["server"] else "login01.cluster.zalf.de", 
         "start-row": "0",
         "end-row": "-1",
         "shared_id": shared_id,
@@ -300,20 +294,26 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     write_normal_output_files = False
 
     path_to_soil_grid = TEMPLATE_SOIL_PATH.format(local_path_to_data_dir=paths["path-to-data-dir"])
+    soil_epsg_code = int(path_to_soil_grid.split("/")[-1].split("_")[2])
+    soil_crs = CRS.from_epsg(soil_epsg_code)
     soil_metadata, header = Mrunlib.read_header(path_to_soil_grid)
     soil_grid_template = np.loadtxt(path_to_soil_grid, dtype=int, skiprows=6)
 
-    if USE_CORINE:
-        path_to_corine_grid = TEMPLATE_CORINE_PATH.format(local_path_to_data_dir=paths["path-to-data-dir"])
-        corine_meta, _ = Mrunlib.read_header(path_to_corine_grid)
-        corine_grid = np.loadtxt(path_to_corine_grid, dtype=int, skiprows=6)
-        corine_gk5_interpolate = Mrunlib.create_ascii_grid_interpolator(corine_grid, corine_meta)
+    scols = int(soil_metadata["ncols"])
+    srows = int(soil_metadata["nrows"])
+    scellsize = int(soil_metadata["cellsize"])
+    xllcorner = int(soil_metadata["xllcorner"])
+    yllcorner = int(soil_metadata["yllcorner"])
+    nodata_value = int(soil_metadata["nodata_value"])
 
-        scols = int(soil_metadata["ncols"])
-        srows = int(soil_metadata["nrows"])
-        scellsize = int(soil_metadata["cellsize"])
-        xllcorner = int(soil_metadata["xllcorner"])
-        yllcorner = int(soil_metadata["yllcorner"])
+    if USE_LANDUSE:
+        path_to_landuse_grid = TEMPLATE_LANDUSE_PATH.format(local_path_to_data_dir=paths["path-to-data-dir"])
+        landuse_epsg_code = int(path_to_landuse_grid.split("/")[-1].split("_")[2])
+        landuse_crs = CRS.from_epsg(landuse_epsg_code)
+        landuse_transformer = Transformer.from_crs(soil_crs, landuse_crs)
+        landuse_meta, _ = Mrunlib.read_header(path_to_landuse_grid)
+        landuse_grid = np.loadtxt(path_to_landuse_grid, dtype=int, skiprows=6)
+        landuse_interpolate = Mrunlib.create_ascii_grid_interpolator(landuse_grid, landuse_meta)
 
         for srow in range(0, srows):
             #print(srow)
@@ -323,20 +323,21 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                     continue
 
                 #get coordinate of clostest climate element of real soil-cell
-                sh_gk5 = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
-                sr_gk5 = xllcorner + (scellsize / 2) + scol * scellsize
+                sh = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
+                sr = xllcorner + (scellsize / 2) + scol * scellsize
 
                 # check if current grid cell is used for agriculture                
-                corine_id = corine_gk5_interpolate(sr_gk5, sh_gk5)
-                if corine_id not in [2,3,4]:
+                lur, luh = landuse_transformer(sh, sr)
+                landuse_id = landuse_interpolate(lur, luh)
+                if landuse_id not in [2,3,4]:
                     soil_grid_template[srow, scol] = -9999
 
         print("filtered through CORINE")
 
     #set all data values to one, to count them later
-    soil_grid_template[soil_grid_template != -9999] = 1
+    soil_grid_template[soil_grid_template != nodata_value] = 1
     #set all no-data values to 0, to ignore them while counting
-    soil_grid_template[soil_grid_template == -9999] = 0
+    soil_grid_template[soil_grid_template == nodata_value] = 0
 
     #count cols in rows
     datacells_per_row = np.sum(soil_grid_template, axis=1)
@@ -361,7 +362,6 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             print("There were errors in message:", msg, "\nSkipping message!")
             return
 
-
         if not hasattr(process_message, "wnof_count"):
             process_message.wnof_count = 0
             process_message.setup_count = 0
@@ -373,6 +373,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             setup_id = custom_id["setup_id"]
             is_bgr = custom_id["bgr"]
             is_yields = custom_id["yields"]
+            is_nodata = custom_id["nodata"]
 
             data = setup_id_to_data[setup_id]
 
@@ -388,7 +389,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             #+ " rows unwritten: " + str(data["row-col-data"].keys()) 
             print(debug_msg)
             #debug_file.write(debug_msg + "\n")
-            data["row-col-data"][row][col].append(create_output(msg))
+            if not is_nodata:
+                data["row-col-data"][row][col].append(create_output(msg))
             data["datacell-count"][row] -= 1
 
             process_message.received_env_count = process_message.received_env_count + 1
