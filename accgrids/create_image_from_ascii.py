@@ -409,11 +409,12 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, projectionID, pd
     # add ticklist, add colorlist if not already given
         if cMap == None :
             cMap = temphexMap
-            cMap.reverse()
-        if ticklist == None :
-            ticklist = tempMap
-            ticklist.reverse()
-
+            if not minLoaded :
+                minLoaded = True
+                minValue = -46
+            if not maxLoaded :
+                maxLoaded = True
+                maxValue = 56
 
     # Read in the ascii data array
     ascii_data_array = np.loadtxt(ascii_path, dtype=np.float, skiprows=6)
@@ -723,10 +724,6 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
     # add ticklist, add colorlist if not already given
         if cMap == None :
             cMap = temphexMap
-            cMap.reverse()
-        if ticklist == None :
-            ticklist = tempMap
-            ticklist.reverse()
 
     return Meta(title, label, colormap, minColor, cMap, colorlisttype,
                 cbarLabel, factor, ticklist,yTicklist,xTicklist, maxValue, maxLoaded, minValue, minLoaded, 
@@ -796,7 +793,9 @@ tempMap = [56, 54, 52, 50, 48, 46, 44, 42, 40, 38,
            16, 14, 12, 10, 8, 6, 4, 2, 0, -2, -4, 
            -6, -8, -10, -12, -14, -16, -18, -20, -22, -24, 
            -26, -28, -30, -32, -34, -36, -38, -40, -42, -44, -46]
-
+def prepareColor() :
+    temphexMap.reverse()
+    
 def createSubPlot(image, out_path, png_dpi, projectionID, pdf=None) :
         
     nplotRows = 0
@@ -1203,4 +1202,5 @@ def makeDir(out_path) :
                 raise
 
 if __name__ == "__main__":
+    prepareColor()
     build()

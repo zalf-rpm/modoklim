@@ -120,7 +120,7 @@ var aggStep uint = 1
 var cropId = "WW"
 var startYear uint = 1971 // inclusive
 var endYear uint = 2099   // inclusive
-var withClimate = true
+var withClimate = false
 var rainfedLookup map[GridCoord]bool
 
 func main() {
@@ -613,7 +613,7 @@ func writeIntRows(fout Fout, useIrrgLookup bool, grid [][]int) {
 			val := col
 			if val != -9999 && useIrrgLookup {
 				if _, ok := rainfedLookup[GridCoord{irow, icol}]; !ok {
-					val = -1
+					val = -101
 				}
 			}
 			fout.Write(strconv.Itoa(val))
