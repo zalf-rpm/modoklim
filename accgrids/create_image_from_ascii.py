@@ -49,6 +49,7 @@ USER = "local"
 NONEVALUE = -9999
 SETUP_FILENAME = "image-setup.yml"
 DEFAULT_DPI_PNG=300
+PROJECTION="3035" # epsg code
 
 def build() :
     "main"
@@ -58,6 +59,7 @@ def build() :
     outputFolder = ""
     generatePDF = False
     png_dpi = DEFAULT_DPI_PNG
+    projection = PROJECTION
     if len(sys.argv) > 1 and __name__ == "__main__":
         for arg in sys.argv[1:]:
             k, v = arg.split("=")
@@ -71,6 +73,8 @@ def build() :
                 generatePDF = bool(v)
             if k == "dpi" :
                 png_dpi = int(v)
+            if k == "projection" :
+                projection = v
             
     if not sourceFolder :
         sourceFolder = PATHS[pathId]["sourcepath"]
@@ -105,7 +109,7 @@ def build() :
                     pngfilename = imageName + ".png"
 
                     outpath = os.path.join(pngFolder, scenario, pngfilename)  
-                    createSubPlot(image, outpath,png_dpi, pdf=pdf)
+                    createSubPlot(image, outpath,png_dpi, projection, pdf=pdf)
                 if generatePDF :
                     pdf.close()
             else :
@@ -123,7 +127,7 @@ def build() :
                         filepath = os.path.join(root, file)
                         metapath = os.path.join(root, metafilename)
                         out_path = os.path.join(pngFolder, scenario, pngfilename)    
-                        createImgFromMeta( filepath, metapath, out_path, png_dpi, pdf=pdf)
+                        createImgFromMeta( filepath, metapath, out_path, png_dpi, projection, pdf=pdf)
                 if generatePDF :
                     pdf.close()
 
@@ -326,7 +330,7 @@ def readSetup(filename, root, files) :
     return imageList
 
 
-def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, pdf=None) :
+def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, projectionID, pdf=None) :
 
     if ascii_path.endswith(".gz") :
            # Read in ascii header data
@@ -351,6 +355,7 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, pdf=None) :
     colormap = 'viridis'
     minColor = ""
     cMap = None
+    colorlisttype = None
     cbarLabel = None
     factor = 1
     ticklist = None
@@ -388,6 +393,8 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, pdf=None) :
                     minColor = doc
                 elif item == "colorlist" :
                     cMap = doc
+                elif item == "colorlisttype" :
+                    colorlisttype = doc
                 elif item == "cbarLabel" :
                     cbarLabel = doc
                 elif item == "ticklist" :
@@ -398,7 +405,16 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, pdf=None) :
                     border = bool(doc)
                 elif item == "showbar" :
                     showbars = bool(doc)
-
+    if colormap == "temperature" :
+    # add ticklist, add colorlist if not already given
+        if cMap == None :
+            cMap = temphexMap
+            if not minLoaded :
+                minLoaded = True
+                minValue = -46
+            if not maxLoaded :
+                maxLoaded = True
+                maxValue = 56
 
     # Read in the ascii data array
     ascii_data_array = np.loadtxt(ascii_path, dtype=np.float, skiprows=6)
@@ -424,7 +440,7 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, pdf=None) :
     # Plot data array
     projection = None
     if border :
-        projection = ccrs.epsg("3035")
+        projection = ccrs.epsg(projectionID)
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1, projection=projection)
 
@@ -451,7 +467,12 @@ def createImgFromMeta(ascii_path, meta_path, out_path, png_dpi, pdf=None) :
 
     # Get the img object in order to pass it to the colorbar function
     elif cMap :
-        colorM = ListedColormap(cMap)
+        if colorlisttype == "LinearSegmented":
+            colorM = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", cMap)
+        else :
+            colorM = ListedColormap(cMap)
+
+
         if minLoaded and maxLoaded:
             img_plot = ax.imshow(ascii_data_array, cmap=colorM, extent=image_extent, interpolation='none', vmin=minValue, vmax=maxValue)
         elif minLoaded :
@@ -538,6 +559,7 @@ class Meta:
     colormap: str
     minColor: str
     cMap : list
+    colorlisttype : str
     cbarLabel: str
     factor: float
     ticklist: list
@@ -607,6 +629,7 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
     xTitle = 1
     removeEmptyColumns = False
     border = False
+    colorlisttype = None
 
     with open(meta_path, 'rt', encoding='utf-8') as meta:
        # documents = yaml.load(meta, Loader=yaml.FullLoader)
@@ -642,6 +665,8 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
                 transparencyfactor = float(doc)
             elif item == "colorlist" :
                 cMap = doc
+            elif item == "colorlisttype" :
+                colorlisttype = doc
             elif item == "renderAs" :
                 renderAs = doc
             elif item == "cbarLabel" :
@@ -699,10 +724,8 @@ def readMeta(meta_path, ascii_nodata, showCBar) :
     # add ticklist, add colorlist if not already given
         if cMap == None :
             cMap = temphexMap
-        if ticklist == None :
-            ticklist = tempMap
 
-    return Meta(title, label, colormap, minColor, cMap,
+    return Meta(title, label, colormap, minColor, cMap, colorlisttype,
                 cbarLabel, factor, ticklist,yTicklist,xTicklist, maxValue, maxLoaded, minValue, minLoaded, 
                 showbars, mintransparent, renderAs, transparencyfactor, lineLabel, lineColor, xLabel, yLabel,
                 YaxisMappingFile,YaxisMappingRefColumn,YaxisMappingTarColumn,YaxisMappingFormat,
@@ -770,8 +793,10 @@ tempMap = [56, 54, 52, 50, 48, 46, 44, 42, 40, 38,
            16, 14, 12, 10, 8, 6, 4, 2, 0, -2, -4, 
            -6, -8, -10, -12, -14, -16, -18, -20, -22, -24, 
            -26, -28, -30, -32, -34, -36, -38, -40, -42, -44, -46]
-
-def createSubPlot(image, out_path, png_dpi, pdf=None) :
+def prepareColor() :
+    temphexMap.reverse()
+    
+def createSubPlot(image, out_path, png_dpi, projectionID, pdf=None) :
         
     nplotRows = 0
     nplotCols = 0
@@ -868,7 +893,7 @@ def createSubPlot(image, out_path, png_dpi, pdf=None) :
     # Plot data array
     projection = None
     if meta[0].border :
-        projection = ccrs.epsg("3035")
+        projection = ccrs.epsg(projectionID)
     fig, axs = plt.subplots(nrows=nplotRows, ncols=nplotCols, squeeze=False, sharex=True, sharey=True, figsize=image.size, subplot_kw={'projection': projection})
     
     # defaults
@@ -895,7 +920,7 @@ def createSubPlot(image, out_path, png_dpi, pdf=None) :
                 if len(subtitles) >= idxRow and len(subtitles[idxRow-1]) > 0 :
                     subtitle = subtitles[idxRow-1]
                 onlyOnce = (idxMerg == len(asciiHeaders)-1)
-                plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce)
+                plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, projectionID)
             if (len(metaInsertLs[(idxRow,idxCol)]) > 0 and 
                 len(asciiHeaderInsertLs[(idxRow,idxCol)]) > 0 and 
                 len(subPositions[(idxRow,idxCol)]) > 0) :
@@ -929,7 +954,7 @@ def createSubPlot(image, out_path, png_dpi, pdf=None) :
                     meta = metas[idxMerg]
                     subtitle = ""
                     onlyOnce = (idxMerg == len(asciiHeaders)-1)
-                    plotLayer(fig, inset_ax, asciiHeader, meta, subtitle, onlyOnce, fontsize, axlabelpad, axtickpad)
+                    plotLayer(fig, inset_ax, asciiHeader, meta, subtitle, onlyOnce, projectionID, fontsize, axlabelpad, axtickpad)
 
 
     # save image and pdf 
@@ -939,7 +964,7 @@ def createSubPlot(image, out_path, png_dpi, pdf=None) :
     plt.savefig(out_path, dpi=png_dpi)
     plt.close(fig)
 
-def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, fontsize = 10, axlabelpad = None, axtickpad = None) :
+def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, projectionID, fontsize = 10, axlabelpad = None, axtickpad = None) :
     # Read in the ascii data array
     ascii_data_array = np.loadtxt(asciiHeader.ascii_path, dtype=np.float, skiprows=6)
     colorM = None
@@ -959,7 +984,10 @@ def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, fontsize = 10, axl
     # Get the img object in order to pass it to the colorbar function
     elif meta.cMap :
         if meta.transparencyfactor < 1.0 or meta.mintransparent < 1.0:
-            newColorMap = ListedColormap(meta.cMap)
+            if meta.colorlisttype == "LinearSegmented":
+                newColorMap = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", meta.cMap)
+            else :
+                newColorMap = ListedColormap(meta.cMap)
             newcolors = newColorMap(np.linspace(0, 1, len(meta.cMap)))
             for idC in range(len(meta.cMap)) :
                 alpha = meta.transparencyfactor
@@ -969,7 +997,10 @@ def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, fontsize = 10, axl
                 newcolors[idC:idC+1, :] = np.array([rgba])
             colorM = ListedColormap(newcolors)
         else :
-            colorM = ListedColormap(meta.cMap)
+            if meta.colorlisttype == "LinearSegmented":
+                colorM = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", meta.cMap)
+            else :
+                colorM = ListedColormap(meta.cMap)
     else :
     # use color map name 
         newColorMap = matplotlib.cm.get_cmap(meta.colormap, 256)
@@ -995,7 +1026,7 @@ def plotLayer(fig, ax, asciiHeader, meta, subtitle, onlyOnce, fontsize = 10, axl
         projection = None
         if meta.border :
             ascii_data_array = np.flip(ascii_data_array, 0)
-            projection = ccrs.epsg("3035")
+            projection = ccrs.epsg(projectionID)
             ax.set_extent(image_extent, crs=projection)
 
             #ax = fig.add_subplot(1, 1, 1, projection=projection)
@@ -1171,4 +1202,5 @@ def makeDir(out_path) :
                 raise
 
 if __name__ == "__main__":
+    prepareColor()
     build()
