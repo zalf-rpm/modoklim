@@ -262,7 +262,6 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
         "start-row": "0",
         "end-row": "-1",
         "shared_id": shared_id,
-        "no-of-setups": 10,
         "timeout": 600000 # 10 minutes
     }
 
@@ -432,13 +431,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                 if leave_after_finished_run \
                 and ((data["end_row"] < 0 and data["next-row"] > data["nrows"]-1) \
                     or (data["end_row"] >= 0 and data["next-row"] > data["end_row"])): 
-                    
                     process_message.setup_count += 1
-                    # if all setups are done, the run_setups list should be empty and we can return
-                    if process_message.setup_count >= int(config["no-of-setups"]):
-                        print("c: all results received, exiting")
-                        leave = True
-                        break
                 
         elif write_normal_output_files or msg["customId"]["bgr"]:
 
