@@ -31,10 +31,16 @@ var crop = map[string]string{
 	"SM_rcp85_420":  "maizesilagemaize",
 }
 
+// var cropMask = map[string]string{
+// 	"WW":  "de_grid_Rainfed_Wheat_GrowingArea_EU.csv",
+// 	"WRa": "de_grid_Rainfed_Maize_GrowingArea_EU.csv",
+// 	"SM":  "de_grid_Rainfed_Rapeseed_GrowingArea_EU.csv",
+// }
+
 var cropMask = map[string]string{
-	"WW":  "de_grid_Rainfed_Wheat_GrowingArea_EU.csv",
-	"WRa": "de_grid_Rainfed_Maize_GrowingArea_EU.csv",
-	"SM":  "de_grid_Rainfed_Rapeseed_GrowingArea_EU.csv",
+	"WW":  "CTM_17-19_mask_1000m_25832.asc",
+	"WRa": "CTM_17-19_mask_1000m_25832.asc",
+	"SM":  "CTM_17-19_mask_1000m_25832.asc",
 }
 
 var scenario = map[string]string{
@@ -62,24 +68,24 @@ var co2 = map[string]string{
 }
 
 // hard coded setup map
-// var setups = map[string][]int{
-// 	"WW_rcp85":  {1, 41, 65, 81, 121, 129},
-// 	"SM_rcp85":  {7, 47, 71, 87, 127, 135},
-// 	"WRa_rcp85": {4, 44, 68, 84, 124, 132},
-// 	"WW_rcp26":  {9, 17, 57, 89, 97},
-// 	"SM_rcp26":  {15, 23, 63, 95, 103},
-// 	"WRa_rcp26": {12, 20, 60, 92, 100},
-// }
-
-// da sims
 var setups = map[string][]int{
-	"WW_rcp85":      {178, 182, 186, 190, 194, 198},
-	"WRa_rcp85":     {180, 184, 188, 192, 196, 200},
-	"SM_rcp85":      {181, 185, 189, 193, 197, 201},
-	"WW_rcp85_420":  {202, 206, 210, 214, 218, 222},
-	"WRa_rcp85_420": {204, 208, 212, 216, 220, 224},
-	"SM_rcp85_420":  {205, 209, 213, 217, 221, 225},
+	"WW_rcp85":  {1, 41, 65, 81, 121, 129},
+	"SM_rcp85":  {7, 47, 71, 87, 127, 135},
+	"WRa_rcp85": {4, 44, 68, 84, 124, 132},
+	"WW_rcp26":  {9, 17, 57, 89, 97},
+	"SM_rcp26":  {15, 23, 63, 95, 103},
+	"WRa_rcp26": {12, 20, 60, 92, 100},
 }
+
+// da clim sims
+// var setups = map[string][]int{
+// 	"WW_rcp85":      {178, 182, 186, 190, 194, 198},
+// 	"WRa_rcp85":     {180, 184, 188, 192, 196, 200},
+// 	"SM_rcp85":      {181, 185, 189, 193, 197, 201},
+// 	"WW_rcp85_420":  {202, 206, 210, 214, 218, 222},
+// 	"WRa_rcp85_420": {204, 208, 212, 216, 220, 224},
+// 	"SM_rcp85_420":  {205, 209, 213, 217, 221, 225},
+// }
 
 const inputFileformat = "%s_Yield_%d_%d.asc"
 
@@ -122,6 +128,7 @@ var startYear uint = 1971 // inclusive
 var endYear uint = 2099   // inclusive
 var withClimate = false
 var rainfedLookup map[GridCoord]bool
+var nodata = -9999.0
 
 func main() {
 	inputFolderPtr := flag.String("in", inputFolder, "path to input")
@@ -159,7 +166,7 @@ func main() {
 		}
 	}
 	if len(setupIds) == 0 {
-		log.Fatal("no setups founf for crop")
+		log.Fatal("no setups found for crop")
 	}
 	rainfedSource := filepath.Join(projectFolder, cropMask[cropId])
 	rainfedLookup = getMaskGridLookup(rainfedSource)
@@ -273,7 +280,6 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 	aggRangeHalf := aggRange / 2
 	yearCounter := 0
 	var header map[string]float64
-	nodata := -1.0
 	var stdeviationGrid [][]float64
 	for _, setup := range setups[setupId] {
 
@@ -293,7 +299,6 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 
 				if header == nil {
 					header = readHeader(scanner, false)
-					nodata = header["nodata_value"]
 				} else {
 					// skip first lines
 					readHeader(scanner, true)
@@ -555,7 +560,7 @@ func (f Fout) Close() {
 func writeAGridHeader(name string, header map[string]float64) (fout Fout) {
 	cornerX := header["xllcorner"]
 	cornery := header["yllcorner"]
-	novalue := int(header["nodata_value"])
+	novalue := int(nodata)
 	cellsize := header["cellsize"]
 	nCol := int(header["ncols"])
 	nRow := int(header["nrows"])
@@ -585,7 +590,7 @@ func writeFloatRows(fout Fout, round int, useIrrgLookup bool, grid [][]float64) 
 	for irow, row := range grid {
 		for icol, col := range row {
 			val := col
-			if val-(-9999) < 0.001 {
+			if val-(nodata) < 0.001 {
 				fout.Write(strconv.Itoa(int(val)))
 			} else {
 				if useIrrgLookup {
@@ -611,7 +616,7 @@ func writeIntRows(fout Fout, useIrrgLookup bool, grid [][]int) {
 	for irow, row := range grid {
 		for icol, col := range row {
 			val := col
-			if val != -9999 && useIrrgLookup {
+			if val != int(nodata) && useIrrgLookup {
 				if _, ok := rainfedLookup[GridCoord{irow, icol}]; !ok {
 					val = -101
 				}
@@ -674,6 +679,7 @@ type metaSetup struct {
 	colorList     []string
 	colorListType string
 	minColor      string
+	border        bool
 }
 
 func newDiffMetaSet() metaSetup {
@@ -684,6 +690,7 @@ func newDiffMetaSet() metaSetup {
 		colorList:     []string{},
 		colorListType: "",
 		minColor:      "lightgrey",
+		border:        false,
 	}
 }
 func newTempMetaSetup() metaSetup {
@@ -694,6 +701,7 @@ func newTempMetaSetup() metaSetup {
 		colorList:     []string{},
 		colorListType: "",
 		minColor:      "lightgrey",
+		border:        false,
 	}
 }
 func newYieldMetaSetup(minValue, maxValue int, colorMap string) metaSetup {
@@ -704,6 +712,7 @@ func newYieldMetaSetup(minValue, maxValue int, colorMap string) metaSetup {
 		colorList:     []string{},
 		colorListType: "",
 		minColor:      "lightgrey",
+		border:        false,
 	}
 }
 func newStdMetaSet(minValue, maxValue int) metaSetup {
@@ -714,6 +723,7 @@ func newStdMetaSet(minValue, maxValue int) metaSetup {
 		colorList:     []string{},
 		colorListType: "",
 		minColor:      "lightgrey",
+		border:        false,
 	}
 }
 
@@ -741,6 +751,10 @@ func writeMetaFile(gridFilePath string, setup metaSetup) {
 	}
 	if len(setup.colorListType) > 0 {
 		file.WriteString(fmt.Sprintf("colorlisttype: %s\n", setup.colorListType))
+	}
+	if setup.border {
+		file.WriteString("border: True\n")
+		file.WriteString("removeEmptyColumns: False\n")
 	}
 }
 
@@ -797,36 +811,64 @@ func getMaskGridLookup(gridsource string) map[GridCoord]bool {
 		log.Fatal(err)
 	}
 	defer sourcefile.Close()
-	firstLine := true
-	colID := -1
-	rowID := -1
-	irrID := -1
+
 	scanner := bufio.NewScanner(sourcefile)
+	header := readHeader(scanner, false)
+	nodataVal := int64(header["NODATA_value"])
+
+	row := 0
 	for scanner.Scan() {
 		line := scanner.Text()
-		tokens := strings.Split(line, ",")
-		if firstLine {
-			firstLine = false
-			// Column,Row,latitude,longitude,irrigation
-			for index, token := range tokens {
-				if token == "Column" {
-					colID = index
-				}
-				if token == "Row" {
-					rowID = index
-				}
-				if token == "irrigation" {
-					irrID = index
-				}
-			}
-		} else {
-			col, _ := strconv.ParseInt(tokens[colID], 10, 64)
-			row, _ := strconv.ParseInt(tokens[rowID], 10, 64)
-			irr, _ := strconv.ParseInt(tokens[irrID], 10, 64)
-			if irr > 0 {
+		tokens := strings.Fields(line)
+		for col := 0; col < len(tokens); col++ {
+			landUsed, _ := strconv.ParseInt(tokens[col], 10, 64)
+			if landUsed > 0 && landUsed != nodataVal {
 				lookup[GridCoord{int(row), int(col)}] = true
 			}
 		}
+		row++
 	}
 	return lookup
 }
+
+// func getMaskGridLookupFromCSV(gridsource string) map[GridCoord]bool {
+// 	lookup := make(map[GridCoord]bool)
+
+// 	sourcefile, err := os.Open(gridsource)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	defer sourcefile.Close()
+// 	firstLine := true
+// 	colID := -1
+// 	rowID := -1
+// 	irrID := -1
+// 	scanner := bufio.NewScanner(sourcefile)
+// 	for scanner.Scan() {
+// 		line := scanner.Text()
+// 		tokens := strings.Split(line, ",")
+// 		if firstLine {
+// 			firstLine = false
+// 			// Column,Row,latitude,longitude,irrigation
+// 			for index, token := range tokens {
+// 				if token == "Column" {
+// 					colID = index
+// 				}
+// 				if token == "Row" {
+// 					rowID = index
+// 				}
+// 				if token == "irrigation" {
+// 					irrID = index
+// 				}
+// 			}
+// 		} else {
+// 			col, _ := strconv.ParseInt(tokens[colID], 10, 64)
+// 			row, _ := strconv.ParseInt(tokens[rowID], 10, 64)
+// 			irr, _ := strconv.ParseInt(tokens[irrID], 10, 64)
+// 			if irr > 0 {
+// 				lookup[GridCoord{int(row), int(col)}] = true
+// 			}
+// 		}
+// 	}
+// 	return lookup
+// }

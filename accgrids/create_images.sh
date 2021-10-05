@@ -22,6 +22,6 @@ fi
 FOLDER=../agg_grids_clim/$SUB
 mkdir -p $FOLDER/img
 IMG=~/singularity/python/python3.7_2.0.sif
-singularity run -B $FOLDER:/source,$FOLDER/img:/out $IMG python create_image_from_ascii.py path=cluster 
+singularity run -B $FOLDER:/source,$FOLDER/img:/out $IMG python create_image_from_ascii.py path=cluster projection=25832
 
 wait
