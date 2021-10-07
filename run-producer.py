@@ -243,6 +243,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:
             site_json = json.load(_)
+
+        site_json["EnvironmentParameters"]["rcp"] = scenario
+
         # read template crop.json
         with open(setup.get("crop.json", config["crop.json"])) as _:
             crop_json = json.load(_)
