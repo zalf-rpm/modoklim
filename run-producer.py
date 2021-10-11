@@ -426,7 +426,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     for _ in range(4):
                         hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
                     env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
-                print(env_template["pathToClimateCSV"])
+                print("pathToClimateCSV:", env_template["pathToClimateCSV"])
                 if DEBUG_WRITE_CLIMATE :
                     listOfClimateFiles.add(subpath_to_csv)
 
