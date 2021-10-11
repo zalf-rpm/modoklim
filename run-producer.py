@@ -418,9 +418,13 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 env_template["csvViaHeaderOptions"] = sim_json["climate.csv-options"]
                 
                 subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
+                for _ in range(4):
+                    subpath_to_csv.replace("//", "/")
                 env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
                 if setup["incl_hist"]:
                     hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
+                    for _ in range(4):
+                        hist_subpath_to_csv.replace("//", "/")
                     env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
                 print(env_template["pathToClimateCSV"])
                 if DEBUG_WRITE_CLIMATE :
