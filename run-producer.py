@@ -38,15 +38,15 @@ PATHS = {
     # adjust the local path to your environment
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
-        "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/dwd_core_ensemble/", # mounted path to archive or hard drive with climate data 
-        "monica-path-to-climate-dir": "/monica_data/climate-data/dwd_core_ensemble/csvs_dwd_core_ensemble/", # mounted path to archive accessable by monica executable
+        "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data 
+        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "./debug-out/",
     },
     "remoteProducer-remoteMonica": {
         #"include-file-base-path": "/monica-parameters/", # path to monica-parameters
-        "path-to-climate-dir": "/data/dwd_core_ensemble/", # mounted path to archive or hard drive with climate data 
-        "monica-path-to-climate-dir": "/monica_data/climate-data/dwd_core_ensemble/csvs_dwd_core_ensemble/", # mounted path to archive accessable by monica executable
+        "path-to-climate-dir": "/data/", # mounted path to archive or hard drive with climate data 
+        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "/out/debug-out/",
     }
@@ -193,12 +193,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     landuse_interpolate = Mrunlib.create_ascii_grid_interpolator(landuse_grid, landuse_meta)
     print("read: ", path_to_landuse_grid)
 
-    cdict = {}
-    # path to latlon-to-rowcol.json
-    path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"])
-    climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
-    print("created climate_data to gk5 interpolator: ", path)
-
+    
     sent_env_count = 1
     start_time = time.perf_counter()
 
@@ -217,6 +212,12 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         ensmem = setup["ensmem"]
         version = setup["version"]
         crop_id = setup["crop-id"]
+
+        cdict = {}
+        # path to latlon-to-rowcol.json
+        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + setup["climate_path_to_latlon_file"] + "/")
+        climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
+        print("created climate_data to gk5 interpolator: ", path)
 
         # read template sim.json 
         with open(setup.get("sim.json", config["sim.json"])) as _:
@@ -417,10 +418,10 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 env_template["csvViaHeaderOptions"] = sim_json["climate.csv-options"]
                 
                 subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
-                env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + subpath_to_csv]
+                env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
                 if setup["incl_hist"]:
                     hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
-                    env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + hist_subpath_to_csv)
+                    env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
                 print(env_template["pathToClimateCSV"])
                 if DEBUG_WRITE_CLIMATE :
                     listOfClimateFiles.add(subpath_to_csv)
