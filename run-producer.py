@@ -408,6 +408,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 if setup["O3"]:
                     env_template["params"]["userEnvironmentParameters"]["AtmosphericO3"] = float(setup["O3"])
 
+                if setup["FieldConditionModifier"]:
+                    env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["species"]["FieldConditionModifier"] = float(setup["FieldConditionModifier"])
+
                 env_template["params"]["simulationParameters"]["UseNMinMineralFertilisingMethod"] = setup["fertilization"]
                 env_template["params"]["simulationParameters"]["UseAutomaticIrrigation"] = setup["irrigation"]
 
