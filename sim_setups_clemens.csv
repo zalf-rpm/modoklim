@@ -27,3 +27,4 @@ run-id,use_vernalisation_fix,yields,bgr,nc_mode,crop-id,sim.json,crop.json,site.
 26,true,true,false,false,WR,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1993-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.90
 27,true,true,false,false,WR,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1993-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.88
 28,true,true,false,false,WR,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1993-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.86
+29,true,true,false,false,SG,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1
