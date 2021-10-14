@@ -14,3 +14,9 @@ run-id,use_vernalisation_fix,yields,bgr,nc_mode,crop-id,sim.json,crop.json,site.
 13,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.88
 14,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.86
 15,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.84
+16,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,2003-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.00
+17,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,2003-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.01
+18,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,2003-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.02
+19,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,2003-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.03
+20,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,2003-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.04
+21,true,true,false,false,WW,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,2003-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.99
