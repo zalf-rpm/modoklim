@@ -29,6 +29,32 @@ var crop = map[string]string{
 	"WW_rcp85_420":  "wheatwinterwheat",
 	"WRa_rcp85_420": "rapewinterrape",
 	"SM_rcp85_420":  "maizesilagemaize",
+	"WG_rcp85":      "barleywinterbarley",
+	"WR_rcp85":      "ryewinterrye",
+	"WW_rcp85_0":    "wheatwinterwheat",
+	"WW_rcp85_1":    "wheatwinterwheat",
+	"WW_rcp85_2":    "wheatwinterwheat",
+	"WW_rcp85_3":    "wheatwinterwheat",
+	"WW_rcp85_4":    "wheatwinterwheat",
+	"WW_rcp85_5":    "wheatwinterwheat",
+	"WG_rcp85_0":    "barleywinterbarley",
+	"WG_rcp85_1":    "barleywinterbarley",
+	"WG_rcp85_2":    "barleywinterbarley",
+	"WG_rcp85_3":    "barleywinterbarley",
+	"WG_rcp85_4":    "barleywinterbarley",
+	"WG_rcp85_5":    "barleywinterbarley",
+	"SM_rcp85_0":    "maizesilagemaize",
+	"SM_rcp85_1":    "maizesilagemaize",
+	"SM_rcp85_2":    "maizesilagemaize",
+	"SM_rcp85_3":    "maizesilagemaize",
+	"SM_rcp85_4":    "maizesilagemaize",
+	"SM_rcp85_5":    "maizesilagemaize",
+	"WR_rcp85_0":    "ryewinterrye",
+	"WR_rcp85_1":    "ryewinterrye",
+	"WR_rcp85_2":    "ryewinterrye",
+	"WR_rcp85_3":    "ryewinterrye",
+	"WR_rcp85_4":    "ryewinterrye",
+	"WR_rcp85_5":    "ryewinterrye",
 }
 
 // var cropMask = map[string]string{
@@ -41,6 +67,8 @@ var cropMask = map[string]string{
 	"WW":  "CTM_17-19_mask_1000m_25832.asc",
 	"WRa": "CTM_17-19_mask_1000m_25832.asc",
 	"SM":  "CTM_17-19_mask_1000m_25832.asc",
+	"WG":  "CTM_17-19_mask_1000m_25832.asc",
+	"WR":  "CTM_17-19_mask_1000m_25832.asc",
 }
 
 var scenario = map[string]string{
@@ -53,6 +81,32 @@ var scenario = map[string]string{
 	"WW_rcp85_420":  "rcp85",
 	"WRa_rcp85_420": "rcp85",
 	"SM_rcp85_420":  "rcp85",
+	"WR_rcp85":      "rcp85",
+	"WG_rcp85":      "rcp85",
+	"WW_rcp85_0":    "rcp85",
+	"WW_rcp85_1":    "rcp85",
+	"WW_rcp85_2":    "rcp85",
+	"WW_rcp85_3":    "rcp85",
+	"WW_rcp85_4":    "rcp85",
+	"WW_rcp85_5":    "rcp85",
+	"WG_rcp85_0":    "rcp85",
+	"WG_rcp85_1":    "rcp85",
+	"WG_rcp85_2":    "rcp85",
+	"WG_rcp85_3":    "rcp85",
+	"WG_rcp85_4":    "rcp85",
+	"WG_rcp85_5":    "rcp85",
+	"SM_rcp85_0":    "rcp85",
+	"SM_rcp85_1":    "rcp85",
+	"SM_rcp85_2":    "rcp85",
+	"SM_rcp85_3":    "rcp85",
+	"SM_rcp85_4":    "rcp85",
+	"SM_rcp85_5":    "rcp85",
+	"WR_rcp85_0":    "rcp85",
+	"WR_rcp85_1":    "rcp85",
+	"WR_rcp85_2":    "rcp85",
+	"WR_rcp85_3":    "rcp85",
+	"WR_rcp85_4":    "rcp85",
+	"WR_rcp85_5":    "rcp85",
 }
 
 var co2 = map[string]string{
@@ -65,16 +119,69 @@ var co2 = map[string]string{
 	"WW_rcp26":      "-",
 	"SM_rcp26":      "-",
 	"WRa_rcp26":     "-",
+	"WR_rcp85":      "-",
+	"WG_rcp85":      "-",
+	"WW_rcp85_0":    "-",
+	"WW_rcp85_1":    "-",
+	"WW_rcp85_2":    "-",
+	"WW_rcp85_3":    "-",
+	"WW_rcp85_4":    "-",
+	"WW_rcp85_5":    "-",
+	"WG_rcp85_0":    "-",
+	"WG_rcp85_1":    "-",
+	"WG_rcp85_2":    "-",
+	"WG_rcp85_3":    "-",
+	"WG_rcp85_4":    "-",
+	"WG_rcp85_5":    "-",
+	"SM_rcp85_0":    "-",
+	"SM_rcp85_1":    "-",
+	"SM_rcp85_2":    "-",
+	"SM_rcp85_3":    "-",
+	"SM_rcp85_4":    "-",
+	"SM_rcp85_5":    "-",
+	"WR_rcp85_0":    "-",
+	"WR_rcp85_1":    "-",
+	"WR_rcp85_2":    "-",
+	"WR_rcp85_3":    "-",
+	"WR_rcp85_4":    "-",
+	"WR_rcp85_5":    "-",
 }
 
 // hard coded setup map
+// var setups = map[string][]int{
+// 	"WW_rcp85":  {1, 41, 65, 81, 121, 129},
+// 	"SM_rcp85":  {7, 47, 71, 87, 127, 135},
+// 	"WRa_rcp85": {4, 44, 68, 84, 124, 132},
+// 	"WW_rcp26":  {9, 17, 57, 89, 97},
+// 	"SM_rcp26":  {15, 23, 63, 95, 103},
+// 	"WRa_rcp26": {12, 20, 60, 92, 100},
+// }
+
 var setups = map[string][]int{
-	"WW_rcp85":  {1, 41, 65, 81, 121, 129},
-	"SM_rcp85":  {7, 47, 71, 87, 127, 135},
-	"WRa_rcp85": {4, 44, 68, 84, 124, 132},
-	"WW_rcp26":  {9, 17, 57, 89, 97},
-	"SM_rcp26":  {15, 23, 63, 95, 103},
-	"WRa_rcp26": {12, 20, 60, 92, 100},
+	"WW_rcp85_0": {137},
+	"WW_rcp85_1": {157},
+	"WW_rcp85_2": {169},
+	"WW_rcp85_3": {177},
+	"WW_rcp85_4": {197},
+	"WW_rcp85_5": {201},
+	"WG_rcp85_0": {138},
+	"WG_rcp85_1": {158},
+	"WG_rcp85_2": {170},
+	"WG_rcp85_3": {178},
+	"WG_rcp85_4": {198},
+	"WG_rcp85_5": {202},
+	"SM_rcp85_0": {140},
+	"SM_rcp85_1": {160},
+	"SM_rcp85_2": {172},
+	"SM_rcp85_3": {180},
+	"SM_rcp85_4": {200},
+	"SM_rcp85_5": {204},
+	"WR_rcp85_0": {139},
+	"WR_rcp85_1": {159},
+	"WR_rcp85_2": {171},
+	"WR_rcp85_3": {179},
+	"WR_rcp85_4": {199},
+	"WR_rcp85_5": {203},
 }
 
 // da clim sims
@@ -119,6 +226,7 @@ var outfileTemplate = map[refGridName]string{
 
 var inputFolder = "./test"
 var outFolder = "./agg_out"
+var outFolders = map[string]string{}
 var projectFolder = "."
 var numConcurrent = 1
 var aggRange uint = 30
@@ -162,7 +270,7 @@ func main() {
 	for key := range setups {
 		if strings.HasPrefix(key, cropId) {
 			setupIds = append(setupIds, key)
-
+			outFolders[key] = outFolder + strings.Trim(strings.Join(strings.Fields(fmt.Sprint(setups[key])), "_"), "[]")
 		}
 	}
 	if len(setupIds) == 0 {
@@ -418,7 +526,7 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 	}
 	writeGrid := func(name refGridName, round int, useLookup bool, grid [][]float64) {
 		// save new grid
-		outFileName := filepath.Join(outFolder, fmt.Sprintf(outfileTemplate[name], crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
+		outFileName := filepath.Join(outFolders[setupId], fmt.Sprintf(outfileTemplate[name], crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 		fout := writeAGridHeader(outFileName, header)
 		writeFloatRows(fout, round, useLookup, grid)
 		fout.Close()
@@ -442,7 +550,7 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 		if refGrid, ok := refGrids[name]; ok {
 			diffgrid := createDiff(refGrid, grid, nodata)
 
-			outDiffFileName := filepath.Join(outFolder, fmt.Sprintf(outDiffFileTemplate[name], crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
+			outDiffFileName := filepath.Join(outFolders[setupId], fmt.Sprintf(outDiffFileTemplate[name], crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 			fout := writeAGridHeader(outDiffFileName, header)
 			writeIntRows(fout, useLookup, diffgrid)
 			fout.Close()
@@ -464,7 +572,7 @@ func calcAvgGrid(refGrids map[refGridName][][]float64, withClimate bool, setupId
 	// 	writeDiffGrid(tminAvg, currTminAvgGrid.grid)
 	// }
 	// save std grid
-	outstdFileName := filepath.Join(outFolder, fmt.Sprintf(outStdfileTemplate, crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
+	outstdFileName := filepath.Join(outFolders[setupId], fmt.Sprintf(outStdfileTemplate, crop[setupId], scenario[setupId], co2[setupId], imageYear, imageYearIndex))
 	foutStd := writeAGridHeader(outstdFileName, header)
 	writeFloatRows(foutStd, 0, true, stdeviationGrid)
 	foutStd.Close()
