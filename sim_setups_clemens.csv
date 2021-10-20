@@ -48,3 +48,11 @@ run-id,use_vernalisation_fix,yields,bgr,nc_mode,crop-id,sim.json,crop.json,site.
 47,true,true,false,false,SM,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.2
 48,true,true,false,false,SM,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.3
 49,true,true,false,false,SM,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,1.4
+50,true,true,false,false,WG,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.95
+51,true,true,false,false,WG,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.9
+52,true,true,false,false,WG,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.85
+53,true,true,false,false,WG,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.8
+54,false,true,false,false,WRa,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.98
+55,false,true,false,false,WRa,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.96
+56,false,true,false,false,WRa,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.94
+57,false,true,false,false,WRa,sim.json,crop.json,site.json,false,dwd/csvs,dwd/csvs/germany,,,,,,1990-01-01,2019-12-31,false,false,true,true,true,false,false,false,false,true,false,false,false,,,0.92
