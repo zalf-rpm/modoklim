@@ -273,6 +273,74 @@
 					"harvest-time": "maturity"
 				}
 			]
+		}],
+		"KA_sustag": [{
+			"worksteps": [
+				{ 
+					"type": "AutomaticSowing", 
+					"crop": {
+						"is-winter-crop": false,
+						"cropParams": {
+							"species": ["include-from-file", "crops/species/potato.json"],
+							"cultivar": ["include-from-file", "crops/cultivars/moderately-early-potato_sustag.json"]
+						},
+						"residueParams": ["include-from-file", "crops/residues/potato.json"]
+					},
+					"earliest-date": "0000-03-25",
+					"latest-date": "0000-05-10",
+					"min-temp": 6.0,
+					"days-in-temp-window": 5,
+					"min-%-asw": 0,
+					"max-%-asw": 97.0,
+					"max-3d-precip-sum": 5,
+					"max-curr-day-precip": 0.5,
+					"temp-sum-above-base-temp": 340,
+					"base-temp": 0
+				},
+				{ 
+					"type": "AutomaticHarvest", 
+					"latest-date": "0000-09-15",
+					"min-%-asw": 0,
+					"max-%-asw": 99.0,
+					"max-3d-precip-sum": 5,
+					"max-curr-day-precip": 0.5,
+					"harvest-time": "maturity"
+				}
+			]
+		}],
+		"KA_agmip": [{
+			"worksteps": [
+				{ 
+					"type": "AutomaticSowing", 
+					"crop": {
+						"is-winter-crop": false,
+						"cropParams": {
+							"species": ["include-from-file", "crops/species/potato.json"],
+							"cultivar": ["include-from-file", "crops/cultivars/moderately-early-potato_agmip.json"]
+						},
+						"residueParams": ["include-from-file", "crops/residues/potato.json"]
+					},
+					"earliest-date": "0000-03-25",
+					"latest-date": "0000-05-10",
+					"min-temp": 6.0,
+					"days-in-temp-window": 5,
+					"min-%-asw": 0,
+					"max-%-asw": 97.0,
+					"max-3d-precip-sum": 5,
+					"max-curr-day-precip": 0.5,
+					"temp-sum-above-base-temp": 340,
+					"base-temp": 0
+				},
+				{ 
+					"type": "AutomaticHarvest", 
+					"latest-date": "0000-09-15",
+					"min-%-asw": 0,
+					"max-%-asw": 99.0,
+					"max-3d-precip-sum": 5,
+					"max-curr-day-precip": 0.5,
+					"harvest-time": "maturity"
+				}
+			]
 		}]
 	},
 
