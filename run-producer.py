@@ -59,7 +59,6 @@ DATA_GRID_LAND_USE = "germany/landuse_1000_31469_gk5.asc"
 DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
-GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
 DEBUG_DONOT_SEND = False
 DEBUG_WRITE = False
@@ -118,34 +117,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     wgs84_crs = CRS.from_epsg(4326)
     #gk5_crs = CRS.from_epsg(31469)
     #transformers[wgs84] = Transformer.from_crs(wgs84_crs, gk5_crs, always_xy=True)
-
-    """
-    wgs84_to_gk5_transformer = Transformer.from_crs(wgs84_crs, gk5, always_xy=True)
-    gk5_to_wgs84_transformer = Transformer.from_crs(gk5, wgs84_crs, always_xy=True)
-
-    ip_points = []
-    ip_values = []
-
-    for lon_ in range(400, 1500):
-        print(lon_, " ", end="")
-        for lat_ in range(4000, 6000):
-            try:
-                lon = lon_ / 100.0
-                lat = lat_ / 100.0
-                r, h = wgs84_to_gk5_transformer.transform(lon, lat)
-                lng, la = gk5_to_wgs84_transformer.transform(r, h, errcheck=True)
-                int(lng)
-                int(la)
-            except Exception as e:
-                ip_points.append([r, h])
-                ip_values.append((lon, lat))
-                #print((lon, lat), " ", end="")
-                pass
-        #print()
-    
-    from scipy.interpolate import NearestNDInterpolator
-    wgs84_ip = NearestNDInterpolator(np.array(ip_points), np.array(ip_values))
-    """
 
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
