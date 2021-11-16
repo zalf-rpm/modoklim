@@ -80,7 +80,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     config = {
         "mode": "mbm-local-remote",
-        "server-port": server["port"] if server["port"] else "6669",
+        "server-port": server["port"] if server["port"] else "6667",
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1",

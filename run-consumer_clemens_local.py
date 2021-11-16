@@ -257,7 +257,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
     config = {
         "mode": "mbm-local-remote",
-        "port": server["port"] if server["port"] else "7780",
+        "port": server["port"] if server["port"] else "7778",
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de", 
         "start-row": "0",
         "end-row": "-1",
