@@ -62,7 +62,7 @@ TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
 GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
-DISTRICT_IDS = [15085]
+DISTRICT_IDS = [9263, 9173]
 
 DEBUG_DONOT_SEND = False
 DEBUG_WRITE = False
@@ -85,11 +85,11 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "start-row": "0", 
         "end-row": "-1",
         "path_to_dem_grid": "",
-        "sim.json": "sim.json",
+        "sim.json": "sim_clemens.json",
         "crop.json": "crop.json",
         "site.json": "site.json",
-        "setups-file": "sim_setups.csv",
-        "run-setups": "[1]",
+        "setups-file": "sim_setups_clemens.csv",
+        "run-setups": "[112]",
         "shared_id": shared_id
     }
     
@@ -228,7 +228,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
         cdict = {}
         # path to latlon-to-rowcol.json
-        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + setup["climate_path_to_latlon_file"] + "/")
+        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + "/")
         climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
         print("created climate_data to gk5 interpolator: ", path)
 
@@ -252,7 +252,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         elif setup["yields"]:
             sim_json["output"]["events"] = sim_json["output"]["yields-events"]
 
-        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
+        #sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:

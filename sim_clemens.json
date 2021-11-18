@@ -118,6 +118,7 @@
 				["Year", "LAST"],
 				["Crop", "FIRST"],
 				["Yield", "LAST"],
+				["AbBiom", "LAST"],
 				["TraDef|tradefavg", "AVG"],
 				["HeatRed|heatredavg", "AVG"],
 				["FrostRed|frostredavg", "AVG"],

@@ -36,8 +36,8 @@ import monica_run_lib as Mrunlib
 PATHS = {
     "mbm-local-remote": {
         "path-to-data-dir": "data/",
-        "path-to-output-dir": "out/",
-        "path-to-csv-output-dir": "csv-out/"
+        "path-to-output-dir": "D:/projects/KlimErtrag/out_remote_local/",
+        "path-to-csv-output-dir": "D:/projects/KlimErtrag/out_remote_local/"
     },
     "remoteConsumer-remoteMonica": {
         "path-to-data-dir": "./data/",
@@ -491,7 +491,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     while not leave:
         try:
             #start_time_recv = timeit.default_timer()
-            msg = socket.recv_json(encoding="latin-1")
+            msg = socket.recv_json()#encoding="latin-1")
             #elapsed = timeit.default_timer() - start_time_recv
             #print("time to receive message" + str(elapsed))
             #start_time_proc = timeit.default_timer()
@@ -501,8 +501,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
         except zmq.error.Again as _e:
             print('no response from the server (with "timeout"=%d ms) ' % socket.RCVTIMEO)
             return
-        except Exception as e:
-            print("Exception:", e)
+        #except Exception as e:
+        #    print("Exception:", e)
             #continue
 
     print("exiting run_consumer()")
