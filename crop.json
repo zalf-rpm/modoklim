@@ -206,6 +206,41 @@
 				}
 			]
 		}],
+		"SG_vern": [{
+			"worksteps": [
+				{ 
+					"type": "AutomaticSowing", 
+					"crop": {
+						"is-winter-crop": false,
+						"cropParams": {
+							"species": ["include-from-file", "crops/species/barley.json"],
+							"cultivar": ["include-from-file", "crops/cultivars/spring-barley_hhf_Baroness_vernal.json"]
+						},
+						"residueParams": ["include-from-file", "crops/residues/barley.json"]
+					},
+					"earliest-date": "0000-02-11",
+					"latest-date": "0000-05-01",
+					"min-temp": 7.0,
+					"days-in-temp-window": 5,
+					"min-%-asw": 0,
+					"max-%-asw": 95.0,
+					"max-3d-precip-sum": 2,
+
+					"max-curr-day-precip": 0.1,
+					"temp-sum-above-base-temp": 0,
+					"base-temp": 0
+				},
+				{ 
+					"type": "AutomaticHarvest", 
+					"latest-date": "0000-09-07",
+					"min-%-asw": 0,
+					"max-%-asw": 99.0,
+					"max-3d-precip-sum": 2,
+					"max-curr-day-precip": 0.1,
+					"harvest-time": "maturity"
+				}
+			]
+		}],
 		"ZR": [{
 			"worksteps": [
 				{ 
