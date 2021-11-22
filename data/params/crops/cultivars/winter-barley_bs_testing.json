@@ -1,10 +1,6 @@
 {
-  "metadata": {
-    "description": "Reparameterization for Klimertrag project and vernalisation factor fix",
-    "date": "09-20201"
-  },
   "WinterCrop": true,
-  "AssimilatePartitioningCoeff": [
+  "AssimilatePartitioningCoeff":[
     [
       0.5,
       0.5,
@@ -42,7 +38,7 @@
       0
     ]
   ],
-  "BaseDaylength": [
+  "BaseDaylength":[
     [
       0,
       0,
@@ -53,19 +49,19 @@
     ],
     "h"
   ],
-  "BeginSensitivePhaseHeatStress": [
+  "BeginSensitivePhaseHeatStress":[
     590,
     "°C d"
   ],
-  "CriticalTemperatureHeatStress": [
+  "CriticalTemperatureHeatStress":[
     31,
     "°C"
   ],
-  "CropHeightP1": 12,
-  "CropHeightP2": 0.60000002384185791,
-  "CropSpecificMaxRootingDepth": 1.2999999523162842,
-  "CultivarName": "winter barley",
-  "DaylengthRequirement": [
+  "CropHeightP1":12,
+  "CropHeightP2":0.60000002384185791,
+  "CropSpecificMaxRootingDepth":1.2999999523162842,
+  "CultivarName":"winter barley",
+  "DaylengthRequirement":[
     [
       0,
       20,
@@ -76,8 +72,8 @@
     ],
     "h"
   ],
-  "Description": "",
-  "DroughtStressThreshold": [
+  "Description":"",
+  "DroughtStressThreshold":[
     1,
     0.9,
     1,
@@ -85,23 +81,23 @@
     0.9,
     0.8
   ],
-  "EndSensitivePhaseHeatStress": [
+  "EndSensitivePhaseHeatStress":[
     690,
     "°C d"
   ],
-  "FrostDehardening": 5.05,
-  "FrostHardening": 0.018,
-  "HeatSumIrrigationEnd": 1032,
-  "HeatSumIrrigationStart": 560,
-  "LT50cultivar": -24,
-  "LatestHarvestDoy": -1,
-  "LowTemperatureExposure": 0.654,
-  "MaxAssimilationRate": 38,
-  "MaxCropHeight": [
+  "FrostDehardening":5.05,
+  "FrostHardening":0.018,
+  "HeatSumIrrigationEnd":1032,
+  "HeatSumIrrigationStart":560,
+  "LT50cultivar":-24,
+  "LatestHarvestDoy":-1,
+  "LowTemperatureExposure":0.654,
+  "MaxAssimilationRate":38,
+  "MaxCropHeight":[
     0.87000000476837158,
     "m"
   ],
-  "OptimumTemperature": [
+  "OptimumTemperature":[
     [
       30,
       30,
@@ -112,30 +108,32 @@
     ],
     "°C"
   ],
-  "OrganIdsForCutting": [],
-  "OrganIdsForPrimaryYield": [
+  "OrganIdsForCutting":[
+
+  ],
+  "OrganIdsForPrimaryYield":[
     {
-      "organId": 4,
-      "type": "YieldComponent",
-      "yieldDryMatter": 0.85999999999999999,
-      "yieldPercentage": 0.84999999999999998
+      "organId":4,
+      "type":"YieldComponent",
+      "yieldDryMatter":0.85999999999999999,
+      "yieldPercentage":0.84999999999999998
     }
   ],
-  "OrganIdsForSecondaryYield": [
+  "OrganIdsForSecondaryYield":[
     {
-      "organId": 2,
-      "type": "YieldComponent",
-      "yieldDryMatter": 0.85999999999999999,
-      "yieldPercentage": 0.84999999999999998
+      "organId":2,
+      "type":"YieldComponent",
+      "yieldDryMatter":0.85999999999999999,
+      "yieldPercentage":0.84999999999999998
     },
     {
-      "organId": 3,
-      "type": "YieldComponent",
-      "yieldDryMatter": 0.85999999999999999,
-      "yieldPercentage": 0.90000000000000002
+      "organId":3,
+      "type":"YieldComponent",
+      "yieldDryMatter":0.85999999999999999,
+      "yieldPercentage":0.90000000000000002
     }
   ],
-  "OrganSenescenceRate": [
+  "OrganSenescenceRate":[
     [
       0,
       0,
@@ -173,21 +171,21 @@
       0
     ]
   ],
-  "Perennial": false,
-  "ResidueNRatio": 0.30000001192092896,
-  "RespiratoryStress": 0.54,
-  "SpecificLeafArea": [
+  "Perennial":false,
+  "ResidueNRatio":0.30000001192092896,
+  "RespiratoryStress":0.54,
+  "SpecificLeafArea":[
     [
-      0.00165,
-      0.0015,
-      0.0015,
-      0.0015,
+      0.0017,
+      0.0019,
+      0.0016,
+      0.0016,
       0.0015,
       0.0015
     ],
     "ha kg-1"
   ],
-  "StageKcFactor": [
+  "StageKcFactor":[
     [
       0.40000000000000002,
       0.69999999999999996,
@@ -198,7 +196,7 @@
     ],
     "1;0"
   ],
-  "StageTemperatureSum": [
+  "StageTemperatureSum":[
     [
       100,
       320,
@@ -209,7 +207,7 @@
     ],
     "°C d"
   ],
-  "VernalisationRequirement": [
+  "VernalisationRequirement":[
     0,
     50,
     0,
@@ -217,5 +215,5 @@
     0,
     0
   ],
-  "type": "CultivarParameters"
+  "type":"CultivarParameters"
 }

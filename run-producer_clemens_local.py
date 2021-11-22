@@ -62,7 +62,7 @@ TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
 GEO_TARGET_GRID=31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
-DISTRICT_IDS = [15088]
+DISTRICT_IDS = [15088, 9263]
 
 DEBUG_DONOT_SEND = False
 DEBUG_WRITE = False
