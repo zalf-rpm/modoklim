@@ -70,7 +70,14 @@
 				  "depth": [0.9, "m"],
 				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
 			  },
-				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW"] },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": {
+					"is-winter-crop": true,
+					"cropParams": {
+						"species": ["include-from-file", "crops/species/wheat.json"],
+						"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs.json"]
+					},
+					"residueParams": ["include-from-file", "crops/residues/wheat.json"]
+				}  },
 				{
 				  "type": "OrganicFertilization",
 				  "days": 1,
