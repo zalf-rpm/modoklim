@@ -117,6 +117,15 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
+				["Yield", "LAST"]
+			]
+		],
+
+		"_yields-events_backup": [
+			"crop", [
+				["CM-count", "FIRST"],
+				["Year", "LAST"],
+				["Crop", "FIRST"],
 				["Yield", "LAST"],
 				["AbBiom", "LAST"],
 				["TraDef|tradefavg", "AVG"],
@@ -213,7 +222,7 @@
 			]
 		],
 
-		"backup-pheno-events": [
+		"_backup-pheno-events": [
 			"Stage-2", [
 				"CM-count",
 				"DOY|s2doy"
