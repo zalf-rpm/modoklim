@@ -281,6 +281,23 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
                 crop_id = int(crop_grid[srow, scol])
                 if crop_id != 1:
+                    print("row/col:", srow, "/", scol, "is not a crop pixel.")
+                    env_template["customId"] = {
+                        "setup_id": setup_id,
+                        "srow": srow, "scol": scol,
+                        "crow": int(crow), "ccol": int(ccol),
+                        "soil_id": soil_id,
+                        "bgr": setup["bgr"],
+                        "yields": setup["yields"],
+                        "pheno": setup["pheno"],
+                        "env_id": sent_env_count,
+                        "nodata": True
+                    }
+                    if not DEBUG_DONOT_SEND:
+                        socket.send_json(env_template)
+                        print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
+                        sent_env_count += 1
+
                     continue
 
                 #get coordinate of clostest climate element of real soil-cell
