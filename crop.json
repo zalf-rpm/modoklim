@@ -35,6 +35,52 @@
 				}
 			]
 		}],
+		"WW_cc": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": {
+					"is-winter-crop": true,
+					"cropParams": {
+						"species": ["include-from-file", "crops/species/wheat.json"],
+						"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs.json"]
+					},
+					"residueParams": ["include-from-file", "crops/residues/wheat.json"]
+				} 
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW"] },
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
+		}],
 		"WG": [{
 			"worksteps": [
 				{ 
