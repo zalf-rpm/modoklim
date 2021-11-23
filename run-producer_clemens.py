@@ -39,9 +39,8 @@ PATHS = {
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data
-        # "path-to-climate-dir": "D:/projects/KlimErtrag/",
         "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
-        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
+        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data
         "path-debug-write-folder": "./debug-out/",
     },
     "remoteProducer-remoteMonica": {
@@ -77,7 +76,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     config = {
         "mode": "mbm-local-remote",
-        "server-port": server["port"] if server["port"] else "6667", ## local: 6667, remote 6666
+        "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1",
@@ -85,7 +84,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "sim.json": "sim.json",
         "crop.json": "crop.json",
         "site.json": "site.json",
-        "setups-file": "sim_setups_clemens.csv",
+        "setups-file": "sim_setups.csv",
         "run-setups": "[1]",
         "shared_id": shared_id
     }
@@ -464,11 +463,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         print("sending ", (sent_env_count-1), " envs took ", (stop_time - start_time), " seconds")
         #print("ran from ", start, "/", row_cols[start], " to ", end, "/", row_cols[end]
         print("exiting run_producer()")
-    except Exception:
-        raise
-
-    try:
-        print(env_template)
     except Exception:
         raise
 

@@ -219,6 +219,19 @@
 				"CM-count",
 				"Crop",
 				"DOY|sdoy"
+			],
+			"Stage-4", [
+				"CM-count",
+				"DOY|s4doy"
+			],
+			"Stage-5", [
+				"CM-count",
+				"DOY|s5doy"
+			],
+			"Harvest", [
+				"CM-count",
+				"Year",
+				"DOY|hdoy"
 			]
 		],
 
