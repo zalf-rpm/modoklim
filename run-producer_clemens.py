@@ -76,7 +76,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     config = {
         "mode": "mbm-local-remote",
-        "server-port": server["port"] if server["port"] else "6666",
+        "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1",
@@ -463,6 +463,11 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         print("sending ", (sent_env_count-1), " envs took ", (stop_time - start_time), " seconds")
         #print("ran from ", start, "/", row_cols[start], " to ", end, "/", row_cols[end]
         print("exiting run_producer()")
+    except Exception:
+        raise
+
+    try:
+        print(env_template)
     except Exception:
         raise
 
