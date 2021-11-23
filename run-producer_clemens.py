@@ -57,6 +57,7 @@ DATA_GRID_HEIGHT = "germany/dem_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_SLOPE = "germany/slope_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_LAND_USE = "germany/landuse_1000_31469_gk5.asc"
 DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
+DATA_GRID_CROPS = "germany/crops-wb2017-2019_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
 
@@ -164,6 +165,17 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     landuse_interpolate = Mrunlib.create_ascii_grid_interpolator(landuse_grid, landuse_meta)
     print("read: ", path_to_landuse_grid)
 
+    # crop mask data
+    path_to_crop_grid = paths["path-to-data-dir"] + DATA_GRID_CROPS
+    crop_epsg_code = int(path_to_crop_grid.split("/")[-1].split("_")[2])
+    crop_crs = CRS.from_epsg(crop_epsg_code)
+    if crop_crs not in soil_crs_to_x_transformers:
+        soil_crs_to_x_transformers[crop_crs] = Transformer.from_crs(soil_crs, crop_crs)
+    crop_meta, _ = Mrunlib.read_header(path_to_crop_grid)
+    crop_grid = np.loadtxt(path_to_crop_grid, dtype=int, skiprows=6)
+    crop_interpolate = Mrunlib.create_ascii_grid_interpolator(crop_grid, crop_meta)
+    print("read: ", path_to_crop_grid)
+
     
     sent_env_count = 1
     start_time = time.perf_counter()
@@ -265,6 +277,10 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             for scol in range(0, scols):
                 soil_id = int(soil_grid[srow, scol])
                 if soil_id == nodata_value:
+                    continue
+
+                crop_id = int(crop_grid[srow, scol])
+                if crop_id != 1:
                     continue
 
                 #get coordinate of clostest climate element of real soil-cell
