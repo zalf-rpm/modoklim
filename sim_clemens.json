@@ -220,6 +220,10 @@
 				"Crop",
 				"DOY|sdoy"
 			],
+			"Stage-3", [
+				"CM-count",
+				"DOY|s3doy"
+			],
 			"Stage-4", [
 				"CM-count",
 				"DOY|s4doy"
