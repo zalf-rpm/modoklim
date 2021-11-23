@@ -210,7 +210,10 @@
 				"CM-count",
 				"Crop",
 				"DOY|sdoy"
-			],		
+			]
+		],
+
+		"backup-pheno-events": [
 			"Stage-2", [
 				"CM-count",
 				"DOY|s2doy"
@@ -244,7 +247,7 @@
 				"Year",
 				"DOY|hdoy"
 			]
-		],
+		]
 
 		"bgr-events": [	
 			"daily", [
