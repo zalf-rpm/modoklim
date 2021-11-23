@@ -72,7 +72,7 @@ def create_output(msg):
     return cm_count_to_vals
 
 
-def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr, is_yields):
+def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr, is_yields, is_pheno):
     "write grids row by row"
     
     if not hasattr(write_row_to_grids, "nodata_row_count"):
@@ -112,6 +112,19 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             #"Pot_ET": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
         }
         output_keys = list(output_grids.keys())
+    elif is_pheno:
+        output_grids = {
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s7doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+        }
     else:
         output_grids = {
             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
@@ -382,6 +395,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             is_bgr = custom_id["bgr"]
             is_yields = custom_id["yields"]
             is_nodata = custom_id["nodata"]
+            is_pheno = custom_id["pheno"]
 
             data = setup_id_to_data[setup_id]
 
@@ -429,7 +443,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                             exit(1)
                 
                 write_row_to_grids(data["row-col-data"], data["next-row"], data["ncols"], data["header"], \
-                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr, is_yields)
+                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr, is_yields, is_pheno)
                 
                 debug_msg = "wrote row: "  + str(data["next-row"]) + " next-row: " + str(data["next-row"]+1) + " rows unwritten: " + str(list(data["row-col-data"].keys()))
                 print(debug_msg)

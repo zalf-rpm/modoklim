@@ -205,6 +205,47 @@
 			]
 		],
 
+		"pheno-events": [
+			"Sowing", [
+				"CM-count",
+				"Crop",
+				"DOY|sdoy"
+			],		
+			"Stage-2", [
+				"CM-count",
+				"DOY|s2doy"
+			],
+			"stem-elongation", [
+				"CM-count",
+				"DOY|sedoy"
+			],
+			"Stage-3", [
+				"CM-count",
+				"DOY|s3doy"
+			],
+			"Stage-4", [
+				"CM-count",
+				"DOY|s4doy"
+			],
+			"Stage-5", [
+				"CM-count",
+				"DOY|s5doy"
+			],
+			"Stage-6", [
+				"CM-count",
+				"DOY|s6doy"
+			],
+			"Stage-7", [
+				"CM-count",
+				"DOY|s7doy"
+			],
+			"Harvest", [
+				"CM-count",
+				"Year",
+				"DOY|hdoy"
+			]
+		],
+
 		"bgr-events": [	
 			"daily", [
 				"Date",
