@@ -279,6 +279,12 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 if soil_id == nodata_value:
                     continue
 
+                #get coordinate of clostest climate element of real soil-cell
+                sh = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
+                sr = xllcorner + (scellsize / 2) + scol * scellsize
+                #inter = crow/ccol encoded into integer
+                crow, ccol = climate_data_interpolator(sr, sh)
+
                 crop_id = int(crop_grid[srow, scol])
                 if crop_id != 1:
                     print("row/col:", srow, "/", scol, "is not a crop pixel.")
@@ -300,9 +306,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
                     continue
 
-                #get coordinate of clostest climate element of real soil-cell
-                sh = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
-                sr = xllcorner + (scellsize / 2) + scol * scellsize
+                
                 
                 tcoords = {}
 
@@ -345,8 +349,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                         sent_env_count += 1
                     continue
                 
-                #inter = crow/ccol encoded into integer
-                crow, ccol = climate_data_interpolator(sr, sh)
+                
 
                 # check if current grid cell is used for agriculture                
                 if setup["landcover"]:
