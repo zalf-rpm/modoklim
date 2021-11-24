@@ -114,7 +114,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = list(output_grids.keys())
     elif is_pheno:
         output_grids = {
-            # "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
