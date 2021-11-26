@@ -46,6 +46,11 @@
 			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
 		}
 	},
+	"fert-params": {
+		"AN": ["include-from-file", "mineral-fertilisers/AN.json"],
+		"urea": ["include-from-file", "mineral-fertilisers/U.json"],
+		"org_fert": ["include-from-file", "organic-fertilisers/CAM.json"]
+	}, 	
 	"cropRotationTemplates": {
 		"WW": [{
 			"worksteps": [
