@@ -128,7 +128,7 @@
 					"is-winter-crop": true,
 					"cropParams": {
 						"species": ["include-from-file", "crops/species/barley.json"],
-						"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs.json"]
+						"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_testing2.json"]
 					},
 					"residueParams": ["include-from-file", "crops/residues/barley.json"]
 				} 
