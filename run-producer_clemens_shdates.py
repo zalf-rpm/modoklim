@@ -208,7 +208,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         except IOError:
             path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id)
             print("Couldn't read file:", path_harvest)
-            return
+            continue
 
         cdict = {}
         # path to latlon-to-rowcol.json
