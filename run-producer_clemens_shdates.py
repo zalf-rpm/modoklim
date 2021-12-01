@@ -347,8 +347,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 ilr_interpolate = ilr_seed_harvest_data[crop_id]["interpolate"]
                 seed_harvest_cs = ilr_interpolate(sr, sh) if ilr_interpolate else None
 
-                print("scol:", scol, "crow/col:", (crow, ccol), "crop_id:", crop_id, "soil_id:", soil_id, "height_nn:", height_nn, "slope:", slope, "seed_harvest_cs:", seed_harvest_cs)
-
                 # set external seed/harvest dates
                 if seed_harvest_cs:
                     seed_harvest_data = ilr_seed_harvest_data[crop_id]["data"][seed_harvest_cs]
