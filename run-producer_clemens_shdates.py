@@ -123,23 +123,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None})
 
-    # add crop id from setup file
-    crops_in_setups = set()
-    for setup_id, setup in setups.items():
-        for crop_id in setup["crop-ids"].split("_"):
-            crops_in_setups.add(crop_id)
-
-    for crop_id in crops_in_setups:
-        try:
-            #read seed/harvest dates for each crop_id
-            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id)
-            print("created seed harvest gk5 interpolator and read data: ", path_harvest)
-            Mrunlib.create_seed_harvest_geoGrid_interpolator_and_read_data(path_harvest, wgs84_crs, utm32_crs, ilr_seed_harvest_data)
-        except IOError:
-            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id)
-            print("Couldn't read file:", path_harvest)
-            continue
-
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
 
@@ -215,6 +198,17 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         ensmem = setup["ensmem"]
         version = setup["version"]
         crop_id = setup["crop-id"]
+
+        # add crop id from setup file
+        try:
+            #read seed/harvest dates for each crop_id
+            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id)
+            print("created seed harvest gk5 interpolator and read data: ", path_harvest)
+            Mrunlib.create_seed_harvest_geoGrid_interpolator_and_read_data(path_harvest, wgs84_crs, utm32_crs, ilr_seed_harvest_data)
+        except IOError:
+            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id)
+            print("Couldn't read file:", path_harvest)
+            return
 
         cdict = {}
         # path to latlon-to-rowcol.json
