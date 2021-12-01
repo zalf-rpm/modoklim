@@ -357,6 +357,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                             sowing_date = seed_harvest_data["sowing-date"]
                         elif setup["sowing-date"] == "auto":
                             sowing_date = seed_harvest_data["latest-sowing-date"]
+                        elif setup["sowing-date"] == "fixed1":
+                            sowing_date = worksteps[0]["date"]
 
                         sds = [int(x) for x in sowing_date.split("-")]
                         sd = date(2001, sds[1], sds[2])
