@@ -411,6 +411,16 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                             worksteps[0]["latest-date"] = seed_harvest_data["latest-sowing-date"]
                             worksteps[1]["latest-date"] = "{:04d}-{:02d}-{:02d}".format(hds[0], calc_harvest_date.month, calc_harvest_date.day)
 
+                        if setup["sowing-date"] == "fixed1" and setup["harvest-date"] == "fixed":
+                            #calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            if is_winter_crop:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            else:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=hdoy)
+                            worksteps[0]["date"] = seed_harvest_data["sowing-date"]
+                            worksteps[-1]["date"] = "{:04d}-{:02d}-{:02d}".format(hds[0], calc_harvest_date.month, calc_harvest_date.day)
+                        
+
                     #print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["earliest-date"], "<", worksteps[0]["latest-date"] )
                     #print("dates: ", int(seed_harvest_cs), ":", worksteps[1]["latest-date"], "<", worksteps[0]["earliest-date"], "<", worksteps[0]["latest-date"] )
                     
