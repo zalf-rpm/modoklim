@@ -479,6 +479,240 @@
 				  "incorporation": true
 				}			
 			  ]
+		}],
+		"WW_sustag4": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": ["ref", "crops", "WW_sustag4"]
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW_sustag4"]},
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
+		}],
+		"WW_sustag5": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": ["ref", "crops", "WW_sustag5"]
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW_sustag5"]},
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
+		}],
+		"WW_sustag6": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": ["ref", "crops", "WW_sustag6"]
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW_sustag6"]},
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
+		}],
+		"WW_sustag7": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": ["ref", "crops", "WW_sustag7"]
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW_sustag7"]},
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
+		}],
+		"WW_sustag8": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": ["ref", "crops", "WW_sustag8"]
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW_sustag8"]},
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
+		}],
+		"WW_sustag9": [{
+			"worksteps": [
+				{ "date": "0000-10-01", "type": "Sowing", "crop": ["ref", "crops", "WW_sustag9"]
+			},
+				{
+				  "type": "NDemandFertilization",
+				  "days": 60,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.3, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 120,
+				  "after": "Sowing",
+				  "N-demand": [80.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+			  {
+				  "type": "NDemandFertilization",
+				  "days": 150,
+				  "after": "Sowing",
+				  "N-demand": [40.0, "kg"],
+				  "depth": [0.9, "m"],
+				  "partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+			  },
+				{ "date": "0001-09-05", "type": "Harvest", "crop": ["ref", "crops", "WW_sustag9"]},
+				{
+				  "type": "OrganicFertilization",
+				  "days": 1,
+				  "after": "Harvest",
+				  "amount": [15000, "kg N"],
+				  "parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
+				  "incorporation": true
+				}			
+			  ]
 		}]
 	},
 
