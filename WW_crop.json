@@ -152,6 +152,222 @@
 				}
 			},
 			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
+		},
+		"WW_sustag4": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": {
+					"=": ["include-from-file", "crops/species/wheat_sustag.json"],
+					"TransitionStageLeafExp": 2,
+					"FieldConditionModifier":0.86
+				},
+				"cultivar": {
+					"=": ["include-from-file", "crops/cultivars/winter-wheat_sustag_4.json"],
+					"OrganIdsForSecondaryYield": [
+						{
+							"organId": 2,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 3,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 4,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 0.15
+						}
+					],
+					"EarlyRefLeafExp": 8,
+					"RefLeafExp": 16
+				}
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
+		},
+		"WW_sustag5": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": {
+					"=": ["include-from-file", "crops/species/wheat_sustag.json"],
+					"TransitionStageLeafExp": 2,
+					"FieldConditionModifier":0.86
+				},
+				"cultivar": {
+					"=": ["include-from-file", "crops/cultivars/winter-wheat_sustag_5.json"],
+					"OrganIdsForSecondaryYield": [
+						{
+							"organId": 2,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 3,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 4,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 0.15
+						}
+					],
+					"EarlyRefLeafExp": 8,
+					"RefLeafExp": 16
+				}
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
+		},
+		"WW_sustag6": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": {
+					"=": ["include-from-file", "crops/species/wheat_sustag.json"],
+					"TransitionStageLeafExp": 2,
+					"FieldConditionModifier":0.86
+				},
+				"cultivar": {
+					"=": ["include-from-file", "crops/cultivars/winter-wheat_sustag_6.json"],
+					"OrganIdsForSecondaryYield": [
+						{
+							"organId": 2,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 3,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 4,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 0.15
+						}
+					],
+					"EarlyRefLeafExp": 8,
+					"RefLeafExp": 16
+				}
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
+		},
+		"WW_sustag7": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": {
+					"=": ["include-from-file", "crops/species/wheat_sustag.json"],
+					"TransitionStageLeafExp": 2,
+					"FieldConditionModifier":0.86
+				},
+				"cultivar": {
+					"=": ["include-from-file", "crops/cultivars/winter-wheat_sustag_7.json"],
+					"OrganIdsForSecondaryYield": [
+						{
+							"organId": 2,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 3,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 4,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 0.15
+						}
+					],
+					"EarlyRefLeafExp": 8,
+					"RefLeafExp": 16
+				}
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
+		},
+		"WW_sustag8": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": {
+					"=": ["include-from-file", "crops/species/wheat_sustag.json"],
+					"TransitionStageLeafExp": 2,
+					"FieldConditionModifier":0.86
+				},
+				"cultivar": {
+					"=": ["include-from-file", "crops/cultivars/winter-wheat_sustag_8.json"],
+					"OrganIdsForSecondaryYield": [
+						{
+							"organId": 2,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 3,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 4,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 0.15
+						}
+					],
+					"EarlyRefLeafExp": 8,
+					"RefLeafExp": 16
+				}
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
+		},
+		"WW_sustag9": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": {
+					"=": ["include-from-file", "crops/species/wheat_sustag.json"],
+					"TransitionStageLeafExp": 2,
+					"FieldConditionModifier":0.86
+				},
+				"cultivar": {
+					"=": ["include-from-file", "crops/cultivars/winter-wheat_sustag_9.json"],
+					"OrganIdsForSecondaryYield": [
+						{
+							"organId": 2,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 3,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 1
+						},
+						{
+							"organId": 4,
+							"type": "YieldComponent",
+							"yieldDryMatter": 0.86,
+							"yieldPercentage": 0.15
+						}
+					],
+					"EarlyRefLeafExp": 8,
+					"RefLeafExp": 16
+				}
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat_sustag.json"]
 		}
 	},
 	"fert-params": {
