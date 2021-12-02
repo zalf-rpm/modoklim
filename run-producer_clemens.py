@@ -285,8 +285,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 #inter = crow/ccol encoded into integer
                 crow, ccol = climate_data_interpolator(sr, sh)
 
-                crop_id = int(crop_grid[srow, scol])
-                if crop_id != 1:
+                crop_grid_id = int(crop_grid[srow, scol])
+                if crop_grid_id != 1:
                     print("row/col:", srow, "/", scol, "is not a crop pixel.")
                     env_template["customId"] = {
                         "setup_id": setup_id,
