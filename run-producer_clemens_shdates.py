@@ -35,6 +35,14 @@ import soil_io3
 import monica_run_lib as Mrunlib
 
 PATHS = {
+     # adjust the local path to your environment
+    "cj-local-remote": {
+        #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
+        "path-to-climate-dir": "D:/projects/KlimErtrag/", # local path
+        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
+        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data
+        "path-debug-write-folder": "./debug-out/",
+    },
     # adjust the local path to your environment
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
@@ -78,17 +86,17 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-remote",
+        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote" 
         "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
-        "end-row": "-1",
+        "end-row": "-1", ## "-1"
         "path_to_dem_grid": "",
-        "sim.json": "sim.json",
+        "sim.json": "sim_clemens.json",
         "crop.json": "crop.json",
         "site.json": "site.json",
-        "setups-file": "sim_setups.csv",
-        "run-setups": "[1]",
+        "setups-file": "sim_setups_clemens.csv",
+        "run-setups": "[278]",
         "shared_id": shared_id
     }
     
@@ -300,6 +308,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 crow, ccol = climate_data_interpolator(sr, sh)
 
                 crop_grid_id = int(crop_grid[srow, scol])
+                print(crop_grid_id)
                 if crop_grid_id != 1:
                     print("row/col:", srow, "/", scol, "is not a crop pixel.")
                     env_template["customId"] = {

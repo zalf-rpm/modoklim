@@ -34,6 +34,11 @@ import soil_io3
 import monica_run_lib as Mrunlib
 
 PATHS = {
+    "cj-local-remote": {
+        "path-to-data-dir": "data/",
+        "path-to-output-dir": "D:/projects/KlimErtrag/out_remote_local/",
+        "path-to-csv-output-dir": "D:/projects/KlimErtrag/out_remote_local/"
+    },
     "mbm-local-remote": {
         "path-to-data-dir": "data/",
         "path-to-output-dir": "out/",
@@ -279,7 +284,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     "collect data from workers"
 
     config = {
-        "mode": "mbm-local-remote",
+        "mode": "mbm-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
         "port": server["port"] if server["port"] else "7777", ## local 7778,  remote 7777
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de", 
         "start-row": "0",
@@ -423,6 +428,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                 
                 path_to_out_dir = config["out"] + str(setup_id) + "/"
                 path_to_csv_out_dir = config["csv-out"] + str(setup_id) + "/"
+                print(path_to_out_dir)
                 if not data["out_dir_exists"]:
                     if os.path.isdir(path_to_out_dir) and os.path.exists(path_to_out_dir):
                         data["out_dir_exists"] = True
@@ -476,6 +482,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             process_message.wnof_count += 1
 
             path_to_out_dir = config["out"] + str(setup_id) + "/" + str(row) + "/"
+            print(path_to_out_dir)
             if not os.path.exists(path_to_out_dir):
                 try:
                     os.makedirs(path_to_out_dir)
@@ -485,8 +492,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
             #with open("out/out-" + str(i) + ".csv", 'wb') as _:
             with open(path_to_out_dir + "col-" + str(col) + ".csv", "w", newline='') as _:
-                writer = csv.writer(_, delimiter=",")
 
+                writer = csv.writer(_, delimiter=",")
                 for data_ in msg.get("data", []):
                     results = data_.get("results", [])
                     orig_spec = data_.get("origSpec", "")
@@ -514,7 +521,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     while not leave:
         try:
             #start_time_recv = timeit.default_timer()
-            msg = socket.recv_json(encoding="latin-1")
+            msg = socket.recv_json() #encoding="latin-1"
             #elapsed = timeit.default_timer() - start_time_recv
             #print("time to receive message" + str(elapsed))
             #start_time_proc = timeit.default_timer()

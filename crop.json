@@ -144,6 +144,28 @@
 			}
 			]
 		}],
+		"WB": [{
+			"worksteps": [
+				{"date": "0000-09-22", "type": "Sowing", "crop": {
+					"is-winter-crop": true,
+					"cropParams": {
+						"species": ["include-from-file", "crops/species/barley.json"],
+						"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_testing2.json"]
+					},
+					"residueParams": ["include-from-file", "crops/residues/barley.json"]
+				}
+			},
+			{
+				"type": "AutomaticHarvest",
+				"latest-date": "0001-09-05",
+				"min-%-asw": 0,
+				"max-%-asw": 99.0,
+				"max-3d-precip-sum": 2,
+				"max-curr-day-precip": 0.1,
+				"harvest-time": "maturity"
+			}
+			]
+		}],
 		"WR": [{
 			"worksteps": [
 				{ 
