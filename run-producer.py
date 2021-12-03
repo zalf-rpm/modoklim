@@ -38,7 +38,8 @@ PATHS = {
     # adjust the local path to your environment
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
-        "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data 
+        #"path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data 
+        "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=localhost,port=2222,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data 
         "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "./debug-out/",
@@ -126,7 +127,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     soil_epsg_code = int(path_to_soil_grid.split("/")[-1].split("_")[2])
     soil_crs = CRS.from_epsg(soil_epsg_code)
     if wgs84_crs not in soil_crs_to_x_transformers:
-        soil_crs_to_x_transformers[wgs84_crs] = Transformer.from_crs(soil_crs, wgs84_crs)
+        soil_crs_to_x_transformers[wgs84_crs] = Transformer.from_crs(soil_crs, wgs84_crs, always_xy=True)
     soil_metadata, _ = Mrunlib.read_header(path_to_soil_grid)
     soil_grid = np.loadtxt(path_to_soil_grid, dtype=int, skiprows=6)
     print("read: ", path_to_soil_grid)
@@ -136,7 +137,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     dem_epsg_code = int(path_to_dem_grid.split("/")[-1].split("_")[2])
     dem_crs = CRS.from_epsg(dem_epsg_code)
     if dem_crs not in soil_crs_to_x_transformers:
-        soil_crs_to_x_transformers[dem_crs] = Transformer.from_crs(soil_crs, dem_crs)
+        soil_crs_to_x_transformers[dem_crs] = Transformer.from_crs(soil_crs, dem_crs, always_xy=True)
     dem_metadata, _ = Mrunlib.read_header(path_to_dem_grid)
     dem_grid = np.loadtxt(path_to_dem_grid, dtype=float, skiprows=6)
     dem_interpolate = Mrunlib.create_ascii_grid_interpolator(dem_grid, dem_metadata)
@@ -147,7 +148,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     slope_epsg_code = int(path_to_slope_grid.split("/")[-1].split("_")[2])
     slope_crs = CRS.from_epsg(slope_epsg_code)
     if slope_crs not in soil_crs_to_x_transformers:
-        soil_crs_to_x_transformers[slope_crs] = Transformer.from_crs(soil_crs, slope_crs)
+        soil_crs_to_x_transformers[slope_crs] = Transformer.from_crs(soil_crs, slope_crs, always_xy=True)
     slope_metadata, _ = Mrunlib.read_header(path_to_slope_grid)
     slope_grid = np.loadtxt(path_to_slope_grid, dtype=float, skiprows=6)
     slope_interpolate = Mrunlib.create_ascii_grid_interpolator(slope_grid, slope_metadata)
@@ -158,7 +159,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     landuse_epsg_code = int(path_to_landuse_grid.split("/")[-1].split("_")[2])
     landuse_crs = CRS.from_epsg(landuse_epsg_code)
     if landuse_crs not in soil_crs_to_x_transformers:
-        soil_crs_to_x_transformers[landuse_crs] = Transformer.from_crs(soil_crs, landuse_crs)
+        soil_crs_to_x_transformers[landuse_crs] = Transformer.from_crs(soil_crs, landuse_crs, always_xy=True)
     landuse_meta, _ = Mrunlib.read_header(path_to_landuse_grid)
     landuse_grid = np.loadtxt(path_to_landuse_grid, dtype=int, skiprows=6)
     landuse_interpolate = Mrunlib.create_ascii_grid_interpolator(landuse_grid, landuse_meta)
@@ -260,6 +261,10 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             elif int(config["end-row"]) > 0 and srow > int(config["end-row"]):
                 break
 
+            #sh = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize
+            #if sh > 6000332.111220938: 
+            #    continue
+
             for scol in range(0, scols):
                 soil_id = int(soil_grid[srow, scol])
                 if soil_id == nodata_value:
@@ -270,6 +275,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 sr = xllcorner + (scellsize / 2) + scol * scellsize
                 
                 tcoords = {}
+
+                #if sr < 725306.8891846563: 
+                #    continue
 
                 """
                 lon, lat = soil_crs_to_x_transformers[wgs84_crs].transform(sr, sh)

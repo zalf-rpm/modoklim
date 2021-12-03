@@ -1,0 +1,174 @@
+{
+  "SiteParameters": {
+    "Latitude": 53.4,
+    "Slope": 0.024,
+    "HeightNN": [17.3 , "m"],
+    "NDeposition": [30, "kg N ha-1 y-1"],
+		
+    "SoilProfileParameters": [
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				0.3,
+				"m"
+			],
+			"KA5TextureClass": "fSms",
+			"Sand": [
+				0.86,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.02,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.872093,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1500.0,
+				"kg m-3"
+			],
+			"description": "Ap",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		},
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				0.2,
+				"m"
+			],
+			"KA5TextureClass": "fSms",
+			"Sand": [
+				0.86,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.02,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.290698,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1700.0,
+				"kg m-3"
+			],
+			"description": "Bhs",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		},
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				0.25,
+				"m"
+			],
+			"KA5TextureClass": "fSms",
+			"Sand": [
+				0.86,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.02,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.0,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1700.0,
+				"kg m-3"
+			],
+			"description": "Bv",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		},
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				0.15000000000000002,
+				"m"
+			],
+			"KA5TextureClass": "fSms",
+			"Sand": [
+				0.86,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.02,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.0,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1700.0,
+				"kg m-3"
+			],
+			"description": "Sw",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		},
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				1.1,
+				"m"
+			],
+			"KA5TextureClass": "Sl4",
+			"Sand": [
+				0.6,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.14,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.0,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1900.0,
+				"kg m-3"
+			],
+			"description": "Sd",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		}
+	],
+	
+	
+	"xx": [
+			{
+				"Thickness": [0.3, "m"],
+				"SoilOrganicCarbon": [0.8, "%"],
+				"KA5TextureClass": "Sl2",
+				"SoilRawDensity": [1446, "kg m-3"]
+			}, 
+			{
+				"Thickness": 0.1,
+				"SoilOrganicCarbon": [0.15, "%"],
+				"KA5TextureClass": "Sl2",
+				"SoilRawDensity": [1446, "kg m-3"]
+			},
+			{
+				"Thickness": 1.6,
+				"SoilOrganicCarbon": [0.05, "%"],
+				"KA5TextureClass": "Sl2",
+				"SoilRawDensity": [1446, "kg m-3"]
+			}
+		]
+  },
+	
+  "SoilTemperatureParameters": ["include-from-file", "general/soil-temperature.json"],
+	"EnvironmentParameters": ["include-from-file", "general/environment.json"],
+  "SoilOrganicParameters": ["include-from-file", "general/soil-organic.json"],
+  "SoilTransportParameters": ["include-from-file", "general/soil-transport.json"],
+  "SoilMoistureParameters": ["include-from-file", "general/soil-moisture.json"]
+}
