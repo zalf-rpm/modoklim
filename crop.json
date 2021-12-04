@@ -513,6 +513,6 @@
 	
 	"CropParameters": {
 		"=": ["include-from-file", "general/crop.json"],
-		"__enable_vernalisation_factor_fix__": false
+		"__enable_vernalisation_factor_fix__": true
 	}
 }

@@ -1,0 +1,119 @@
+{
+  "SiteParameters": {
+    "Latitude": 54.1,
+    "Slope": 0.021,
+    "HeightNN": [39.0 , "m"],
+    "NDeposition": [30, "kg N ha-1 y-1"],
+		
+    "SoilProfileParameters": [
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				0.4,
+				"m"
+			],
+			"KA5TextureClass": "fSms",
+			"Sand": [
+				0.86,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.02,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				3.488372,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1500.0,
+				"kg m-3"
+			],
+			"description": "Ah",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		},
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				0.09999999999999998,
+				"m"
+			],
+			"KA5TextureClass": "fSms",
+			"Sand": [
+				0.86,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.02,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.290698,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1700.0,
+				"kg m-3"
+			],
+			"description": "Go",
+			"is_in_groundwater": false,
+			"is_impenetrable": false
+		},
+		{
+			"type": "SoilParameters",
+			"Thickness": [
+				1.5,
+				"m"
+			],
+			"KA5TextureClass": "Sl2",
+			"Sand": [
+				0.76,
+				"% [0-1]"
+			],
+			"Clay": [
+				0.06,
+				"% [0-1]"
+			],
+			"SoilOrganicCarbon": [
+				0.0,
+				"mass% [0-100]"
+			],
+			"SoilBulkDensity": [
+				1700.0,
+				"kg m-3"
+			],
+			"description": "Gr",
+			"is_in_groundwater": true,
+			"is_impenetrable": false
+		}
+	],
+		
+	"xx": [
+			{
+				"Thickness": [0.3, "m"],
+				"SoilOrganicCarbon": [0.8, "%"],
+				"KA5TextureClass": "Sl2",
+				"SoilRawDensity": [1446, "kg m-3"]
+			}, 
+			{
+				"Thickness": 0.1,
+				"SoilOrganicCarbon": [0.15, "%"],
+				"KA5TextureClass": "Sl2",
+				"SoilRawDensity": [1446, "kg m-3"]
+			},
+			{
+				"Thickness": 1.6,
+				"SoilOrganicCarbon": [0.05, "%"],
+				"KA5TextureClass": "Sl2",
+				"SoilRawDensity": [1446, "kg m-3"]
+			}
+		]
+  },
+	
+  "SoilTemperatureParameters": ["include-from-file", "general/soil-temperature.json"],
+	"EnvironmentParameters": ["include-from-file", "general/environment.json"],
+  "SoilOrganicParameters": ["include-from-file", "general/soil-organic.json"],
+  "SoilTransportParameters": ["include-from-file", "general/soil-transport.json"],
+  "SoilMoistureParameters": ["include-from-file", "general/soil-moisture.json"]
+}
