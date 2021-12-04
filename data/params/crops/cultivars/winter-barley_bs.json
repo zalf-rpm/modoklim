@@ -1,7 +1,7 @@
 {
   "metadata": {
     "description": "Reparameterization for Klimertrag project and vernalisation factor fix",
-    "date": "09-20201"
+    "date": "09-2021"
   },
   "WinterCrop": true,
   "AssimilatePartitioningCoeff": [

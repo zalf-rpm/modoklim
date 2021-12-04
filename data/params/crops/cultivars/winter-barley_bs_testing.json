@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "description": "Klimertrag parameters with soem changed parameters that Ehsan proposed.",
+    "date": "11-2021"},
   "WinterCrop": true,
   "AssimilatePartitioningCoeff":[
     [
