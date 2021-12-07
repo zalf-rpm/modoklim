@@ -121,8 +121,7 @@
 				["TraDef|tradefavg", "AVG"],
 				["HeatRed|heatredavg", "AVG"],
 				["FrostRed|frostredavg", "AVG"],
-				["OxRed|oxredavg", "AVG"],
-				["Precip|precipsum", "SUM"]
+				["OxRed|oxredavg", "AVG"]
 			]
 		],
 

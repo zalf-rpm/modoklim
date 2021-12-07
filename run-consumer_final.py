@@ -99,7 +99,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             "oxredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            "precipsum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "precipsum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "nstressavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "heatredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "frostredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
