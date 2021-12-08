@@ -119,16 +119,16 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = list(output_grids.keys())
     elif is_pheno:
         output_grids = {
-            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+            # "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "s7doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
         }
         output_keys = list(output_grids.keys())
     else:
@@ -284,8 +284,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     "collect data from workers"
 
     config = {
-        "mode": "mbm-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
-        "port": server["port"] if server["port"] else "7777", ## local 7778,  remote 7777
+        "mode": "cj-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
+        "port": server["port"] if server["port"] else "7778", ## local 7778,  remote 7777
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de", 
         "start-row": "0",
         "end-row": "-1",

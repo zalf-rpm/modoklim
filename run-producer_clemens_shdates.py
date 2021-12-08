@@ -86,8 +86,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
-        "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
+        "mode": "cj-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
+        "server-port": server["port"] if server["port"] else "6667", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1", ## "-1"
@@ -587,6 +587,13 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "env_id": sent_env_count,
                     "nodata": False
                 }
+
+                print("Harvest type:", setup["harvest-date"])
+                print("Srow: ", env_template["customId"]["srow"], "Scol:", env_template["customId"]["scol"])
+                if setup["harvest-date"] == "fixed":
+                    print("Harvest-date:", env_template["cropRotation"][0]["worksteps"][1]["date"])
+                elif setup["harvest-date"] == "auto":
+                    print("Harvest-date:", env_template["cropRotation"][0]["worksteps"][1]["latest-date"])
 
                 if not DEBUG_DONOT_SEND :
                     socket.send_json(env_template)

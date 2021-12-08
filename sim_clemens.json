@@ -221,11 +221,7 @@
 				["Crop", "FIRST"],
 				["Yield", "LAST"]
 			],
-			"Sowing", [
-				"CM-count",
-				"Crop",
-				"DOY|sdoy"
-			],
+			
 			"Stage-3", [
 				"CM-count",
 				"DOY|s3doy"
@@ -238,10 +234,6 @@
 				"CM-count",
 				"DOY|s5doy"
 			],
-			"Stage-6", [
-				"CM-count",
-				"DOY|s6doy"
-			],
 			"Harvest", [
 				"CM-count",
 				"Year",
@@ -250,6 +242,15 @@
 		],
 
 		"_backup-pheno-events": [
+			"Sowing", [
+				"CM-count",
+				"Crop",
+				"DOY|sdoy"
+			],
+			"Stage-6", [
+				"CM-count",
+				"DOY|s6doy"
+			],
 			"Stage-2", [
 				"CM-count",
 				"DOY|s2doy"
