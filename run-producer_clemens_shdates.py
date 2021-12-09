@@ -86,8 +86,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "cj-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
-        "server-port": server["port"] if server["port"] else "6667", ## local: 6667, remote 6666
+        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
+        "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1", ## "-1"
