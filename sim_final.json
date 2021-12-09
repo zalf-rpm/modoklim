@@ -118,7 +118,7 @@
 				["Year", "LAST"],
 				["Crop", "FIRST"],
 				["Yield", "LAST"],
-				["TraDef|tradefavg", "AVG"]
+				["TraDef|tradefavg", "AVG"],
 				["FrostRed|frostredavg", "AVG"]
 			]
 		],
