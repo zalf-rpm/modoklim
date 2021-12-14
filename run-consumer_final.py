@@ -425,8 +425,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             process_message.received_env_count = process_message.received_env_count + 1
 
             #while data["next-row"] in data["row-col-data"] and data["datacell-count"][data["next-row"]] == 0:
-            while data["datacell-count"][data["next-row"]] == 0:
-            # while data["next-row"] in data["datacell-count"] and data["datacell-count"][data["next-row"]] == 0:
+            # while data["datacell-count"][data["next-row"]] == 0:
+            while data["next-row"] in data["datacell-count"] and data["datacell-count"][data["next-row"]] == 0:
                 
                 path_to_out_dir = config["out"] + str(setup_id) + "/"
                 path_to_csv_out_dir = config["csv-out"] + str(setup_id) + "/"
