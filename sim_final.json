@@ -221,15 +221,15 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
-				["Yield", "LAST"],
-				"Stage-5", [
-					"CM-count",
-					"DOY|s5doy"
-				],
-				"Stage-6", [
-					"CM-count",
-					"DOY|s6doy"
-				]
+				["Yield", "LAST"]
+			],
+			"Stage-5", [
+				"CM-count",
+				"DOY|s5doy"
+			],
+			"Stage-6", [
+				"CM-count",
+				"DOY|s6doy"
 			]
 		],
 		"_backup-pheno-events": [
