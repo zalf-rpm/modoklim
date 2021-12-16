@@ -417,14 +417,15 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             #+ " rows unwritten: " + str(data["row-col-data"].keys()) 
             print(debug_msg)
             #debug_file.write(debug_msg + "\n")
-            if not is_nodata:
+            if is_nodata:
+                data["row-col-data"][row][col] = -9999
+            else:
                 data["row-col-data"][row][col].append(create_output(msg))
             data["datacell-count"][row] -= 1
 
             process_message.received_env_count = process_message.received_env_count + 1
 
-            #while data["next-row"] in data["row-col-data"] and data["datacell-count"][data["next-row"]] == 0:
-            while data["datacell-count"][data["next-row"]] == 0:
+            while data["next-row"] in data["row-col-data"] and data["datacell-count"][data["next-row"]] == 0:
                 
                 path_to_out_dir = config["out"] + str(setup_id) + "/"
                 path_to_csv_out_dir = config["csv-out"] + str(setup_id) + "/"
