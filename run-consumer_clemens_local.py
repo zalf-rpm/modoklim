@@ -34,10 +34,15 @@ import soil_io3
 import monica_run_lib as Mrunlib
 
 PATHS = {
-    "mbm-local-remote": {
+    "cj-local-remote": {
         "path-to-data-dir": "data/",
         "path-to-output-dir": "D:/projects/KlimErtrag/out_remote_local/",
         "path-to-csv-output-dir": "D:/projects/KlimErtrag/out_remote_local/"
+    },
+    "mbm-local-remote": {
+        "path-to-data-dir": "data/",
+        "path-to-output-dir": "out/",
+        "path-to-csv-output-dir": "csv-out/"
     },
     "remoteConsumer-remoteMonica": {
         "path-to-data-dir": "./data/",
@@ -72,7 +77,7 @@ def create_output(msg):
     return cm_count_to_vals
 
 
-def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr, is_yields):
+def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id, is_bgr, is_yields, is_pheno):
     "write grids row by row"
     
     if not hasattr(write_row_to_grids, "nodata_row_count"):
@@ -90,7 +95,16 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     elif is_yields:
         output_grids = {
             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"TraDef": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "nstressavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "oxredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "heatredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "frostredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "nstresslast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "oxredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "tradeflast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2}
             #"HeatRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             #"FrostRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             #"Yield-31-7": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
@@ -101,6 +115,20 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             #"tmax-max": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             #"precip-sum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             #"Pot_ET": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+        }
+        output_keys = list(output_grids.keys())
+    elif is_pheno:
+        output_grids = {
+            # "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+            # "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"}
+            # "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s7doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"}
         }
         output_keys = list(output_grids.keys())
     else:
@@ -159,14 +187,14 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     is_no_data_row = True
     # skip this part if we write just a nodata line
     if row in row_col_data:
-        no_data_cols = 0
+        no_data_cols = ncols
         for col in range(0, ncols):
             if col in row_col_data[row]:
                 rcd_val = row_col_data[row][col]
                 if rcd_val == -9999:
-                    no_data_cols += 1
                     continue
                 else:
+                    no_data_cols -= 1
                     cmc_and_year_to_vals = defaultdict(lambda: defaultdict(list))
                     for cell_data in rcd_val:
                         # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
@@ -251,13 +279,12 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     if row in row_col_data:
         del row_col_data[row]
 
-
 def run_consumer(leave_after_finished_run = True, server = {"server": None, "port": None}, shared_id = None):
     "collect data from workers"
 
     config = {
-        "mode": "mbm-local-remote",
-        "port": server["port"] if server["port"] else "7778",
+        "mode": "cj-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
+        "port": server["port"] if server["port"] else "7778", ## local 7778,  remote 7777
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de", 
         "start-row": "0",
         "end-row": "-1",
@@ -290,7 +317,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     socket.connect("tcp://" + config["server"] + ":" + config["port"])
     socket.RCVTIMEO = config["timeout"]
     leave = False
-    write_normal_output_files = True
+    write_normal_output_files = False
 
     path_to_soil_grid = TEMPLATE_SOIL_PATH.format(local_path_to_data_dir=paths["path-to-data-dir"])
     soil_epsg_code = int(path_to_soil_grid.split("/")[-1].split("_")[2])
@@ -373,6 +400,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             is_bgr = custom_id["bgr"]
             is_yields = custom_id["yields"]
             is_nodata = custom_id["nodata"]
+            is_pheno = custom_id["pheno"]
 
             data = setup_id_to_data[setup_id]
 
@@ -400,6 +428,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                 
                 path_to_out_dir = config["out"] + str(setup_id) + "/"
                 path_to_csv_out_dir = config["csv-out"] + str(setup_id) + "/"
+                print(path_to_out_dir)
                 if not data["out_dir_exists"]:
                     if os.path.isdir(path_to_out_dir) and os.path.exists(path_to_out_dir):
                         data["out_dir_exists"] = True
@@ -421,7 +450,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
                             exit(1)
                 
                 write_row_to_grids(data["row-col-data"], data["next-row"], data["ncols"], data["header"], \
-                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr, is_yields)
+                    path_to_out_dir, path_to_csv_out_dir, setup_id, is_bgr, is_yields, is_pheno)
                 
                 debug_msg = "wrote row: "  + str(data["next-row"]) + " next-row: " + str(data["next-row"]+1) + " rows unwritten: " + str(list(data["row-col-data"].keys()))
                 print(debug_msg)
@@ -446,14 +475,14 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             setup_id = custom_id["setup_id"]
             row = custom_id["srow"]
             col = custom_id["scol"]
-            district_id = custom_id["district_id"]
             #crow = custom_id.get("crow", -1)
             #ccol = custom_id.get("ccol", -1)
             #soil_id = custom_id.get("soil_id", -1)
             
             process_message.wnof_count += 1
 
-            path_to_out_dir = config["out"] + str(district_id) + "_" + str(setup_id) + "/" + str(row) + "/"
+            path_to_out_dir = config["out"] + str(setup_id) + "/" + str(row) + "/"
+            print(path_to_out_dir)
             if not os.path.exists(path_to_out_dir):
                 try:
                     os.makedirs(path_to_out_dir)
@@ -463,8 +492,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
             #with open("out/out-" + str(i) + ".csv", 'wb') as _:
             with open(path_to_out_dir + "col-" + str(col) + ".csv", "w", newline='') as _:
-                writer = csv.writer(_, delimiter=",")
 
+                writer = csv.writer(_, delimiter=",")
                 for data_ in msg.get("data", []):
                     results = data_.get("results", [])
                     orig_spec = data_.get("origSpec", "")
@@ -492,7 +521,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     while not leave:
         try:
             #start_time_recv = timeit.default_timer()
-            msg = socket.recv_json()#encoding="latin-1")
+            msg = socket.recv_json() #encoding="latin-1"
             #elapsed = timeit.default_timer() - start_time_recv
             #print("time to receive message" + str(elapsed))
             #start_time_proc = timeit.default_timer()
@@ -502,8 +531,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
         except zmq.error.Again as _e:
             print('no response from the server (with "timeout"=%d ms) ' % socket.RCVTIMEO)
             return
-        #except Exception as e:
-        #    print("Exception:", e)
+        except Exception as e:
+            print("Exception:", e)
             #continue
 
     print("exiting run_consumer()")

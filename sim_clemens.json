@@ -214,7 +214,13 @@
 			]
 		],
 
-		"pheno-events": [
+		"pheno-events": 
+		["crop", [
+			["CM-count", "FIRST"],
+			["Year", "LAST"],
+			["Crop", "FIRST"],
+			["Yield", "LAST"]
+		],
 			"Stage-4", [
 				"CM-count",
 				"DOY|s4doy"

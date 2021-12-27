@@ -187,14 +187,14 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     is_no_data_row = True
     # skip this part if we write just a nodata line
     if row in row_col_data:
-        no_data_cols = 0
+        no_data_cols = ncols
         for col in range(0, ncols):
             if col in row_col_data[row]:
                 rcd_val = row_col_data[row][col]
                 if rcd_val == -9999:
-                    no_data_cols += 1
                     continue
                 else:
+                    no_data_cols -= 1
                     cmc_and_year_to_vals = defaultdict(lambda: defaultdict(list))
                     for cell_data in rcd_val:
                         # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
