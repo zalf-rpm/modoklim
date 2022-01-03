@@ -1,4 +1,5 @@
 {
+	"__note__": "01/2020 : Final version for simulations of future plant growth. There is a different version for historic plant growth because of different headers.",
 	"crop.json": "crop.json",
 	"site.json": "site.json",
 	"climate.csv": "",
@@ -215,7 +216,6 @@
 				["Mois|hsm69", [7, 9, "AVG"]]
 			]
 		],
-
 		"pheno-events": [
 			"crop", [
 				["CM-count", "FIRST"],
@@ -223,13 +223,50 @@
 				["Crop", "FIRST"],
 				["Yield", "LAST"]
 			],
+			"Sowing", [
+				"CM-count",
+				"Crop",
+				"Year",
+				"DOY|sdoy"
+			],
+			"Stage-1", [
+				"CM-count",
+				"Year",
+				"DOY|s1doy"
+			],
+			"Stage-2", [
+				"CM-count",
+				"Year",
+				"DOY|s2doy"
+			],
+			"stem-elongation", [
+				"CM-count",
+				"DOY|sedoy"
+			],
+			"Stage-3", [
+				"CM-count",
+				"Year",
+				"DOY|s3doy"
+			],
+			"Stage-4", [
+				"CM-count",
+				"Year",
+				"DOY|s4doy"
+			],
 			"Stage-5", [
 				"CM-count",
+				"Year",
 				"DOY|s5doy"
 			],
 			"Stage-6", [
 				"CM-count",
+				"Year",
 				"DOY|s6doy"
+			],
+			"Harvest", [
+				"CM-count",
+				"Year",
+				"DOY|hdoy"
 			]
 		],
 		"_backup-pheno-events": [
@@ -237,6 +274,10 @@
 				"CM-count",
 				"Crop",
 				"DOY|sdoy"
+			],
+			"Stage-1", [
+				"CM-count",
+				"DOY|s2doy"
 			],
 			"Stage-2", [
 				"CM-count",

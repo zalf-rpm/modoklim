@@ -1,5 +1,5 @@
   {
-	"__note__": "Testing of different winter barley parameters",
+	"__note__": "01/2020 : Final version for setups with fixed sowing dates, automatic harvest dates and phenology calibrated to DWD data.",
 	"crops": {
 		"WB": {
 			"is-winter-crop": true,
@@ -9,19 +9,19 @@
 			},
 			"residueParams": ["include-from-file", "crops/residues/barley.json"]
 		},
-		"WB_test": {
+		"WW": {
 			"is-winter-crop": true,
 			"cropParams": {
-				"species": ["include-from-file", "crops/species/barley.json"],
-				"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_testing.json"]
+				"species": ["include-from-file", "crops/species/wheat_bs_dwd_pheno.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs_dwd_pheno.json"]
 			},
-			"residueParams": ["include-from-file", "crops/residues/barley.json"]
+			"residueParams": ["include-from-file", "crops/residues/wheat.json"]
 		},
-		"WB_test2": {
+		"WB_dwd": {
 			"is-winter-crop": true,
 			"cropParams": {
-				"species": ["include-from-file", "crops/species/barley.json"],
-				"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_testing2.json"]
+				"species": ["include-from-file", "crops/species/barley_bs_dwd_pheno.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_dwd_pheno.json"]
 			},
 			"residueParams": ["include-from-file", "crops/residues/barley.json"]
 		}
@@ -57,7 +57,7 @@
 		"WB_sfix_hauto": [{
 			"worksteps": [
 				{
-					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "WB"] 
+					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "WB_dwd"] 
 			},
 			{ 
 				"type": "AutomaticHarvest", 
@@ -99,6 +99,22 @@
 				{ 
 					"date": "0001-08-20", "type": "Harvest", "crop": ["ref", "crops", "WB"] 
 				}
+			]
+		}],
+		"WW_sfix_hauto": [{
+			"worksteps": [
+				{
+					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "WW"] 
+			},
+			{ 
+				"type": "AutomaticHarvest", 
+				"latest-date": "0001-09-05",
+				"min-%-asw": 0,
+				"max-%-asw": 99.0,
+				"max-3d-precip-sum": 2,
+				"max-curr-day-precip": 0.1,
+				"harvest-time": "maturity"
+			}
 			]
 		}]
 	},

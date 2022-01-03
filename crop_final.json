@@ -1,5 +1,31 @@
   {
-	"__note__": "Adapted from HERMES2Go, BBG Project",
+	"__note__": "01/2020 : Final version for setups with fixed sowing dates, automatic harvest dates and phenology calibrated to DWD data. Adapted from HERMES2Go, BBG Project",
+	"crops": {
+		"WB": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/barley.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/barley.json"]
+		},
+		"WW": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/wheat_bs_dwd_pheno.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs_dwd_pheno.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/wheat.json"]
+		},
+		"WB_dwd": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/barley_bs_dwd_pheno.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_dwd_pheno.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/barley.json"]
+		}
+	},
 	"fert-params": {
 		"AN": ["include-from-file", "mineral-fertilisers/AN.json"],
 		"U": ["include-from-file", "mineral-fertilisers/U.json"],
@@ -156,6 +182,38 @@
 					"parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
 					"incorporation": true
 				  }
+			]
+		}],
+		"WB_sfix_hauto": [{
+			"worksteps": [
+				{
+					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "WB_dwd"] 
+				},
+				{
+					"type": "NDemandFertilization",
+					"days": 55,
+					"after": "Sowing",
+					"N-demand": [50.0, "kg"],
+					"depth": [0.9, "m"],
+					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+				  },
+				  {
+					"type": "NDemandFertilizatio",
+					"days": 150,
+					"after": "Sowing",
+					"N-demand": [90.0, "kg"],
+					"depth": [0.9, "m"],
+					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
+				  },
+				{ 
+					"type": "AutomaticHarvest", 
+					"latest-date": "0001-09-05",
+					"min-%-asw": 0,
+					"max-%-asw": 99.0,
+					"max-3d-precip-sum": 2,
+					"max-curr-day-precip": 0.1,
+					"harvest-time": "maturity"
+				}
 			]
 		}],
 		"WG": [{

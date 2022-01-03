@@ -121,15 +121,16 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     elif is_pheno:
         output_grids = {
             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            # "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s1doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"}
+            "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "s7doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
         }
         output_keys = list(output_grids.keys())
     else:

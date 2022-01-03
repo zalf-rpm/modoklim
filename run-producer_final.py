@@ -35,6 +35,14 @@ import soil_io3
 import monica_run_lib as Mrunlib
 
 PATHS = {
+     # adjust the local path to your environment
+    "cj-local-remote": {
+        #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
+        "path-to-climate-dir": "D:/projects/KlimErtrag/", # local path
+        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
+        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data
+        "path-debug-write-folder": "./debug-out/",
+    },
     # adjust the local path to your environment
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
@@ -58,8 +66,11 @@ DATA_GRID_SLOPE = "germany/slope_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_LAND_USE = "germany/landuse_1000_31469_gk5.asc"
 DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_CROPS = "germany/crops-all2017-2019_1000_25832_etrs89-utm32n.asc"
+# DATA_GRID_CROPS = "germany/dwd-stations-pheno_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
+
+TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
 
 DEBUG_DONOT_SEND = False
 DEBUG_WRITE = False
@@ -76,13 +87,13 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-remote",
+        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
         "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
-        "end-row": "-1",
+        "end-row": "-1", ## "-1"
         "path_to_dem_grid": "",
-        "sim.json": "sim_final.json",
+        "sim.json": "sim_clemens.json",
         "crop.json": "crop_final.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_final.csv",
@@ -116,12 +127,14 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     # transform wgs84 into gk5
     soil_crs_to_x_transformers = {}
     wgs84_crs = CRS.from_epsg(4326)
-    #gk5_crs = CRS.from_epsg(31469)
+    utm32_crs = CRS.from_epsg(25832)
     #transformers[wgs84] = Transformer.from_crs(wgs84_crs, gk5_crs, always_xy=True)
+
+    ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None})
 
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
-    
+
     # soil data
     path_to_soil_grid = paths["path-to-data-dir"] + DATA_GRID_SOIL
     soil_epsg_code = int(path_to_soil_grid.split("/")[-1].split("_")[2])
@@ -176,7 +189,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     crop_interpolate = Mrunlib.create_ascii_grid_interpolator(crop_grid, crop_meta)
     print("read: ", path_to_crop_grid)
 
-    
     sent_env_count = 1
     start_time = time.perf_counter()
 
@@ -196,9 +208,24 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         version = setup["version"]
         crop_id = setup["crop-id"]
 
+        ## extract crop_id from crop-id name that has possible an extenstion
+        crop_id_short = crop_id.split('_')[0]
+
+        # add crop id from setup file
+        try:
+            #read seed/harvest dates for each crop_id
+            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id_short)
+            print("created seed harvest gk5 interpolator and read data: ", path_harvest)
+            Mrunlib.create_seed_harvest_geoGrid_interpolator_and_read_data(path_harvest, wgs84_crs, utm32_crs, ilr_seed_harvest_data)
+        except IOError:
+            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id_short)
+            print("Couldn't read file:", path_harvest)
+            continue
+
         cdict = {}
         # path to latlon-to-rowcol.json
-        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + setup["climate_path_to_latlon_file"] + "/")
+        # path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + setup["climate_path_to_latlon_file"] + "/")
+        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + "/")
         climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
         print("created climate_data to gk5 interpolator: ", path)
 
@@ -286,8 +313,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 crow, ccol = climate_data_interpolator(sr, sh)
 
                 crop_grid_id = int(crop_grid[srow, scol])
+                # print(crop_grid_id)
                 if crop_grid_id != 1:
-                    print("row/col:", srow, "/", scol, "is not a crop pixel.")
+                    # print("row/col:", srow, "/", scol, "is not a crop pixel.")
                     env_template["customId"] = {
                         "setup_id": setup_id,
                         "srow": srow, "scol": scol,
@@ -301,13 +329,13 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     }
                     if not DEBUG_DONOT_SEND:
                         socket.send_json(env_template)
-                        print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
+                        # print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
                         sent_env_count += 1
 
                     continue
 
-                
-                
+
+
                 tcoords = {}
 
                 """
@@ -328,8 +356,108 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     soil_profile = soil_io3.soil_parameters(soil_db_con, soil_id)
                     soil_id_cache[soil_id] = soil_profile
 
+                worksteps = env_template["cropRotation"][0]["worksteps"]
+
+                ilr_interpolate = ilr_seed_harvest_data[crop_id_short]["interpolate"]
+                seed_harvest_cs = ilr_interpolate(sr, sh) if ilr_interpolate else None
+
+                # set external seed/harvest dates
+                if seed_harvest_cs:
+                    seed_harvest_data = ilr_seed_harvest_data[crop_id_short]["data"][seed_harvest_cs]
+                    if seed_harvest_data:
+                        is_winter_crop = ilr_seed_harvest_data[crop_id_short]["is-winter-crop"]
+
+                        if setup["sowing-date"] == "fixed":
+                            sowing_date = seed_harvest_data["sowing-date"]
+                        elif setup["sowing-date"] == "auto":
+                            sowing_date = seed_harvest_data["latest-sowing-date"]
+                        elif setup["sowing-date"] == "fixed1":
+                            sowing_date = worksteps[0]["date"]
+
+                        sds = [int(x) for x in sowing_date.split("-")]
+                        sd = date(2001, sds[1], sds[2])
+                        sdoy = sd.timetuple().tm_yday
+
+                        if setup["harvest-date"] == "fixed":
+                            harvest_date = seed_harvest_data["harvest-date"]                         
+                        elif setup["harvest-date"] == "auto":
+                            harvest_date = seed_harvest_data["latest-harvest-date"]
+
+                        # print("sowing_date:", sowing_date, "harvest_date:", harvest_date)
+                        # print("sowing_date:", worksteps[0]["date"], "harvest_date:", worksteps[0]["date"])
+
+                        hds = [int(x) for x in harvest_date.split("-")]
+                        hd = date(2001, hds[1], hds[2])
+                        hdoy = hd.timetuple().tm_yday
+
+                        esds = [int(x) for x in seed_harvest_data["earliest-sowing-date"].split("-")]
+                        esd = date(2001, esds[1], esds[2])
+
+                        # sowing after harvest should probably never occur in both fixed setup!
+                        if setup["sowing-date"] == "fixed" and setup["harvest-date"] == "fixed":
+                            #calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            if is_winter_crop:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            else:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=hdoy)
+                            worksteps[0]["date"] = seed_harvest_data["sowing-date"]
+                            worksteps[-1]["date"] = "{:04d}-{:02d}-{:02d}".format(hds[0], calc_harvest_date.month, calc_harvest_date.day)
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["date"])
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[-1]["date"])
+                        
+                        elif setup["sowing-date"] == "fixed" and setup["harvest-date"] == "auto":
+                            if is_winter_crop:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            else:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=hdoy)
+                            worksteps[0]["date"] = seed_harvest_data["sowing-date"]
+                            worksteps[1]["latest-date"] = "{:04d}-{:02d}-{:02d}".format(hds[0], calc_harvest_date.month, calc_harvest_date.day)
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["date"])
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[1]["latest-date"])
+
+                        elif setup["sowing-date"] == "auto" and setup["harvest-date"] == "fixed":
+                            worksteps[0]["earliest-date"] = seed_harvest_data["earliest-sowing-date"] if esd > date(esd.year, 6, 20) else "{:04d}-{:02d}-{:02d}".format(sds[0], 6, 20)
+                            calc_sowing_date = date(2000, 12, 31) + timedelta(days=max(hdoy+1, sdoy))
+                            worksteps[0]["latest-date"] = "{:04d}-{:02d}-{:02d}".format(sds[0], calc_sowing_date.month, calc_sowing_date.day)
+                            worksteps[1]["date"] = seed_harvest_data["harvest-date"]
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["earliest-date"], "<",
+                                  worksteps[0]["latest-date"])
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[-1]["date"])
+
+                        elif setup["sowing-date"] == "auto" and setup["harvest-date"] == "auto":
+                            worksteps[0]["earliest-date"] = seed_harvest_data["earliest-sowing-date"] if esd > date(esd.year, 6, 20) else "{:04d}-{:02d}-{:02d}".format(sds[0], 6, 20)
+                            if is_winter_crop:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            else:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=hdoy)
+                            worksteps[0]["latest-date"] = seed_harvest_data["latest-sowing-date"]
+                            worksteps[1]["latest-date"] = "{:04d}-{:02d}-{:02d}".format(hds[0], calc_harvest_date.month, calc_harvest_date.day)
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["earliest-date"], "<",
+                                  worksteps[0]["latest-date"])
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[1]["latest-date"])
+
+                        elif setup["sowing-date"] == "fixed1" and setup["harvest-date"] == "fixed":
+                            #calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            if is_winter_crop:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=min(hdoy, sdoy-1))
+                            else:
+                                calc_harvest_date = date(2000, 12, 31) + timedelta(days=hdoy)
+                            worksteps[0]["date"] = sowing_date
+                            # print(seed_harvest_data["sowing-date"])
+                            worksteps[-1]["date"] = "{:04d}-{:02d}-{:02d}".format(hds[0], calc_harvest_date.month, calc_harvest_date.day)
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["date"])
+                            print("dates: ", int(seed_harvest_cs), ":", worksteps[-1]["date"])
+
+
+                    #print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["earliest-date"], "<", worksteps[0]["latest-date"] )
+                    #print("dates: ", int(seed_harvest_cs), ":", worksteps[1]["latest-date"], "<", worksteps[0]["earliest-date"], "<", worksteps[0]["latest-date"] )
+                    
+                    # print("dates: ", int(seed_harvest_cs), ":", worksteps[0]["date"])
+                    # print("dates: ", int(seed_harvest_cs), ":", worksteps[-1]["date"])
+
+
                 if len(soil_profile) == 0:
-                    print("row/col:", srow, "/", scol, "has unknown soil_id:", soil_id)
+                    # print("row/col:", srow, "/", scol, "has unknown soil_id:", soil_id)
                     #unknown_soil_ids.add(soil_id)
 
                     env_template["customId"] = {
@@ -345,7 +473,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     }
                     if not DEBUG_DONOT_SEND:
                         socket.send_json(env_template)
-                        print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
+                        # print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
                         sent_env_count += 1
                     continue
                 
@@ -421,6 +549,11 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 if setup["FieldConditionModifier"]:
                     env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["species"]["FieldConditionModifier"] = float(setup["FieldConditionModifier"])
 
+                if setup["StageTemperatureSum"]:
+                    stage_ts = setup["StageTemperatureSum"].split('_')
+                    stage_ts = [int(temp_sum) for temp_sum in stage_ts]
+                    env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"]["StageTemperatureSum"][0] = stage_ts
+
                 env_template["params"]["simulationParameters"]["UseNMinMineralFertilisingMethod"] = setup["fertilization"]
                 env_template["params"]["simulationParameters"]["UseAutomaticIrrigation"] = setup["irrigation"]
 
@@ -436,19 +569,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     subpath_to_csv = subpath_to_csv.replace("//", "/")
                 env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
                 if setup["incl_hist"]:
-                    
-                    if rcm[:3] == "UHO":
-                        hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm="CLMcom-CCLM4-8-17", scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
-                        for _ in range(4):
-                            hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
-                        env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
-                    
-                    elif rcm[:3] == "SMH":
-                        hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm="CLMcom-CCLM4-8-17", scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
-                        for _ in range(4):
-                            hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
-                        env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
-
                     hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
                     for _ in range(4):
                         hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
@@ -468,6 +588,13 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "env_id": sent_env_count,
                     "nodata": False
                 }
+
+                print("Harvest type:", setup["harvest-date"])
+                print("Srow: ", env_template["customId"]["srow"], "Scol:", env_template["customId"]["scol"])
+                if setup["harvest-date"] == "fixed":
+                    print("Harvest-date:", env_template["cropRotation"][0]["worksteps"][1]["date"])
+                elif setup["harvest-date"] == "auto":
+                    print("Harvest-date:", env_template["cropRotation"][0]["worksteps"][1]["latest-date"])
 
                 if not DEBUG_DONOT_SEND :
                     socket.send_json(env_template)
