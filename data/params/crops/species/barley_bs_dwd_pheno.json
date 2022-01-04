@@ -32,7 +32,7 @@
 	"DefaultRadiationUseEfficiency": 0.5,
 	"DevelopmentAccelerationByNitrogenStress": 1,
 	"DroughtImpactOnFertilityFactor": 0,
-	"FieldConditionModifier": 0.68,
+	"FieldConditionModifier": 0.71,
 	"InitialKcFactor": 0.4000000059604645,
 	"InitialOrganBiomass": [
 		53,
