@@ -91,9 +91,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
-        "end-row": "-1", ## "-1"
+        "end-row": "-1", 
         "path_to_dem_grid": "",
-        "sim.json": "sim_clemens.json",
+        "sim.json": "sim_final.json",
         "crop.json": "crop_final.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_final.csv",
