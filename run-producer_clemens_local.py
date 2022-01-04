@@ -36,6 +36,13 @@ import monica_run_lib as Mrunlib
 
 PATHS = {
     # adjust the local path to your environment
+    "cj-local-remote": {
+        #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
+        "path-to-climate-dir": "D:/projects/KlimErtrag/", # local path
+        "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
+        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data
+        "path-debug-write-folder": "./debug-out/",
+    },
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "D:/projects/KlimErtrag/", # local path
@@ -62,7 +69,6 @@ DATA_GRID_DISTRICTS = r"germany/dwd-stations-pheno_1000_25832_etrs89-utm32n.asc"
 # DATA_GRID_DISTRICTS = r"germany/rand-sample-wbtenth_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
-GEO_TARGET_GRID = 31469 #proj4 -> 3-degree gauss-kruger zone 5 (=Germany) https://epsg.io/5835 ###https://epsg.io/31469
 
 TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
 
@@ -85,7 +91,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-remote",
+        "mode": "cj-local-remote",
         "server-port": server["port"] if server["port"] else "6667",
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
@@ -95,7 +101,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "crop.json": "crop.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_wb_testing.csv",
-        "run-setups": "[303]",
+        "run-setups": "[302]",
         "shared_id": shared_id
     }
     
@@ -130,35 +136,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #transformers[wgs84] = Transformer.from_crs(wgs84_crs, gk5_crs, always_xy=True)
 
     ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None})
-
-
-    """
-    wgs84_to_gk5_transformer = Transformer.from_crs(wgs84_crs, gk5, always_xy=True)
-    gk5_to_wgs84_transformer = Transformer.from_crs(gk5, wgs84_crs, always_xy=True)
-
-    ip_points = []
-    ip_values = []
-
-    for lon_ in range(400, 1500):
-        print(lon_, " ", end="")
-        for lat_ in range(4000, 6000):
-            try:
-                lon = lon_ / 100.0
-                lat = lat_ / 100.0
-                r, h = wgs84_to_gk5_transformer.transform(lon, lat)
-                lng, la = gk5_to_wgs84_transformer.transform(r, h, errcheck=True)
-                int(lng)
-                int(la)
-            except Exception as e:
-                ip_points.append([r, h])
-                ip_values.append((lon, lat))
-                #print((lon, lat), " ", end="")
-                pass
-        #print()
-    
-    from scipy.interpolate import NearestNDInterpolator
-    wgs84_ip = NearestNDInterpolator(np.array(ip_points), np.array(ip_values))
-    """
 
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
@@ -343,18 +320,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 sr = xllcorner + (scellsize / 2) + scol * scellsize
                 
                 tcoords = {}
-
-                """
-                lon, lat = soil_crs_to_x_transformers[wgs84_crs].transform(sr, sh)
-                try:
-                    int(lon)
-                    int(lat)
-                except Exception as e:
-                    lon, lat = wgs84_ip(sr, sh)
-
-                cs__.write(str(srow) + "," + str(scol) + "," + str(sr) + "," + str(sh) + "," + str(lat) + "," + str(lon) + "\n")
-                continue
-                """
 
                 if soil_id in soil_id_cache:
                     soil_profile = soil_id_cache[soil_id]

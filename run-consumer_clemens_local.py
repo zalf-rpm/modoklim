@@ -127,7 +127,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             # "s1doy_end": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s4doy": {"data": make_dict_nparr(), "cast-to": "int"},
             # "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},

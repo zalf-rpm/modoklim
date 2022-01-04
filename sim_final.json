@@ -241,6 +241,7 @@
 			],
 			"stem-elongation", [
 				"CM-count",
+				"Year",
 				"DOY|sedoy"
 			],
 			"Stage-3", [

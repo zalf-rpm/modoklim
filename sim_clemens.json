@@ -258,31 +258,41 @@
 		],
 
 		"_backup-pheno-events": [
-			"Sowing", [
-				"CM-count",
-				"Crop",
-				"DOY|sdoy"
-			],
-			"Stage-1", [
-				["CM-count", "LAST"],
-				"DOY|s1doy_end"
-			],
-			"Stage-2", [
-				"CM-count",
-				"DOY|s2doy"
-			],
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
 				["Yield", "LAST"]
 			],
+			"Sowing", [
+				"CM-count",
+				"Crop",
+				"Year",
+				"DOY|sdoy"
+			],
+			"stem-elongation", [
+				"CM-count",
+				"Year",
+				"DOY|sedoy"
+			],
+			"Stage-2", [
+				"CM-count",
+				"Year",
+				"DOY|s2doy"
+			],
+			"Stage-3", [
+				"CM-count",
+				"Year",
+				"DOY|s3doy"
+			],
 			"Stage-4", [
 				"CM-count",
+				"Year",
 				"DOY|s4doy"
 			],
 			"Stage-6", [
 				"CM-count",
+				"Year",
 				"DOY|s6doy"
 			],
 			"Harvest", [
