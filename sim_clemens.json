@@ -235,6 +235,11 @@
 				"Year",
 				"DOY|s2doy"
 			],
+			"cereal-stem-elongation", [
+				"CM-count",
+				"Year",
+				"DOY|sedoy"
+			],
 			"Stage-3", [
 				"CM-count",
 				"Year",

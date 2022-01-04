@@ -239,7 +239,7 @@
 				"Year",
 				"DOY|s2doy"
 			],
-			"stem-elongation", [
+			"cereal-stem-elongation", [
 				"CM-count",
 				"Year",
 				"DOY|sedoy"

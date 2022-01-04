@@ -92,7 +92,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
     config = {
         "mode": "cj-local-remote",
-        "server-port": server["port"] if server["port"] else "6667",
+        "server-port": server["port"] if server["port"] else "6667", ## tommaso: 6667 | clemens: 6669
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1",

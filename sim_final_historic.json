@@ -176,7 +176,7 @@
 				["Mois|s2sm36", [4, 6, "AVG"]],
 				["Mois|s2sm69", [7, 9, "AVG"]]
 			],
-			"stem-elongation", [
+			"cereal-stem-elongation", [
 				"CM-count",
 				"DOY|sedoy",
 				["Mois|sesm03", [1, 3, "AVG"]],
@@ -238,19 +238,43 @@
 			"Sowing", [
 				"CM-count",
 				"Crop",
+				"Year",
 				"DOY|sdoy"
+			],
+			"Stage-1", [
+				"CM-count",
+				"Year",
+				"DOY|s1doy"
+			],
+			"Stage-2", [
+				"CM-count",
+				"Year",
+				"DOY|s2doy"
+			],
+			"cereal-stem-elongation", [
+				"CM-count",
+				"Year",
+				"DOY|sedoy"
 			],
 			"Stage-3", [
 				"CM-count",
+				"Year",
 				"DOY|s3doy"
 			],
 			"Stage-4", [
 				"CM-count",
+				"Year",
 				"DOY|s4doy"
 			],
 			"Stage-5", [
 				"CM-count",
+				"Year",
 				"DOY|s5doy"
+			],
+			"Stage-6", [
+				"CM-count",
+				"Year",
+				"DOY|s6doy"
 			],
 			"Harvest", [
 				"CM-count",

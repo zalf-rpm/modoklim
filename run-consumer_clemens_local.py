@@ -290,7 +290,7 @@ def run_consumer(leave_after_finished_run=True, server={"server": None, "port": 
 
     config = {
         "mode": "cj-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
-        "port": server["port"] if server["port"] else "7778",  ## local 7778,  remote 7777
+        "port": server["port"] if server["port"] else "7778",  ## local 7778,  remote tommaso:7778 clemens:7780
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0",
         "end-row": "-1",
