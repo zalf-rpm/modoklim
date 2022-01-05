@@ -1,5 +1,5 @@
   {
-	"__note__": "01/2020 : Final version for setups with fixed sowing dates, automatic harvest dates and phenology calibrated to DWD data. Adapted from HERMES2Go, BBG Project",
+	"__note__": "01/2022 : Final version for setups with fixed sowing dates, automatic harvest dates and phenology calibrated to DWD data. Adapted from HERMES2Go, BBG Project",
 	"crops": {
 		"WB": {
 			"is-winter-crop": true,
@@ -9,10 +9,10 @@
 			},
 			"residueParams": ["include-from-file", "crops/residues/barley.json"]
 		},
-		"WW": {
+		"WW_dwd": {
 			"is-winter-crop": true,
 			"cropParams": {
-				"species": ["include-from-file", "crops/species/wheat_bs_dwd_pheno.json"],
+				"species": ["include-from-file", "crops/species/wheat.json"],
 				"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs_dwd_pheno.json"]
 			},
 			"residueParams": ["include-from-file", "crops/residues/wheat.json"]
@@ -20,8 +20,24 @@
 		"WB_dwd": {
 			"is-winter-crop": true,
 			"cropParams": {
-				"species": ["include-from-file", "crops/species/barley_bs_dwd_pheno.json"],
+				"species": ["include-from-file", "crops/species/barley.json"],
 				"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs_dwd_pheno.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/barley.json"]
+		},
+		"WR_dwd": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/rye.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/winter-rye_hhf_dwd_pheno.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/rye.json"]
+		},
+		"SB_dwd": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/barley.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/spring-barley_hhf_dwd_pheno.json"]
 			},
 			"residueParams": ["include-from-file", "crops/residues/barley.json"]
 		}
@@ -32,28 +48,10 @@
 		"CAM": ["include-from-file", "organic-fertilisers/CAM.json"]
 	}, 	
 	"cropRotationTemplates": {
-		"WW": [{
+		"WW_sfix_hauto": [{
 			"worksteps": [
-				{ 
-					"type": "AutomaticSowing", 
-					"crop": {
-						"is-winter-crop": true,
-						"cropParams": {
-							"species": ["include-from-file", "crops/species/wheat.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_bs.json"]
-						},
-						"residueParams": ["include-from-file", "crops/residues/wheat.json"]
-					},
-					"earliest-date": "0000-08-29",
-					"latest-date": "0000-11-08",
-					"min-temp": 18.5,
-					"days-in-temp-window": 14,
-					"min-%-asw": 0,
-					"max-%-asw": 99.9,
-					"max-3d-precip-sum": 2,
-					"max-curr-day-precip": 0.1,
-					"temp-sum-above-base-temp": 0,
-					"base-temp": 0
+				{
+					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "WW_dwd"] 
 				},
 				{
 					"type": "NDemandFertilization",
@@ -95,93 +93,7 @@
 					"amount": [15000, "kg N"],
 					"parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
 					"incorporation": true
-				  }
-			]
-		}],
-		"WW_sustag": [{
-			"worksteps": [
-				{ 
-					"type": "AutomaticSowing", 
-					"crop": {
-						"is-winter-crop": true,
-						"cropParams": {
-							"species": ["include-from-file", "crops/species/wheat.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/winter-wheat_sustag.json"],
-							"OrganIdsForSecondaryYield": [
-								{
-									"organId": 2,
-									"type": "YieldComponent",
-									"yieldDryMatter": 0.86,
-									"yieldPercentage": 1
-								},
-								{
-									"organId": 3,
-									"type": "YieldComponent",
-									"yieldDryMatter": 0.86,
-									"yieldPercentage": 1
-								},
-								{
-									"organId": 4,
-									"type": "YieldComponent",
-									"yieldDryMatter": 0.86,
-									"yieldPercentage": 0.15
-								}
-							]
-						},
-						"residueParams": ["include-from-file", "crops/residues/wheat.json"]
-					},
-					"earliest-date": "0000-08-29",
-					"latest-date": "0000-11-08",
-					"min-temp": 18.5,
-					"days-in-temp-window": 14,
-					"min-%-asw": 0,
-					"max-%-asw": 99.9,
-					"max-3d-precip-sum": 2,
-					"max-curr-day-precip": 0.1,
-					"temp-sum-above-base-temp": 0,
-					"base-temp": 0
-				},
-				{
-					"type": "NDemandFertilization",
-					"days": 60,
-					"after": "Sowing",
-					"N-demand": [40.0, "kg"],
-					"depth": [0.3, "m"],
-					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
-				},
-				{
-					"type": "NDemandFertilization",
-					"days": 120,
-					"after": "Sowing",
-					"N-demand": [80.0, "kg"],
-					"depth": [0.9, "m"],
-					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
-				},
-				{
-					"type": "NDemandFertilization",
-					"days": 150,
-					"after": "Sowing",
-					"N-demand": [40.0, "kg"],
-					"depth": [0.9, "m"],
-					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
-				},
-				{ 
-					"type": "AutomaticHarvest", 
-					"latest-date": "0001-09-05",
-					"min-%-asw": 0,
-					"max-%-asw": 99.0,
-					"max-3d-precip-sum": 2,
-					"max-curr-day-precip": 0.1,
-					"harvest-time": "maturity"
-				},
-				{
-					"type": "OrganicFertilization",
-					"days": 1,
-					"after": "Harvest",
-					"amount": [15000, "kg N"],
-					"parameters": ["include-from-file", "organic-fertilisers/CAM.json"],
-					"incorporation": true
-				  }
+				}
 			]
 		}],
 		"WB_sfix_hauto": [{
@@ -216,28 +128,10 @@
 				}
 			]
 		}],
-		"WG": [{
+		"WR_sfix_hauto": [{
 			"worksteps": [
-				{ 
-					"type": "AutomaticSowing", 
-					"crop": {
-						"is-winter-crop": true,
-						"cropParams": {
-							"species": ["include-from-file", "crops/species/barley.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/winter-barley_bs.json"]
-						},
-						"residueParams": ["include-from-file", "crops/residues/barley.json"]
-					},
-					"earliest-date": "0000-08-28",
-					"latest-date": "0000-10-12",
-					"min-temp": 18.5,
-					"days-in-temp-window": 14,
-					"min-%-asw": 0,
-					"max-%-asw": 99.9,
-					"max-3d-precip-sum": 2,
-					"max-curr-day-precip": 0.1,
-					"temp-sum-above-base-temp": 0,
-					"base-temp": 0
+				{
+					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "WR_dwd"] 
 				},
 				{
 					"type": "NDemandFertilization",
@@ -266,28 +160,10 @@
 				}
 			]
 		}],
-		"WR": [{
+		"SB_sfix_hauto": [{
 			"worksteps": [
-				{ 
-					"type": "AutomaticSowing", 
-					"crop": {
-						"is-winter-crop": true,
-						"cropParams": {
-							"species": ["include-from-file", "crops/species/rye.json"],
-							"cultivar": ["include-from-file", "crops/cultivars/winter-rye_hhf_Borellus.json"]
-						},
-						"residueParams": ["include-from-file", "crops/residues/rye.json"]
-					},
-					"earliest-date": "0000-08-28",
-					"latest-date": "0000-11-06",
-					"min-temp": 18.5,
-					"days-in-temp-window": 14,
-					"min-%-asw": 0,
-					"max-%-asw": 99.9,
-					"max-3d-precip-sum": 2,
-					"max-curr-day-precip": 0.1,
-					"temp-sum-above-base-temp": 0,
-					"base-temp": 0
+				{
+					"date": "0000-09-22", "type": "Sowing", "crop": ["ref", "crops", "SB_dwd"] 
 				},
 				{
 					"type": "NDemandFertilization",
@@ -296,15 +172,15 @@
 					"N-demand": [50.0, "kg"],
 					"depth": [0.9, "m"],
 					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
-				},
-				{
-					"type": "NDemandFertilization",
+				  },
+				  {
+					"type": "NDemandFertilizatio",
 					"days": 150,
 					"after": "Sowing",
-					"N-demand": [80.0, "kg"],
+					"N-demand": [90.0, "kg"],
 					"depth": [0.9, "m"],
 					"partition": ["include-from-file", "mineral-fertilisers/AN.json"]
-				},
+				  },
 				{ 
 					"type": "AutomaticHarvest", 
 					"latest-date": "0001-09-05",

@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "description": "Klimertrag parameters with reduced temperature sum until heading",
-    "date": "11-2021"},
+    "description": "Klimertrag parameters. First parameterized on Braunschweig FACE experiment, then phenology adapted to DWD Jahreszaeler observations.",
+    "date": "01-2022"},
     "WinterCrop": true,
   "AssimilatePartitioningCoeff": [
     [
