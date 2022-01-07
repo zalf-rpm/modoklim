@@ -250,10 +250,20 @@
 				"Year",
 				"DOY|s4doy"
 			],
+			"Stage-5", [
+				"CM-count",
+				"Year",
+				"DOY|s5doy"
+			],
 			"Stage-6", [
 				"CM-count",
 				"Year",
 				"DOY|s6doy"
+			],
+			"Stage-7", [
+				"CM-count",
+				"Year",
+				"DOY|s7doy"
 			],
 			"Harvest", [
 				"CM-count",

@@ -111,9 +111,11 @@ def create_seed_harvest_geoGrid_interpolator_and_read_data(path_to_csv_file, wor
         "SM": False,
         "GM": False,
         "SBee": False,
+        "SU": False,
         "SB": False,
         "SWR": True, 
-        "CLALF": False, 
+        "CLALF": False,
+        "PO": False
     }
 
     with open(path_to_csv_file) as _:

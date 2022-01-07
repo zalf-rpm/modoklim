@@ -52,7 +52,7 @@
     "h"
   ],
   "BeginSensitivePhaseHeatStress":[  
-    550,
+    470,
     "°C d"
   ],
   "CriticalTemperatureHeatStress":[  
@@ -84,7 +84,7 @@
     0.5
   ],
   "EndSensitivePhaseHeatStress":[  
-    670,
+    640,
     "°C d"
   ],
   "FrostDehardening":5.0500001907348633,
