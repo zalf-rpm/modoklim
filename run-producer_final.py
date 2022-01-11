@@ -606,10 +606,11 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
                 print("Harvest type:", setup["harvest-date"])
                 print("Srow: ", env_template["customId"]["srow"], "Scol:", env_template["customId"]["scol"])
+                harvest_ws = next(filter(lambda ws: ws["type"][-7:] == "Harvest", env_template["cropRotation"][0]["worksteps"]))
                 if setup["harvest-date"] == "fixed":
-                    print("Harvest-date:", env_template["cropRotation"][0]["worksteps"][1]["date"])
+                    print("Harvest-date:", harvest_ws["date"])
                 elif setup["harvest-date"] == "auto":
-                    print("Harvest-date:", env_template["cropRotation"][0]["worksteps"][1]["latest-date"])
+                    print("Harvest-date:", harvest_ws["latest-date"])
 
                 if not DEBUG_DONOT_SEND :
                     socket.send_json(env_template)
