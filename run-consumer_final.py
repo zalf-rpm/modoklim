@@ -94,10 +94,10 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = ["Mois", "STemp"]
     elif is_yields:
         output_grids = {
-            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+            # "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "oxredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "precipsum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "nstressavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
