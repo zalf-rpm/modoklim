@@ -118,9 +118,7 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
-				["Yield", "LAST"],
-				["TraDef|tradefavg", "AVG"],
-				["FrostRed|frostredavg", "AVG"]
+				["Yield", "LAST"]
 			]
 		],
 
