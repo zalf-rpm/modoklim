@@ -5,87 +5,10 @@ from numpy.core.numeric import outer
 from osgeo import gdal
 import joblib
 
-WD = "/beegfs/jaenicke/klimertrag/raster/sim-yields/11_final_results"
+WD = "/beegfs/jaenicke/klimertrag_temp/raster/sim-yields/11_final_results"
 OUTPUT_FOLDER = f"{WD}/results"
 
 OUTPUT_VARS = ["Yield"]  #"Yield"
-
-SETUPS = {"ryewinterrye":{
-        "crop" : "ryewinterrye",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-    "rapewinterrape":{
-        "crop" : "rapewinterrape",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-    "wheatwinterwheat_sust":{
-        "crop" : "wheatwinterwheat",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-        "barleywinterbarley":{
-        "crop" : "barleywinterbarley",
-        "rcp26" : [2,3,8,12,13],
-        "rcp45" : [4,5,7,10,14,15],
-        "rcp85" : [1,6,9,11,16,17],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-    "potatomoderatelyearlypotato":{
-        "crop" : "potatomoderatelyearlypotato",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2098},
-    },
-    "barleyspringbarley":{
-        "crop" : "barleyspringbarley",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2098},
-    },
-    "maizesilagemaize":{
-        "crop" : "maizesilagemaize",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2098},
-    },
-    "sugarbeet":{
-        "crop" : "sugarbeet",
-        "rcp26" : [],
-        "rcp45" : [],
-        "rcp85" : [],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2098},
-    },
-    }
-
-#### wheatwinterwheat_klim
-# frostred, tradefavg
 
 SETUPS = {
     "barleywinterbarley":{
@@ -96,7 +19,70 @@ SETUPS = {
         "hist_per" : {"start": 1971, "end": 2000},
         "futur_per" : {"start": 2031, "end": 2060},
         "futur_per2" : {"start": 2070, "end": 2099},
-    }
+    },
+    "barleyspringbarley":{
+        "crop" : "barleyspringbarley",
+        "rcp26" : [20,21,26,30,31],
+        "rcp45" : [22,23,25,28,32,33],
+        "rcp85" : [19,24,27,29,34,35],
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+    },
+    "wheatwinterwheat":{
+        "crop" : "wheatwinterwheat",
+        "rcp26" : [38,39,44,48,49],
+        "rcp45" : [40,41,43,46,50,51],
+        "rcp85" : [37,42,45,47,52,53],
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+    },
+    "ryewinterrye":{
+        "crop" : "ryewinterrye",
+        "rcp26" : [56,57,62,66,67],
+        "rcp45" : [58,59,61,64,68,69],
+        "rcp85" : [55,60,63,65,70,71],
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+    },
+    # "rapewinterrape":{
+    #     "crop" : "rapewinterrape",
+    #     "rcp26" : [74,75,80,84,85],
+    #     "rcp45" : [76,77,79,82,86,87],
+    #     "rcp85" : [73,78,81,83,88,89],
+    #     "hist_per" : {"start": 1971, "end": 2000},
+    #     "futur_per" : {"start": 2031, "end": 2060},
+    #     "futur_per2" : {"start": 2070, "end": 2099},
+    # },
+    # "maizesilagemaize":{
+    #     "crop" : "rapewinterrape",
+    #     "rcp26" : [92,93,98,102,103],
+    #     "rcp45" : [94,95,97,100,104,105],
+    #     "rcp85" : [91,96,99,101,106,107],
+    #     "hist_per" : {"start": 1971, "end": 2000},
+    #     "futur_per" : {"start": 2031, "end": 2060},
+    #     "futur_per2" : {"start": 2070, "end": 2099},
+    # },
+    "sugarbeet":{
+        "crop" : "sugarbeet",
+        "rcp26" : [110,111,116,120,121],
+        "rcp45" : [112,113,115,118,122,123],
+        "rcp85" : [109,114,117,119,124,125],
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+    },
+    "potatomoderatelyearlypotato":{
+        "crop" : "potatomoderatelyearlypotato",
+        "rcp26" : [128,129,134,138,139],
+        "rcp45" : [130,131,133,136,140,141],
+        "rcp85" : [127,132,135,137,142,143],
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+    },
     }
 
 def create_folder(directory):
