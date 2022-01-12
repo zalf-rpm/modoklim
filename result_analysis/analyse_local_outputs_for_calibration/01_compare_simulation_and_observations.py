@@ -10,10 +10,9 @@ from osgeo import gdal
 import seaborn as sns
 from matplotlib.lines import Line2D
 
-
 DISTRICT_IDS = [1]
-RUN_ID = 308
-CROP = "Zucker-Ruebe"
+RUN_ID = 305
+CROP = 'Sommergerste'  #"Winterraps" #"Sommergerste" #"Zucker-Ruebe" #"Mais"
 
 ## Working directory
 WD = r"D:\projects\KlimErtrag\klimertrag\result_analysis"
