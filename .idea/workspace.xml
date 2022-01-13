@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="138f35ac-3a38-43f4-8ba9-1ccaf1fdcc16" name="Changes" comment="Add analysis scripts and necessary reference data">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-producer_clemens_local.py" beforeDir="false" afterPath="$PROJECT_DIR$/run-producer_clemens_local.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sim_setups_final.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_setups_final.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sim_setups_testing.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_setups_testing.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,7 +23,7 @@
     <property name="TODO_SCOPE" value="All Places" />
     <property name="WebServerToolWindowFactoryState" value="true" />
   </component>
-  <component name="RunManager" selected="Python.run-producer_clemens_local">
+  <component name="RunManager" selected="Python.run-consumer_clemens_local">
     <configuration name="01_compare_simulation_and_observations" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="klimertrag" />
       <option name="INTERPRETER_OPTIONS" value="" />
