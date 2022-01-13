@@ -101,7 +101,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "crop.json": "crop.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_testing.csv",
-        "run-setups": "[309]",
+        "run-setups": "[11]",
         "shared_id": shared_id
     }
     
