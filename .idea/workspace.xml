@@ -3,10 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="138f35ac-3a38-43f4-8ba9-1ccaf1fdcc16" name="Changes" comment="Add analysis scripts and necessary reference data">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crop_final.json" beforeDir="false" afterPath="$PROJECT_DIR$/crop_final.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-producer_clemens_local.py" beforeDir="false" afterPath="$PROJECT_DIR$/run-producer_clemens_local.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run-producer_final.py" beforeDir="false" afterPath="$PROJECT_DIR$/run-producer_final.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sim_setups_testing.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_setups_testing.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +173,7 @@
       <workItem from="1641899985575" duration="7091000" />
       <workItem from="1642066365140" duration="3115000" />
       <workItem from="1642075064815" duration="5539000" />
-      <workItem from="1642148938144" duration="10041000" />
+      <workItem from="1642148938144" duration="10635000" />
     </task>
     <task id="LOCAL-00001" summary="Add analysis scripts and necessary reference data">
       <created>1641577973292</created>
