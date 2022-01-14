@@ -2,17 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="138f35ac-3a38-43f4-8ba9-1ccaf1fdcc16" name="Changes" comment="Add analysis scripts and necessary reference data">
-      <change beforePath="$PROJECT_DIR$/.idea/klimertrag.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/klimertrag.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crop_final.json" beforeDir="false" afterPath="$PROJECT_DIR$/crop_final.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run-producer_clemens_local.py" beforeDir="false" afterPath="$PROJECT_DIR$/run-producer_clemens_local.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sim_setups_final.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_setups_final.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run-producer_final.py" beforeDir="false" afterPath="$PROJECT_DIR$/run-producer_final.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sim_setups_testing.csv" beforeDir="false" afterPath="$PROJECT_DIR$/sim_setups_testing.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -163,7 +176,8 @@
       <workItem from="1641892399786" duration="1525000" />
       <workItem from="1641899985575" duration="7091000" />
       <workItem from="1642066365140" duration="3115000" />
-      <workItem from="1642075064815" duration="5537000" />
+      <workItem from="1642075064815" duration="5539000" />
+      <workItem from="1642148938144" duration="10041000" />
     </task>
     <task id="LOCAL-00001" summary="Add analysis scripts and necessary reference data">
       <created>1641577973292</created>
@@ -195,10 +209,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="Add analysis scripts and necessary reference data" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$run_consumer_clemens_local.coverage" NAME="run-consumer_clemens_local Coverage Results" MODIFIED="1642081059388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$01_compare_simulation_and_observations__1_.coverage" NAME="01_compare_simulation_and_observations (1) Coverage Results" MODIFIED="1642081566216" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../scripts/phenology_calibration_dwd" />
+    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$run_consumer_clemens_local.coverage" NAME="run-consumer_clemens_local Coverage Results" MODIFIED="1642155822906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$01_compare_simulation_and_observations__1_.coverage" NAME="01_compare_simulation_and_observations (1) Coverage Results" MODIFIED="1642161896630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../scripts/phenology_calibration_dwd" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$01_compare_simulation_and_observations.coverage" NAME="01_compare_simulation_and_observations Coverage Results" MODIFIED="1641908625672" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/result_analysis/analyse_local_outputs_for_calibration" />
-    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$run_producer_clemens_local.coverage" NAME="run-producer_clemens_local Coverage Results" MODIFIED="1642081085571" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$run_producer_clemens_local.coverage" NAME="run-producer_clemens_local Coverage Results" MODIFIED="1642158127837" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$run_consumer_final.coverage" NAME="run-consumer_final Coverage Results" MODIFIED="1641900202962" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
