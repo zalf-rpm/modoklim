@@ -11,42 +11,42 @@ OUTPUT_FOLDER = f"{WD}/results"
 OUTPUT_VARS = ["Yield"]  #"Yield"
 
 SETUPS = {
-    "barleywinterbarley":{
-        "crop" : "barleywinterbarley",
-        "rcp26" : [2,3,8,12,13],
-        "rcp45" : [4,5,7,10,14,15],
-        "rcp85" : [1,6,9,11,16,17],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-    "barleyspringbarley":{
-        "crop" : "barleyspringbarley",
-        "rcp26" : [20,21,26,30,31],
-        "rcp45" : [22,23,25,28,32,33],
-        "rcp85" : [19,24,27,29,34,35],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-    "wheatwinterwheat":{
-        "crop" : "wheatwinterwheat",
-        "rcp26" : [38,39,44,48,49],
-        "rcp45" : [40,41,43,46,50,51],
-        "rcp85" : [37,42,45,47,52,53],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
-    "ryewinterrye":{
-        "crop" : "ryewinterrye",
-        "rcp26" : [56,57,62,66,67],
-        "rcp45" : [58,59,61,64,68,69],
-        "rcp85" : [55,60,63,65,70,71],
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-    },
+    # "barleywinterbarley":{
+    #     "crop" : "barleywinterbarley",
+    #     "rcp26" : [2,3,8,12,13],
+    #     "rcp45" : [4,5,7,10,14,15],
+    #     "rcp85" : [1,6,9,11,16,17],
+    #     "hist_per" : {"start": 1971, "end": 2000},
+    #     "futur_per" : {"start": 2031, "end": 2060},
+    #     "futur_per2" : {"start": 2070, "end": 2099},
+    # },
+    # "barleyspringbarley":{
+    #     "crop" : "barleyspringbarley",
+    #     "rcp26" : [20,21,26,30,31],
+    #     "rcp45" : [22,23,25,28,32,33],
+    #     "rcp85" : [19,24,27,29,34,35],
+    #     "hist_per" : {"start": 1971, "end": 2000},
+    #     "futur_per" : {"start": 2031, "end": 2060},
+    #     "futur_per2" : {"start": 2070, "end": 2098},
+    # },
+    # "wheatwinterwheat":{
+    #     "crop" : "wheatwinterwheat",
+    #     "rcp26" : [38,39,44,48,49],
+    #     "rcp45" : [40,41,43,46,50,51],
+    #     "rcp85" : [37,42,45,47,52,53],
+    #     "hist_per" : {"start": 1971, "end": 2000},
+    #     "futur_per" : {"start": 2031, "end": 2060},
+    #     "futur_per2" : {"start": 2070, "end": 2099},
+    # },
+    # "ryewinterrye":{
+    #     "crop" : "ryewinterrye",
+    #     "rcp26" : [56,57,62,66,67],
+    #     "rcp45" : [58,59,61,64,68,69],
+    #     "rcp85" : [55,60,63,65,70,71],
+    #     "hist_per" : {"start": 1971, "end": 2000},
+    #     "futur_per" : {"start": 2031, "end": 2060},
+    #     "futur_per2" : {"start": 2070, "end": 2099},
+    # },
     # "rapewinterrape":{
     #     "crop" : "rapewinterrape",
     #     "rcp26" : [74,75,80,84,85],
@@ -56,15 +56,15 @@ SETUPS = {
     #     "futur_per" : {"start": 2031, "end": 2060},
     #     "futur_per2" : {"start": 2070, "end": 2099},
     # },
-    # "maizesilagemaize":{
-    #     "crop" : "rapewinterrape",
-    #     "rcp26" : [92,93,98,102,103],
-    #     "rcp45" : [94,95,97,100,104,105],
-    #     "rcp85" : [91,96,99,101,106,107],
-    #     "hist_per" : {"start": 1971, "end": 2000},
-    #     "futur_per" : {"start": 2031, "end": 2060},
-    #     "futur_per2" : {"start": 2070, "end": 2099},
-    # },
+    "maizesilagemaize":{
+        "crop" : "maizesilagemaize",
+        "rcp26" : [92,93,98,102,103],
+        "rcp45" : [94,95,97,100,104,105],
+        "rcp85" : [91,96,99,101,106,107],
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2098},
+    },
     "sugarbeet":{
         "crop" : "sugarbeet",
         "rcp26" : [110,111,116,120,121],
@@ -72,7 +72,7 @@ SETUPS = {
         "rcp85" : [109,114,117,119,124,125],
         "hist_per" : {"start": 1971, "end": 2000},
         "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
+        "futur_per2" : {"start": 2070, "end": 2098},
     },
     "potatomoderatelyearlypotato":{
         "crop" : "potatomoderatelyearlypotato",
@@ -81,7 +81,7 @@ SETUPS = {
         "rcp85" : [127,132,135,137,142,143],
         "hist_per" : {"start": 1971, "end": 2000},
         "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
+        "futur_per2" : {"start": 2070, "end": 2098},
     },
     }
 
@@ -354,7 +354,7 @@ def work_func(sname):
         ## 2. Calculate the average, std and the coeff of var. per rcp across the time periods
         out_periods = f"{OUTPUT_FOLDER}/period_statistics/{sname}"
         for rcp in ["rcp26", "rcp45", "rcp85"]:
-            for period in ["hist_per", "futur_per", "futur_per2"]:
+            for period in [ "futur_per2"]:  #"hist_per", "futur_per",
                 calculate_period_statistics(wd=out_yearly, setup=setup, rcp=rcp, period=period, output_var=output_var, out_folder=out_periods, statistic="mean")
                 calculate_period_statistics(wd=out_yearly, setup=setup, rcp=rcp, period=period, output_var=output_var, out_folder=out_periods, statistic="std")
                 calculate_period_statistics(wd=out_yearly, setup=setup, rcp=rcp, period=period, output_var=output_var, out_folder=out_periods, statistic="cov")

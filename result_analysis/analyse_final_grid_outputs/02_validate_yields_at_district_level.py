@@ -23,13 +23,13 @@ CROP_MSK_PTH2 = "/beegfs/jaenicke/klimertrag/result_analysis/data/crop_masks/CM_
 
 YIELD_PTH = "/beegfs/jaenicke/klimertrag_temp/raster/sim-yields/11_final_results"
 
-RUN_IDS = [144]  #18,36,54,72,90,108,126,
+RUN_IDS = list(range(171,175))  #18,36,54,72,90,108,126,
 
 OBS_PTH_LDK = f"/beegfs/jaenicke/klimertrag/result_analysis/data/reference_tables/yields/Ertraege_Landkreise_10_Frucharten_1999-2020_detrended.csv"
 OBS_PTH_GER = f"/beegfs/jaenicke/klimertrag/result_analysis/data/reference_tables/yields/Ertraege_Deutschland_10_Frucharten_1999-2020_detrended.csv"
 
-OUT_FOLDER_TABLES = "/beegfs/jaenicke/klimertrag_temp/tables/11_final_results/yield_validation"
-OUT_FOLDER_FIGURES = "/beegfs/jaenicke/klimertrag_temp/figures/11_final_results"
+OUT_FOLDER_TABLES = "/beegfs/jaenicke/klimertrag_temp/tables/11_final_results"
+OUT_FOLDER_FIGURES = "/beegfs/jaenicke/klimertrag_temp/figures/11_final_results/yield_validation"
 
 YIELD_OBS_COL = 'yield_obs_detr'
 
@@ -592,7 +592,7 @@ def validate_results_years_aggregated(run_id):
         print(f"Probably no predicted or observed values for this time period. {min_year} - {max_year}.")
 
 if __name__ == '__main__':
-    # merge_observation_simulation_years_aggregated()
+    merge_observation_simulation_years_aggregated()
     for run_id in RUN_IDS:
         print(run_id)
         validate_results_years_aggregated(run_id=run_id)
