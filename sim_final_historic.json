@@ -127,7 +127,7 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
-				["Yield", "LAST"]
+				["FrostRed|frostredlast", "LAST"]
 			]
 		],
 
