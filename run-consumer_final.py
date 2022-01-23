@@ -135,49 +135,49 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = list(output_grids.keys())
     else:
         output_grids = {
-            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            # "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             
-            "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "ssm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "ssm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "ssm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             
-            "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s2doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s2sm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s2sm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s2sm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "sedoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "sesm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "sesm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "sesm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s3doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s3sm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s3sm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s3sm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s4doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s4sm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s4sm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s4sm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s5sm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s5sm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s5sm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s6doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s6sm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s6sm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s6sm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "s7doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "s7doy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "s7sm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s7sm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "s7sm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
 
-            "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
             "hsm03": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "hsm36": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
             "hsm69": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 4},
