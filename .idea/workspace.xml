@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="138f35ac-3a38-43f4-8ba9-1ccaf1fdcc16" name="Changes" comment="Add analysis scripts and necessary reference data">
-      <change beforePath="$PROJECT_DIR$/.idea/klimertrag.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/klimertrag.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -201,7 +199,7 @@
       <workItem from="1643218952813" duration="2435000" />
       <workItem from="1643362079539" duration="23774000" />
       <workItem from="1643641213292" duration="1195000" />
-      <workItem from="1643708570574" duration="389000" />
+      <workItem from="1643708570574" duration="1273000" />
     </task>
     <task id="LOCAL-00001" summary="Add analysis scripts and necessary reference data">
       <created>1641577973292</created>
