@@ -216,8 +216,21 @@
 				["Mois|hsm69", [7, 9, "AVG"]]
 			]
 		],
-
 		"pheno-events": [
+		"daily", [
+				"Date",
+				"DOY",
+				"Precip",
+				"Tmin",
+				"Tavg",
+				"Tmax",
+				"Wind",
+				"Globrad",
+				"Relhumid",
+				"AtmCO2"
+			]
+		],
+		"_pheno-events": [
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],

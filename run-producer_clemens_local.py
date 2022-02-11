@@ -65,7 +65,8 @@ DATA_GRID_SLOPE = "germany/slope_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_LAND_USE = "germany/landuse_1000_31469_gk5.asc"
 DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
 # DATA_GRID_DISTRICTS = "germany/districts_1000_25832_etrs89-utm32n.asc"
-DATA_GRID_DISTRICTS = r"germany/dwd-stations-pheno_1000_25832_etrs89-utm32n.asc"
+# DATA_GRID_DISTRICTS = r"germany/dwd-stations-pheno_1000_25832_etrs89-utm32n.asc"
+DATA_GRID_DISTRICTS = r"germany/jki-stations_1000_25832_etrs89-utm32n.asc"
 # DATA_GRID_DISTRICTS = r"germany/rand-sample-wbtenth_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
@@ -101,7 +102,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "crop.json": "crop.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_testing.csv",
-        "run-setups": "[309]",
+        "run-setups": "[401,402,403,404,405,406,407,408,409,410,411,412,413,414,415,416,417]",
         "shared_id": shared_id
     }
     
@@ -229,7 +230,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
         cdict = {}
         # path to latlon-to-rowcol.json
-        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + "/")
+        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + "latlon" + "/")
         climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
         print("created climate_data to gk5 interpolator: ", path)
 
@@ -564,14 +565,48 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
                 for _ in range(4):
                     subpath_to_csv = subpath_to_csv.replace("//", "/")
-                env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
+                # env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
+                # if setup["incl_hist"]:
+                #     hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
+                #     for _ in range(4):
+                #         hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
+                #     env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
+                # print("pathToClimateCSV:", env_template["pathToClimateCSV"])
+                # if DEBUG_WRITE_CLIMATE :
+                #     listOfClimateFiles.add(subpath_to_csv)
+                env_template["pathToClimateCSV"] = [
+                    paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
                 if setup["incl_hist"]:
-                    hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical", ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
+
+                    if rcm[:3] == "UHO":
+                        hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm="CLMcom-CCLM4-8-17",
+                                                                               scenario="historical", ensmem=ensmem,
+                                                                               version=version, crow=str(crow),
+                                                                               ccol=str(ccol))
+                        for _ in range(4):
+                            hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
+                        env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup[
+                            "climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
+
+                    elif rcm[:3] == "SMH":
+                        hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm="CLMcom-CCLM4-8-17",
+                                                                               scenario="historical", ensmem=ensmem,
+                                                                               version=version, crow=str(crow),
+                                                                               ccol=str(ccol))
+                        for _ in range(4):
+                            hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
+                        env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup[
+                            "climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
+
+                    hist_subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario="historical",
+                                                                           ensmem=ensmem, version=version,
+                                                                           crow=str(crow), ccol=str(ccol))
                     for _ in range(4):
                         hist_subpath_to_csv = hist_subpath_to_csv.replace("//", "/")
-                    env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
+                    env_template["pathToClimateCSV"].insert(0, paths["monica-path-to-climate-dir"] + setup[
+                        "climate_path_to_csvs"] + "/" + hist_subpath_to_csv)
                 print("pathToClimateCSV:", env_template["pathToClimateCSV"])
-                if DEBUG_WRITE_CLIMATE :
+                if DEBUG_WRITE_CLIMATE:
                     listOfClimateFiles.add(subpath_to_csv)
 
                 env_template["customId"] = {
@@ -583,7 +618,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     "yields": setup["yields"],
                     "env_id": sent_env_count,
                     "nodata": False,
-                    "district_id": district_id
+                    "district_id": district_id,
+                    "sr": sr,
+                    "sh": sh
                 }
 
                 if not DEBUG_DONOT_SEND :

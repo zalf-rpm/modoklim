@@ -6,5 +6,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="scripts" />
     <orderEntry type="module" module-name="hohenheim" />
+    <orderEntry type="module" module-name="hohenfinow" />
   </component>
 </module>
