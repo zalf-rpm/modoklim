@@ -1,0 +1,11 @@
+{
+    "dwd_germany": "capnp://insecure@10.10.24.110:46397/db16e924-fde4-45c3-b1ee-7872f749461d",
+    "buek_200": "",
+    "buek_1000": "capnp://insecure@10.10.24.110:46013/d27002f4-932b-4318-9258-94d3f78fb348",
+    "dgm_1000": "capnp://insecure@10.10.24.110:33651/a283144b-71b6-4682-a13d-87465dd5d32a",
+    "slope_1000": "capnp://insecure@10.10.24.110:38617/223e0270-9f7a-4ea9-8c98-d882b675ff79",
+    "landuse_1000": "",
+    "crop_1000": "",
+    "monica": "capnp://insecure@10.10.24.110:35649",
+    "jobs": "capnp://insecure@10.10.24.110:46821/fd320cc0-24d3-48b7-b822-94911567fa97"
+}
