@@ -51,6 +51,8 @@ climate_data_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "climate_data.capnp"
 common_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "common.capnp"), imports=abs_imports)
 #mgmt_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "management.capnp"), imports=abs_imports)
 jobs_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "jobs.capnp"), imports=abs_imports)
+config_service_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "config.capnp"), imports=abs_imports)
+config_capnp = capnp.load("config.capnp")
 
 DATA_GRID_CROPS = "germany/germany-complete_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
@@ -63,6 +65,7 @@ def run():
         "site.json": "site.json",
         "setups-file": "sim_setups_capnp_bgr.csv",
         "pet2sr": "petname_to_sturdy_refs.json",
+        "config_sr": "capnp://insecure@10.10.24.210:38989/0bf3f1ce-5026-4765-bbaf-22819f734d4e",
         "run-setups": "[1]"
     }
     
@@ -86,8 +89,8 @@ def run():
 
     conMan = common.ConnectionManager()
 
-    def connect(sr_or_petname, cast_as):
-        sr = sr_or_petname if sr_or_petname[:8] == "capnp://" else pet_to_srs[sr_or_petname]
+    def connect(conf, sr_or_petname, cast_as):
+        sr = sr_or_petname if sr_or_petname[:8] == "capnp://" else conf.get(sr_or_petname, pet_to_srs[sr_or_petname])
         return conMan.try_connect(sr, cast_as=cast_as)
 
     
@@ -101,6 +104,19 @@ def run():
 
     sent_env_count = 1
     start_time = time.perf_counter()
+
+    config_service_cap = conMan.connect(config["config_sr"], config_service_capnp.Service)
+    conf_res = config_service_cap.nextConfig().wait()
+    if conf_res.noFurtherConfigs:
+        print("no further configs available")
+        return
+    serv_conf = {}
+    for e in conf_res.config.as_struct(config_capnp.Config).entries:
+        if e.sturdyRef:
+            serv_conf[e.name] = e.sturdyRef
+    print(serv_conf)
+
+    return
 
     listOfClimateFiles = set()
     # run calculations for each setup
@@ -116,16 +132,15 @@ def run():
         ## extract crop_id from crop-id name that has possible an extenstion
         crop_id_short = crop_id.split('_')[0]
 
-
-        #climate_dataset_cap = connect(setup["climate_dataset_sr"], climate_data_capnp.Dataset)
-        climate_service_cap = connect(setup["climate_dataset_sr"], climate_data_capnp.Service)
+        #climate_dataset_cap = connect(conf.get("dwd_germany", setup["climate_dataset_sr"]), climate_data_capnp.Dataset)
+        climate_service_cap = connect(serv_conf, setup["climate_dataset_sr"], climate_data_capnp.Service)
         climate_dataset_cap = climate_service_cap.getAvailableDatasets().wait().datasets[0].data
-        soil_cap = connect(setup["soil_sr"], soil_data_capnp.Service)
-        dgm_cap = connect(setup["dgm_sr"], grid_capnp.Grid)
-        slope_cap = connect(setup["slope_sr"], grid_capnp.Grid)
-        monica_cap = connect(setup["monica_sr"], model_capnp.EnvInstance)
-        landcover_cap = connect(setup["landcover_sr"], grid_capnp.Grid) if setup["landcover"] else None
-        jobs_cap = connect(setup["jobs_sr"], jobs_capnp.Service)
+        soil_cap = connect(serv_conf, setup["soil_sr"], soil_data_capnp.Service)
+        dgm_cap = connect(serv_conf, setup["dgm_sr"], grid_capnp.Grid)
+        slope_cap = connect(serv_conf, setup["slope_sr"], grid_capnp.Grid)
+        monica_cap = connect(serv_conf, setup["monica_sr"], model_capnp.EnvInstance)
+        landcover_cap = connect(serv_conf, setup["landcover_sr"], grid_capnp.Grid) if setup["landcover"] else None
+        jobs_cap = connect(serv_conf, setup["jobs_sr"], jobs_capnp.Service)
 
         # add crop id from setup file
         try:

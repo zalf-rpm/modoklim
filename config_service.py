@@ -50,36 +50,43 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
     def __init__(self, restorer, no_of_configs = 1):
         self._restorer = restorer
         self._no_of_configs = no_of_configs
-        self._name_to_sturdy_refs = defaultdict(list) 
+        self._petname_to_sturdy_refs = defaultdict(list) 
+        self._started_processes = []
 
-        #self.start_services()
+
+    def __del__(self):
+        for p in self._started_processes:
+            p.terminate()
 
 
     def start_services(self):
 
-        print(self.create_registrar("monica"))
-        return
-
         # start monicas
         for i in range(self._no_of_configs):
             sr = self.create_registrar("monica")
-            sp.run(["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-rsr", sr])
-            
+            self._started_processes.append(sp.Popen(
+                ["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-d", "-rsr", sr]))
+
+        return
+
         # start climate service
         sr = self.create_registrar("dwd_germany")
-        sp.run(["python", "src/python/services/climate/dwd_germany_service.py"],
+        self._started_processes.append(sp.Popen(
+            ["python", "src/python/services/climate/dwd_germany_service.py"],
             input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure")
+            cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start climate service
         sr = self.create_registrar("buek_1000")
-        sp.run(["python", "src/python/services/soil/sqlite_soil_data_service.py"],
+        self._started_processes.append(sp.Popen(
+            ["python", "src/python/services/soil/sqlite_soil_data_service.py"],
             input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure")
+            cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start dgm service
         sr = self.create_registrar("dgm_1000")
-        sp.run([
+        self._started_processes.append(sp.Popen(
+            [
                 "python", 
                 "src/python/services/grid/ascii_grid.py",
                 "path_to_ascii_grid=data/geo/dem_1000_31469_gk5.asc",
@@ -87,11 +94,12 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
                 "val_type=float"
             ],
             input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure")
+            cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start slope service
         sr = self.create_registrar("slope_1000")
-        sp.run([
+        self._started_processes.append(sp.Popen(
+            [
                 "python", 
                 "src/python/services/grid/ascii_grid.py",
                 "path_to_ascii_grid=data/geo/slope_1000_31469_gk5.asc",
@@ -99,41 +107,40 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
                 "val_type=float"
             ],
             input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure")
+            cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start job factory
         sr = self.create_registrar("jobs")
-        sp.run([
+        self._started_processes.append(sp.Popen(
+            [
                 "python", 
                 "src/python/services/jobs/jobs_service.py",
                 "path_to_csv=/home/berg/Desktop/Koordinaten_HE_dummy_ID.csv"
             ],
             input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure")
+            cwd="/home/berg/GitHub/mas-infrastructure"))
 
 
     def create_registrar(self, name):
         reg = Registrar()
         sr, unsave_sr = self._restorer.save(reg)
-        if name in self._name_to_sturdy_refs:
-            self._name_to_sturdy_refs = [self._name_to_sturdy_refs[name]]
-            reg.register_action = lambda sr: self._name_to_sturdy_refs[name].append(sr)
+        if name in self._petname_to_sturdy_refs:
+            self._petname_to_sturdy_refs = [self._petname_to_sturdy_refs[name]]
+            reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs[name].append(sr)
         else:
-            reg.register_action = lambda sr: self._name_to_sturdy_refs.insert(name, sr)
+            reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs.insert(name, sr)
         return sr
 
 
-    def createConfig_context(self, context): # createConfig @0 () -> (config :C, noFurtherConfigs :Bool = false);
-
+    def nextConfig_context(self, context): # createConfig @0 () -> (config :C, noFurtherConfigs :Bool = false);
+        def val_or_pop(v):
+            return v.pop() if isinstance(v, list) else v
         if self._no_of_configs > 0:
-            context.results.config = config_capnp.Config.new_message(
-                climateServiceSR=self._name_to_sturdy_refs.get("dwd_germany", ""),
-                soilServiceSR=self._name_to_sturdy_refs.get("buek_1000", ""),
-                dgmSR=self._name_to_sturdy_refs.get("dgm_1000", ""),
-                slopeSR=self._name_to_sturdy_refs.get("slope_1000", ""),
-                monicaSR=self._name_to_sturdy_refs.get("monica", "").pop(),
-                jobFactorySR=self._name_to_sturdy_refs.get("jobs", "")
-            )
+            entries = list([{
+                "name": petname, 
+                "sturdyRef": val_or_pop(self._petname_to_sturdy_refs.get(petname, ""))
+            } for petname in ["dwd_germany", "buek_1000", "dgm_1000", "slope_1000", "monica", "jobs"]])
+            context.results.config = config_capnp.Config.new_message(entries=entries)
         else:
             context.results.noFurtherConfigs = True
 
@@ -153,8 +160,14 @@ class Registrar(reg_capnp.Registrar.Server, common.Identifiable):
         self._register_sr_action = a 
 
     def register_context(self, context): # register @0 (cap :Common.Identifiable, regName :Text, categoryId :Text) -> (unreg :Common.Action, reregSR :Text);
+        def do_reg(sr):
+            print(sr)
+            self._register_sr_action(sr)
         if self._register_sr_action:
-            context.params.cap.save().then(lambda res: self._register_sr_action(res.sr))
+            sr = context.params.cap.save().wait().sturdyRef
+            print(sr)
+            do_reg(sr)
+            #return context.params.cap.save().then(lambda res: do_reg(res.sr)) #self._register_sr_action(res.sr))
 
 #------------------------------------------------------------------------------
 
@@ -181,14 +194,16 @@ async def main(use_async, no_of_configs=1, serve_bootstrap=True, host=None, port
     service = LocalService(restorer, no_of_configs=int(config["no_of_configs"]))
     if use_async:
         await serv.async_init_and_run_service({"service": service}, config["host"], config["port"], 
-        serve_bootstrap=config["serve_bootstrap"], restorer=restorer)
+            serve_bootstrap=config["serve_bootstrap"], restorer=restorer, 
+            run_before_enter_eventloop=lambda: service.start_services())
     else:
         
         serv.init_and_run_service({"service": service}, config["host"], config["port"], 
-            serve_bootstrap=config["serve_bootstrap"], restorer=restorer)
+            serve_bootstrap=config["serve_bootstrap"], restorer=restorer,
+            run_before_enter_eventloop=lambda: service.start_services())
 
 #------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    asyncio.run(main(False, no_of_configs=2)) 
+    asyncio.run(main(False, no_of_configs=1)) 
     #asyncio.run(main(True, no_of_configs=2)) #asyncio
