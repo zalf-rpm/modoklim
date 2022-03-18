@@ -64,6 +64,7 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
         # start monicas
         for i in range(self._no_of_configs):
             sr = self.create_registrar("monica")
+            return
             self._started_processes.append(sp.Popen(
                 ["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-d", "-rsr", sr]))
 
@@ -129,6 +130,7 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
             reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs[name].append(sr)
         else:
             reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs.insert(name, sr)
+        print("created registrar with sr:", sr)
         return sr
 
 
@@ -151,6 +153,7 @@ class Registrar(reg_capnp.Registrar.Server, common.Identifiable):
     def __init__(self, register_sr_action=None):
         self._register_sr_action = register_sr_action
 
+
     @property
     def register_sr_action(self):
         return self._register_action 
@@ -161,13 +164,11 @@ class Registrar(reg_capnp.Registrar.Server, common.Identifiable):
 
     def register_context(self, context): # register @0 (cap :Common.Identifiable, regName :Text, categoryId :Text) -> (unreg :Common.Action, reregSR :Text);
         def do_reg(sr):
-            print(sr)
-            self._register_sr_action(sr)
+            print("------------------", sr)
+            #self._register_sr_action(sr)
         if self._register_sr_action:
-            sr = context.params.cap.save().wait().sturdyRef
-            print(sr)
-            do_reg(sr)
-            #return context.params.cap.save().then(lambda res: do_reg(res.sr)) #self._register_sr_action(res.sr))
+            print("Registrator: register message received")
+            return context.params.cap.save().then(lambda res: do_reg(res.sturdyRef)) #self._register_sr_action(res.sr))
 
 #------------------------------------------------------------------------------
 
@@ -205,5 +206,5 @@ async def main(use_async, no_of_configs=1, serve_bootstrap=True, host=None, port
 #------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    asyncio.run(main(False, no_of_configs=1)) 
-    #asyncio.run(main(True, no_of_configs=2)) #asyncio
+    #asyncio.run(main(False, no_of_configs=1)) 
+    asyncio.run(main(True, no_of_configs=1)) #asyncio
