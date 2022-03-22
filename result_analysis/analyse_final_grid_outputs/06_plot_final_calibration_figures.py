@@ -141,13 +141,14 @@ def plot_yield_difference_in_grid(run_ids, diff_col, title, out_pth, max_val=Non
     plt.rcParams['legend.fontsize'] = 9
     plt.rcParams["font.family"] = "DejaVu Sans"
 
-    ncols = math.ceil(len(run_ids) / 2)
-    # ncols = len(run_ids)
+    nrows = math.ceil(len(run_ids) / 2)
 
-    fig, axs = plt.subplots(nrows=2, ncols=ncols, sharey=True, figsize=cm2inch(16.0, 10))
-
-    ixs = [(0,0), (0,1), (0,2), (0,3), (2,0), (2,1), (2,2), (2,3)]
-    lgixs = [(1,0), (1,1), (1,2), (1,3), (3,0), (3,1), (3,2), (3,3)]
+    # ncols = math.ceil(len(run_ids) / 2)
+    # fig, axs = plt.subplots(nrows=2, ncols=ncols, sharey=True, figsize=cm2inch(16.0, 10))
+    # ixs = [(0,0), (0,1), (0,2), (0,3), (2,0), (2,1), (2,2), (2,3)]
+    # lgixs = [(1,0), (1,1), (1,2), (1,3), (3,0), (3,1), (3,2), (3,3)]
+    fig, axs = plt.subplots(nrows=4, ncols=2, figsize=(cm2inch(16, 24)),
+                            gridspec_kw=dict(height_ratios=[8, 8, 8, 8]))
 
     for r, run_id in enumerate(run_ids):
 
@@ -226,19 +227,79 @@ def plot_yield_difference_in_grid(run_ids, diff_col, title, out_pth, max_val=Non
 
         max_val = None
 
+    ## merge last row of grid
+    # gs = axs[1, 1].get_gridspec()
+    # ax = plt.subplot(gs[4, :])
+    #
+    # ## add colorbar to last row
+    # cb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=ax,
+    #                   orientation='horizontal', fraction=0.5, label='Obs.-Sim [%]')
+    # cb.set_ticks(bounds)
+    # cb.ax.yaxis.set_tick_params(color="white")
+    # # cb.set_ticklabels(["<-25", "-20", "-15", "-10", "-5", "0", "5", "10", "15", "20", "25", ">30"])
+    # cb.set_ticklabels(["<-35", "-30", "-25", "-20", "-15", "-10", "-5", "0", "5", "10", "15", "20", "25", ">30"])
+    # cb.ax.tick_params(labelsize=10)
+    # cb.outline.set_visible(False)
+
+
     # ## Add colorbar
-    ax4 = fig.add_axes([0.91, 0.12, 0.01, 0.73])
-    ax4.annotate(text="Obs.-Sim.\n    [%]", xy=(0.89, 0.89), xycoords='figure fraction', fontsize=10)
-    cb = mpl.colorbar.ColorbarBase(ax4, cmap=cmap, norm=norm, spacing='proportional')
+    # ax4 = fig.add_axes([0.2, 0.05, 0.71, 0.01])
+    # ax4.annotate(text="Obs.-Sim.\n    [%]", xy=(0.89, 0.89), xycoords='figure fraction', fontsize=10)
+    # cmap = plt.cm.RdYlGn  # RdYlGn
+    # cmaplist = [cmap(i) for i in range(cmap.N)]
+    # cmap = mpl.colors.LinearSegmentedColormap.from_list(
+    #     'Custom cmap', cmaplist, cmap.N)
+    # # define the bins and normalize
+    # bounds = np.linspace(v_min, v_max, 12)
+    # norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+    #
+    # cb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=ax,
+    #                   orientation='horizontal', fraction=0.5, label=label)
+    # cb.set_ticks(bounds)
+    # cb.ax.yaxis.set_tick_params(color="white")
+    # cb.set_ticklabels(["<-25", "-20", "-15", "-10", "-5", "0", "5", "10", "15", "20", "25", ">30"])
+    # cb.ax.tick_params(labelsize=10)
+    # cb.outline.set_visible(False)
+
+
+    # cb = mpl.colorbar.ColorbarBase(ax4, cmap=cmap, norm=norm, spacing='proportional',
+    #                                orientation='horizontal', label='Obs.-Sim [%]')
+    # cb.set_ticks(bounds)
+    # cb.ax.yaxis.set_tick_params(color="white")
+    # # cb.set_ticklabels(["<-35", "-30","-25", "-20", "-15", "-10", "-5", "0", "5", "10", "15", "20", "25", ">30"])
+    # cb.ax.tick_params(labelsize=10)
+    # cb.outline.set_visible(False)
+
+    plt.tight_layout()
+    plt.show()
+    fig.savefig(out_pth)
+    plt.close()
+
+def plot_legend(v_min, v_max, width, height, label, out_pth):
+
+    fig, ax = plt.subplots(figsize=(cm2inch(width, height)))
+
+    nbounds = int(((-v_min + v_max) / 5) + 1)
+
+    cmap = plt.cm.RdYlBu  # RdYlGn
+    cmaplist = [cmap(i) for i in range(cmap.N)]
+    cmap = mpl.colors.LinearSegmentedColormap.from_list(
+        'Custom cmap', cmaplist, cmap.N)
+    # define the bins and normalize
+    bounds = np.linspace(v_min, v_max, nbounds)
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
+
+    cb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=ax,
+                      orientation='horizontal', fraction=0.5, label=label)
     cb.set_ticks(bounds)
     cb.ax.yaxis.set_tick_params(color="white")
-    # cb.set_ticklabels(["<-35", "-30","-25", "-20", "-15", "-10", "-5", "0", "5", "10", "15", "20", "25", ">30"])
+    cb.set_ticklabels(["<-35", "-30", "-25", "-20", "-15", "-10", "-5", "0", "5", "10", "15", "20", "25", ">30"])
     cb.ax.tick_params(labelsize=10)
     cb.outline.set_visible(False)
 
-    # plt.tight_layout()
-    plt.show()
-    fig.savefig(out_pth)
+    plt.tight_layout()
+
+    plt.savefig(out_pth, dpi=600, bbox_inches='tight')
     plt.close()
 
 
@@ -270,14 +331,15 @@ def plot_obs_vs_sim_in_grid(run_ids, obs_col, sim_col, out_pth):
         agr_ind = round(d_modified(df[obs_col], df[sim_col]), 2)
         rmse = round(math.sqrt(metrics.mean_squared_error(df[obs_col], df[sim_col])), 2)
         nmbe = round(np.mean(np.array(df[obs_col]) - np.array(df[sim_col])) / np.mean(np.array(df[obs_col])), 2)
+        nmae = round(metrics.mean_absolute_error(np.array(df[obs_col]), np.array(df[sim_col])) / np.mean(np.array(df[obs_col])), 2)
         corr_matrix = np.corrcoef(np.array(df[obs_col]), np.array(df[sim_col]))
         corr = corr_matrix[0, 1]
         rsq = round(corr ** 2, 2)
 
-        axs[ix].scatter(x=df[obs_col], y=df[sim_col], s=3)
+        axs[ix].scatter(x=df[sim_col], y=df[obs_col], s=3)
         axs[ix].annotate(text=f"nMBE: {nmbe}", xy=(0.051, 0.60), xycoords='axes fraction')
         axs[ix].annotate(text=f"R²: {rsq}", xy=(0.051, 0.70), xycoords='axes fraction')
-        axs[ix].annotate(text=f"RMSE: {rmse}", xy=(0.051, 0.8), xycoords='axes fraction')
+        axs[ix].annotate(text=f"nMAE: {nmae}", xy=(0.051, 0.8), xycoords='axes fraction')
         axs[ix].annotate(text=f"d_mod: {agr_ind}", xy=(0.051, 0.90), xycoords='axes fraction')
 
         max_val = max(df[sim_col].max(), df[obs_col].max())
@@ -288,8 +350,8 @@ def plot_obs_vs_sim_in_grid(run_ids, obs_col, sim_col, out_pth):
         axs[ix].set_title(crop_name, loc='left', fontsize=font_size)
         # ax.set_xlabel('Reference')
         # ax.set_ylabel('Prediction')
-        axs[ix].set_xlabel('Observation')
-        axs[ix].set_ylabel('Simulation')
+        axs[ix].set_xlabel('Simulation')
+        axs[ix].set_ylabel('Observation')
 
     plt.tight_layout()
     # plt.show()
@@ -331,6 +393,9 @@ def plot_observat_simulation_time_series_in_grid(run_ids, obs_col, sim_col, out_
         ## Calculate performance measures
         agr_ind = round(d_modified(df[obs_col], df[sim_col]), 2)
         rmse = int(math.sqrt(metrics.mean_squared_error(df[obs_col], df[sim_col])))
+        nmae = round(
+            metrics.mean_absolute_error(np.array(df[obs_col]), np.array(df[sim_col])) / np.mean(np.array(df[obs_col])),
+            2)
 
         obs = np.array(df[obs_col])
         sim = np.array(df[sim_col])
@@ -347,7 +412,7 @@ def plot_observat_simulation_time_series_in_grid(run_ids, obs_col, sim_col, out_
         axs[ix].plot(df['Year'], df[sim_col], c='blue')
         axs[ix].set_ylim([ymin, ymax])
 
-        text = f"R²:{rsq}, RMSE:{rmse}, nMBE:{nmbe}"
+        text = f"R²:{rsq}, nMAE:{nmae}, nMBE:{nmbe}"
         axs[ix].annotate(text=text, xy=(0.021, 0.02), xycoords='axes fraction', size=9)
         axs[ix].set_title(crop_name, loc='left', fontsize=font_size)
 
@@ -408,19 +473,26 @@ def main():
     # plot_yield_difference_in_grid(run_ids=RUN_IDS,
     #                               diff_col='diff_obsim',
     #                               title='All crops',
-    #                               out_pth=r"D:\projects\KlimErtrag\figures\klimertrag_landkreise\11_final_results\yield_validation\test.png", max_val=None)
+    #                               out_pth=r"D:\projects\KlimErtrag\figures\klimertrag_landkreise\11_final_results\yield_validation\yield_difference_maps.png", max_val=None)
 
-    # out_pth = fr"D:\projects\KlimErtrag\figures\klimertrag_landkreise\11_final_results\yield_validation\scatter-spatial_obs-sim.png"
-    # plot_obs_vs_sim_in_grid(run_ids=RUN_IDS,
-    #                         obs_col=YIELD_OBS_COL,
-    #                         sim_col='yield_sim',
-    #                         out_pth=out_pth)
+    out_pth = fr"D:\projects\KlimErtrag\figures\klimertrag_landkreise\11_final_results\yield_validation\scatter-spatial_obs-sim.png"
+    plot_obs_vs_sim_in_grid(run_ids=RUN_IDS,
+                            obs_col=YIELD_OBS_COL,
+                            sim_col='yield_sim',
+                            out_pth=out_pth)
 
     out_pth = fr"D:\projects\KlimErtrag\figures\klimertrag_landkreise\11_final_results\yield_validation\timeseries_obs-sim.png"
     plot_observat_simulation_time_series_in_grid(run_ids=RUN_IDS,
                             obs_col=YIELD_OBS_COL,
                             sim_col='yield_sim_geravg',
                             out_pth=out_pth)
+
+    # plot_legend(v_min=-35,
+    #             v_max=30,
+    #             width=13,
+    #             height=0.3,
+    #             label="Observationen-Simulationen [%]",
+    #             out_pth=rf"D:\projects\KlimErtrag\figures\klimertrag_landkreise\11_final_results\yield_validation\legend_obs-sim_-25_to_+30.jpg")
 
 if __name__ == '__main__':
     main()
