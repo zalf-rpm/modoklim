@@ -38,29 +38,9 @@ SETUPS = {
         "change_range" : {"min": -2500, "max" : 2500},
         "yield_max": 9000
     },
-    "wheatwinterwheat_sust":{
-        "crop" : "wheatwinterwheat",
-        "crop_name_ger" : "Winter-Weizen",
-        "abbr": "WW",
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-        "change_range" : {"min": -2500, "max" : 2500},
-        "yield_max": 9000
-    },
-    "ryewinterrye":{
-        "crop" : "ryewinterrye",
-        "crop_name_ger" : "Winter-Roggen",
-        "abbr": "WRye",
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-            "change_range" : {"min": -2500, "max" : 2500},
-        "yield_max": 9000
-    },
     "barleywinterbarley":{
         "crop" : "barleywinterbarley",
-        "crop_name_ger" : "Winter-Gerste",
+        "crop_name_ger" : "Wintergerste",
         "abbr": "WB",
         "hist_per" : {"start": 1971, "end": 2000},
         "futur_per" : {"start": 2031, "end": 2060},
@@ -88,9 +68,30 @@ SETUPS = {
         "change_range": {"min": -4500, "max": 4500},
         "yield_max": 22500
     },
+    "wheatwinterwheat_sust":{
+        "crop" : "wheatwinterwheat",
+        "crop_name_ger" : "Winterweizen",
+        "abbr": "WW",
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+        "change_range" : {"min": -2500, "max" : 2500},
+        "yield_max": 9000
+    },
+    "ryewinterrye":{
+        "crop" : "ryewinterrye",
+        "crop_name_ger" : "Winterroggen",
+        "abbr": "WRye",
+        "hist_per" : {"start": 1971, "end": 2000},
+        "futur_per" : {"start": 2031, "end": 2060},
+        "futur_per2" : {"start": 2070, "end": 2099},
+            "change_range" : {"min": -2500, "max" : 2500},
+        "yield_max": 9000
+    },
+
     "barleyspringbarley":{
         "crop" : "barleyspringbarley",
-        "crop_name_ger" : "Sommer-Gerste",
+        "crop_name_ger" : "Sommergerste",
         "abbr": "SB",
         "hist_per" : {"start": 1971, "end": 2000},
         "futur_per" : {"start": 2031, "end": 2060},
@@ -120,18 +121,18 @@ SETUPS = {
     },
     }
 
-SETUPS = {
-    "barleywinterbarley":{
-        "crop" : "barleywinterbarley",
-        "crop_name_ger" : "Winter-Gerste",
-        "abbr": "WB",
-        "hist_per" : {"start": 1971, "end": 2000},
-        "futur_per" : {"start": 2031, "end": 2060},
-        "futur_per2" : {"start": 2070, "end": 2099},
-        "change_range" : {"min": -2500, "max" : 2500},
-        "yield_max": 9000
-    }
-    }
+# SETUPS = {
+#     "barleywinterbarley":{
+#         "crop" : "barleywinterbarley",
+#         "crop_name_ger" : "Winter-Gerste",
+#         "abbr": "WB",
+#         "hist_per" : {"start": 1971, "end": 2000},
+#         "futur_per" : {"start": 2031, "end": 2060},
+#         "futur_per2" : {"start": 2070, "end": 2099},
+#         "change_range" : {"min": -2500, "max" : 2500},
+#         "yield_max": 9000
+#     }
+#     }
 
 def create_folder(directory):
     """
@@ -692,6 +693,6 @@ def main():
                           title=OUTPUT_VAR_DICT[output_var]["title"], out_folder=out_folder)
 
 if __name__ == '__main__':
-    # main()
+    main()
 
-    joblib.Parallel(n_jobs=1)(joblib.delayed(work_func)(sname) for sname in SETUPS)
+    # joblib.Parallel(n_jobs=1)(joblib.delayed(work_func)(sname) for sname in SETUPS)
