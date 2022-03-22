@@ -24,6 +24,7 @@ from pathlib import Path
 import subprocess as sp
 import sys
 import time
+from threading import Thread, Lock
 import uuid
 
 PATH_TO_REPO = Path(os.path.realpath(__file__)).parent
@@ -43,6 +44,8 @@ PATH_TO_CAPNP_SCHEMAS = PATH_TO_REPO.parent / "mas-infrastructure" / "capnproto_
 abs_imports = [str(PATH_TO_CAPNP_SCHEMAS)]
 reg_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "registry.capnp"), imports=abs_imports)
 config_service_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "config.capnp"), imports=abs_imports)
+common_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "common.capnp"), imports=abs_imports)
+persistence_capnp = capnp.load(str(PATH_TO_CAPNP_SCHEMAS / "persistence.capnp"), imports=abs_imports)
 config_capnp = capnp.load("config.capnp", imports=abs_imports)
 
 class LocalService(config_service_capnp.Service.Server, common.Identifiable, serv.AdministrableService): 
@@ -51,75 +54,148 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
         self._restorer = restorer
         self._no_of_configs = no_of_configs
         self._petname_to_sturdy_refs = defaultdict(list) 
-        self._started_processes = []
+        #self._processes_lock = Lock()
+        #self._started_processes = []
 
 
     def __del__(self):
-        for p in self._started_processes:
-            p.terminate()
+        pass
+        #for p in self._started_processes:
+        #    p.terminate()
 
 
     def start_services(self):
 
+        #def start_monica(sr):
+        #    p = sp.Popen(["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-d", "-rsr", sr])
+        #    self._processes_lock.acquire()
+        #    self._started_processes.append(p)
+        #    self._processes_lock.release()
+
         # start monicas
         for i in range(self._no_of_configs):
             sr = self.create_registrar("monica")
-            return
-            self._started_processes.append(sp.Popen(
-                ["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-d", "-rsr", sr]))
+            print("monica", i, "sr:", sr)
+            Thread(
+                target=sp.run, 
+                args=(["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-d", "-rsr", sr],),
+                #kwargs={"input": json.dumps({"service": sr}), "encoding": "ascii"}
+            ).start()
+            #Thread(target=start_monica, args=(sr,)).start()
+            #self._started_processes.append(sp.Popen(
+            #    ["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-d", "-rsr", sr]))
 
-        return
+        #def start_python(script, sr):
+        #    p = sp.Popen(["python", script], stdin=sp.PIPE, shell=False, encoding="ascii")
+        #        #cwd="/home/berg/GitHub/mas-infrastructure")
+        #    p.communicate(input=json.dumps({"service": sr}))
+        #    print("after communicate")
+        #    self._processes_lock.acquire()
+        #    self._started_processes.append(p)
+        #    self._processes_lock.release()
 
         # start climate service
         sr = self.create_registrar("dwd_germany")
-        self._started_processes.append(sp.Popen(
-            ["python", "src/python/services/climate/dwd_germany_service.py"],
-            input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure"))
-
+        print("dwd_germany sr:", sr)
+        Thread(
+            target=sp.run, 
+            args=(["python", "/home/berg/GitHub/mas-infrastructure/src/python/services/climate/dwd_germany_service.py"],),
+            kwargs={"input": json.dumps({"service": sr}), "encoding": "ascii"}
+        ).start()
+        #Thread(target=start_python, args=("/home/berg/GitHub/mas-infrastructure/src/python/services/climate/dwd_germany_service.py", sr)).start()
+        #p1 = sp.Popen(
+        #    ["python", "/home/berg/GitHub/mas-infrastructure/src/python/services/climate/dwd_germany_service.py"],
+        #    stdin=sp.PIPE, shell=False)#True,
+            #cwd="/home/berg/GitHub/mas-infrastructure")
+        #out, err = p1.communicate(input=json.dumps({"service": sr}).encode(encoding="ascii"))
+        #print("dwd_germany out:", out, "err:", err)
+        #p1.communicate(input=json.dumps({"service": sr}).encode(encoding="ascii"))
+        #print("after communicate")
+        #self._started_processes.append(p1)
+        
         # start climate service
         sr = self.create_registrar("buek_1000")
-        self._started_processes.append(sp.Popen(
-            ["python", "src/python/services/soil/sqlite_soil_data_service.py"],
-            input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure"))
+        print("buek_1000 sr:", sr)
+        Thread(
+            target=sp.run, 
+            args=(["python", "/home/berg/GitHub/mas-infrastructure/src/python/services/soil/sqlite_soil_data_service.py"],),
+            kwargs={"input": json.dumps({"service": sr}), "encoding": "ascii"}
+        ).start()
+        #self._started_processes.append(sp.Popen(
+        #    ["python", "src/python/services/soil/sqlite_soil_data_service.py"],
+        #    input=json.dumps({"service": sr}), shell=True,
+        #    cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start dgm service
         sr = self.create_registrar("dgm_1000")
-        self._started_processes.append(sp.Popen(
-            [
+        print("dgm_1000 sr:", sr)
+        Thread(
+            target=sp.run, 
+            args=([
                 "python", 
-                "src/python/services/grid/ascii_grid.py",
-                "path_to_ascii_grid=data/geo/dem_1000_31469_gk5.asc",
+                "/home/berg/GitHub/mas-infrastructure/src/python/services/grid/ascii_grid.py",
+                "path_to_ascii_grid=/home/berg/GitHub/mas-infrastructure/data/geo/dem_1000_31469_gk5.asc",
                 "grid_crs=gk5",
                 "val_type=float"
-            ],
-            input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure"))
+            ],),
+            kwargs={"input": json.dumps({"service": sr}), "encoding": "ascii"}
+        ).start()
+        #self._started_processes.append(sp.Popen(
+        #    [
+        #        "python", 
+        #        "src/python/services/grid/ascii_grid.py",
+        #        "path_to_ascii_grid=data/geo/dem_1000_31469_gk5.asc",
+        #        "grid_crs=gk5",
+        #        "val_type=float"
+        #    ],
+        #    input=json.dumps({"service": sr}), shell=True,
+        #    cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start slope service
         sr = self.create_registrar("slope_1000")
-        self._started_processes.append(sp.Popen(
-            [
+        print("slope_1000 sr:", sr)
+        Thread(
+            target=sp.run, 
+            args=([
                 "python", 
-                "src/python/services/grid/ascii_grid.py",
-                "path_to_ascii_grid=data/geo/slope_1000_31469_gk5.asc",
+                "/home/berg/GitHub/mas-infrastructure/src/python/services/grid/ascii_grid.py",
+                "path_to_ascii_grid=/home/berg/GitHub/mas-infrastructure/data/geo/slope_1000_31469_gk5.asc",
                 "grid_crs=gk5",
                 "val_type=float"
-            ],
-            input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure"))
+            ],),
+            kwargs={"input": json.dumps({"service": sr}), "encoding": "ascii"}
+        ).start()
+        #self._started_processes.append(sp.Popen(
+        #    [
+        #        "python", 
+        #        "src/python/services/grid/ascii_grid.py",
+        #        "path_to_ascii_grid=data/geo/slope_1000_31469_gk5.asc",
+        #        "grid_crs=gk5",
+        #        "val_type=float"
+        #    ],
+        #    input=json.dumps({"service": sr}), shell=True,
+        #    cwd="/home/berg/GitHub/mas-infrastructure"))
 
         # start job factory
         sr = self.create_registrar("jobs")
-        self._started_processes.append(sp.Popen(
-            [
+        print("slope_1000 sr:", sr)
+        Thread(
+            target=sp.run, 
+            args=([
                 "python", 
-                "src/python/services/jobs/jobs_service.py",
+                "/home/berg/GitHub/mas-infrastructure/src/python/services/jobs/jobs_service.py",
                 "path_to_csv=/home/berg/Desktop/Koordinaten_HE_dummy_ID.csv"
-            ],
-            input=json.dumps({"service": sr}), shell=True,
-            cwd="/home/berg/GitHub/mas-infrastructure"))
+            ],),
+            kwargs={"input": json.dumps({"service": sr}), "encoding": "ascii"}
+        ).start()
+        #self._started_processes.append(sp.Popen(
+        #    [
+        #        "python", 
+        #        "src/python/services/jobs/jobs_service.py",
+        #        "path_to_csv=/home/berg/Desktop/Koordinaten_HE_dummy_ID.csv"
+        #    ],
+        #    input=json.dumps({"service": sr}), shell=True,
+        #    cwd="/home/berg/GitHub/mas-infrastructure"))
 
 
     def create_registrar(self, name):
@@ -129,8 +205,8 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, ser
             self._petname_to_sturdy_refs = [self._petname_to_sturdy_refs[name]]
             reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs[name].append(sr)
         else:
-            reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs.insert(name, sr)
-        print("created registrar with sr:", sr)
+            reg.register_sr_action = lambda sr: self._petname_to_sturdy_refs.update(name=sr)
+        #print("created registrar with sr:", sr)
         return sr
 
 
@@ -153,7 +229,6 @@ class Registrar(reg_capnp.Registrar.Server, common.Identifiable):
     def __init__(self, register_sr_action=None):
         self._register_sr_action = register_sr_action
 
-
     @property
     def register_sr_action(self):
         return self._register_action 
@@ -163,12 +238,9 @@ class Registrar(reg_capnp.Registrar.Server, common.Identifiable):
         self._register_sr_action = a 
 
     def register_context(self, context): # register @0 (cap :Common.Identifiable, regName :Text, categoryId :Text) -> (unreg :Common.Action, reregSR :Text);
-        def do_reg(sr):
-            print("------------------", sr)
-            #self._register_sr_action(sr)
+        print("Registrator: register message received")
         if self._register_sr_action:
-            print("Registrator: register message received")
-            return context.params.cap.save().then(lambda res: do_reg(res.sturdyRef)) #self._register_sr_action(res.sr))
+            return context.params.cap.cast_as(persistence_capnp.Persistent).save().then(lambda res: self._register_sr_action(res.sturdyRef))
 
 #------------------------------------------------------------------------------
 
