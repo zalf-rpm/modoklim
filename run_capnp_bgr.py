@@ -65,7 +65,7 @@ def run():
         "site.json": "site.json",
         "setups-file": "sim_setups_capnp_bgr.csv",
         "pet2sr": "petname_to_sturdy_refs.json",
-        "config_sr": "capnp://insecure@10.10.24.210:38989/0bf3f1ce-5026-4765-bbaf-22819f734d4e",
+        "config_sr": "capnp://insecure@10.10.24.210:46157/09943e14-6bbf-496a-9862-c3aaa2945213",
         "run-setups": "[1]"
     }
     
@@ -115,8 +115,6 @@ def run():
         if e.sturdyRef:
             serv_conf[e.name] = e.sturdyRef
     print(serv_conf)
-
-    return
 
     listOfClimateFiles = set()
     # run calculations for each setup
@@ -421,7 +419,7 @@ def run():
                 #"soilProfile": soil_profiles.profiles[0]
             }).wait().result.as_struct(common_capnp.StructuredText).value
 
-            write_monica_csv(json.loads(res_str), id=sent_env_count)
+            write_monica_csv(json.loads(res_str), id=coord["id"])
 
             sent_env_count += 1
 
