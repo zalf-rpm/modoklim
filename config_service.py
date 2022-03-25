@@ -85,7 +85,7 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, com
             print("monica", i)
             Thread(
                 target=sp.run, 
-                args=(["/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", "-rsr", self._registrar_sr],)
+                args=(["/home/berg/GitHub/monica/_cmake_linux/monica-capnp-server", "-rsr", self._registrar_sr],)
             ).start()
 
         # start climate service
@@ -102,14 +102,23 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, com
         # start soil service
         Thread(
             target=sp.run, 
-            args=(["python", "/home/berg/GitHub/mas-infrastructure/src/python/services/soil/sqlite_soil_data_service.py"],),
+            args=([
+                "python", 
+                "/home/berg/GitHub/mas-infrastructure/src/python/services/soil/sqlite_soil_data_service.py",
+                #"path_to_sqlite_db=/home/berg/GitHub/mas-infrastructure/data/soil/buek1000.sqlite",
+                #"path_to_ascii_soil_grid=data/soil/buek1000_1000_31469_gk5.asc"
+                "path_to_sqlite_db=/home/berg/GitHub/mas-infrastructure/data/soil/buek200.sqlite",
+                "path_to_ascii_soil_grid=/home/berg/GitHub/mas-infrastructure/data/soil/buek200_1000_25832_etrs89-utm32n.asc"
+            ],),
             kwargs={
                 "input": json.dumps({
-                    "service": {"reg_sr": self._registrar_sr, "reg_name": "buek_1000"},
-                    "admin": {"reg_sr": self._registrar_sr, "reg_name": "buek_1000", "cat_id": "admin"}
+                    #"service": {"reg_sr": self._registrar_sr, "reg_name": "buek_1000"},
+                    #"admin": {"reg_sr": self._registrar_sr, "reg_name": "buek_1000", "cat_id": "admin"}
+                    "service": {"reg_sr": self._registrar_sr, "reg_name": "buek_200"},
+                    "admin": {"reg_sr": self._registrar_sr, "reg_name": "buek_200", "cat_id": "admin"}
                 }), "encoding": "ascii"}
         ).start()
-        
+
         # start dgm service
         Thread(
             target=sp.run, 
@@ -168,7 +177,7 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, com
             entries = list([{
                 "name": petname, 
                 "sturdyRef": rotate_and_get_first_value(self._petname_to_sturdy_refs.get(petname, deque())) 
-            } for petname in ["dwd_germany", "buek_1000", "dgm_1000", "slope_1000", "monica", "jobs"]])
+            } for petname in ["dwd_germany", "buek_200", "dgm_1000", "slope_1000", "monica", "jobs"]])
             context.results.config = config_capnp.Config.new_message(entries=entries)
         else:
             context.results.noFurtherConfigs = True
