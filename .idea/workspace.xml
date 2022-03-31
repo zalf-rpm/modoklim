@@ -2,9 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="138f35ac-3a38-43f4-8ba9-1ccaf1fdcc16" name="Changes" comment="Add script for final plots of report">
+      <change afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/02_prepare_yield_reference_tables-detrend.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../AgoraNatura/agora_natura/result_analysis/01_plot_final_calibration_figures.py" beforeDir="false" afterPath="$PROJECT_DIR$/../../AgoraNatura/agora_natura/result_analysis/01_plot_final_calibration_figures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/klimertrag.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/klimertrag.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/05_plot_final_maps_and_figures.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/05_plot_final_maps_and_figures.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/06_plot_final_calibration_figures.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/06_plot_final_calibration_figures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/02_validate_yields_at_district_level.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/03_validate_yields_at_district_level.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/03_validate_phenology_with_dwd_reference.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/04_validate_phenology_with_dwd_reference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/04_calculate_result_grids.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/05_calculate_result_grids.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/05_plot_final_maps_and_figures.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/06_plot_final_maps_and_figures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/06_plot_final_calibration_figures.py" beforeDir="false" afterPath="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs/07_plot_final_calibration_figures.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,9 +41,10 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../AgoraNatura/agora_natura" />
   </component>
   <component name="ProjectId" id="23NXe2cslpKqIn7FM2NTzPBJu6f" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -50,7 +59,7 @@
     <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
     <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/MONICA/hohenfinow" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../AgoraNatura/agora_natura" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -60,21 +69,21 @@
       <recent name="D:\projects\KlimErtrag\scripts" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.06_plot_final_calibration_figures">
-    <configuration name="01_compare_simulation_and_observations" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="scripts" />
+  <component name="RunManager" selected="Python.01_plot_final_calibration_figures">
+    <configuration name="01_plot_final_calibration_figures" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="agora_natura" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../scripts/phenology_calibration_dwd" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../AgoraNatura/agora_natura/result_analysis" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../scripts/phenology_calibration_dwd/01_compare_simulation_and_observations.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../../AgoraNatura/agora_natura/result_analysis/01_plot_final_calibration_figures.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,11 +182,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.01_plot_final_calibration_figures" />
         <item itemvalue="Python.06_plot_final_calibration_figures" />
         <item itemvalue="Python.dummy" />
         <item itemvalue="Python.05_plot_final_maps_and_figures" />
         <item itemvalue="Python.05_plot_results" />
-        <item itemvalue="Python.01_compare_simulation_and_observations" />
       </list>
     </recent_temporary>
   </component>
@@ -227,6 +236,8 @@
       <workItem from="1647529466366" duration="6634000" />
       <workItem from="1647594264231" duration="8882000" />
       <workItem from="1647862220705" duration="2070000" />
+      <workItem from="1648556161846" duration="886000" />
+      <workItem from="1648734942688" duration="6905000" />
     </task>
     <task id="LOCAL-00001" summary="Add analysis scripts and necessary reference data">
       <created>1641577973292</created>
@@ -273,6 +284,7 @@
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$dummy.coverage" NAME="dummy Coverage Results" MODIFIED="1647616452099" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../scripts" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$prepare_input_files.coverage" NAME="prepare_input_files Coverage Results" MODIFIED="1645540979552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../scripts/simulations_jki" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$run_consumer_clemens_local.coverage" NAME="run-consumer_clemens_local Coverage Results" MODIFIED="1643792268465" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$01_plot_final_calibration_figures.coverage" NAME="01_plot_final_calibration_figures Coverage Results" MODIFIED="1648741551358" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../AgoraNatura/agora_natura/result_analysis" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$01_compare_simulation_and_observations__1_.coverage" NAME="01_compare_simulation_and_observations (1) Coverage Results" MODIFIED="1642161896630" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../scripts/phenology_calibration_dwd" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$06_plot_final_calibration_figures.coverage" NAME="06_plot_final_calibration_figures Coverage Results" MODIFIED="1647863270409" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/result_analysis/analyse_final_grid_outputs" />
     <SUITE FILE_PATH="coverage/00_draw_sample_from_mask_py$01_compare_simulation_and_observations.coverage" NAME="01_compare_simulation_and_observations Coverage Results" MODIFIED="1647424341475" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../scripts/phenology_calibration_dwd" />
