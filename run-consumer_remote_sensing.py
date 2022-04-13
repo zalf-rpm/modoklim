@@ -60,14 +60,13 @@ def create_output(msg):
     for data in msg.get("data", []):
         results = data.get("results", [])
 
-        is_from_section = data.get("origSpec", "").startswith('{"from')
-
         for vals in results:
             if "CM-count" in vals:
-                cm_count_to_vals[vals["CM-count"]].update(vals)
-            elif is_from_section:
-                cm_count_to_vals[vals["CM-count"]]["LAI_"+vals["Date"][5:]] = vals["LAI"]
-                cm_count_to_vals[vals["CM-count"]]["Act_ET_"+vals["Date"][5:]] = vals["Act_ET"]
+                if "LAI" in vals:
+                    cm_count_to_vals[vals["CM-count"]]["LAI_"+vals["Date"][5:]] = vals["LAI"]
+                    cm_count_to_vals[vals["CM-count"]]["Act_ET_"+vals["Date"][5:]] = vals["Act_ET"]
+                else:
+                    cm_count_to_vals[vals["CM-count"]].update(vals)
 
     cmcs = list(cm_count_to_vals.keys())
     cmcs.sort()
