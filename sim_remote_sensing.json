@@ -32,7 +32,7 @@
 				["Crop", "FIRST"],
 				["Yield", "LAST"]
 			],
-			{"from": "xxxx-07-01", "to": "xxxx-08-31"}, [
+			{"start": "xxxx-07-01", "end": "xxxx-08-31"}, [
 				"CM-count",
 				"Date",
 				"Year",
