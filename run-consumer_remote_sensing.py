@@ -65,14 +65,15 @@ def create_output(msg):
                 if "LAI" in vals:
                     cm_count_to_vals[vals["CM-count"]]["LAI_"+vals["Date"][5:]] = vals["LAI"]
                     cm_count_to_vals[vals["CM-count"]]["Act_ET_"+vals["Date"][5:]] = vals["Act_ET"]
+                    cm_count_to_vals[vals["CM-count"]]["Year"] = vals["Year"]
                 else:
                     cm_count_to_vals[vals["CM-count"]].update(vals)
 
     cmcs = list(cm_count_to_vals.keys())
     cmcs.sort()
-    last_cmc = cmcs[-1]
-    if "Year" not in cm_count_to_vals[last_cmc]:
-        cm_count_to_vals.pop(last_cmc)
+    #last_cmc = cmcs[-1]
+    #if "Year" not in cm_count_to_vals[last_cmc]:
+    #    cm_count_to_vals.pop(last_cmc)
 
     return cm_count_to_vals
 
