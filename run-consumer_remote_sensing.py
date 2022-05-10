@@ -91,7 +91,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
     }
     for day in range(31+31):
-        date_ = date(2000, 7, 1)+timedelta(days=day)
+        date_ = date(2000, 4, 1)+timedelta(days=day)
         date_str = date.strftime(date_, "%m-%d")
         output_grids["LAI_"+date_str] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
         output_grids["Act_ET_"+date_str] = {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
