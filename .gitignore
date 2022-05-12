@@ -119,3 +119,5 @@ dmypy.json
 /agg_grids
 /agg_grids_clim
 .vscode/temporary_notes
+out
+out_test

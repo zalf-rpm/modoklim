@@ -1,0 +1,30 @@
+<?xml version="1.0"?> 
+ <drawfbp_file xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:noNamespaceSchemaLocation="https://github.com/jpaulm/drawfbp/blob/master/lib/drawfbp_file.xsd">
+<net>
+<desc>Click anywhere on selection area</desc>
+ <blocks><block> <x> 1040 </x> <y> 648 </y> <id> 16 </id> <type>B</type> <width>96</width> <height>64</height> <description>create BGR
+MONICA env</description> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 128 </x> <y> 144 </y> <id> 2 </id> <type>B</type> <width>96</width> <height>64</height> <description>read_file</description> <compname>read_file.py</compname> <blockclassname>/home/berg/GitHub/mas-infrastructure/src/python/fbp/fbp.json!/modules/test:capnp_fbp/components/read_file.py</blockclassname> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 320 </x> <y> 144 </y> <id> 4 </id> <type>B</type> <width>96</width> <height>64</height> <description>split_string</description> <compname>split_file.py</compname> <blockclassname>/home/berg/GitHub/mas-infrastructure/src/python/fbp/fbp.json!/modules/test:capnp_fbp/components/split_file.py</blockclassname> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 536 </x> <y> 144 </y> <id> 6 </id> <type>B</type> <width>96</width> <height>64</height> <description>to_geo_coord</description> <compname>to_geo_coord.py</compname> <blockclassname>/home/berg/GitHub/mas-infrastructure/src/python/fbp/fbp.json!/modules/test:capnp_fbp/components/to_geo_coord.py</blockclassname> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 784 </x> <y> 144 </y> <id> 8 </id> <type>B</type> <width>96</width> <height>64</height> <description>utm_to_latlon</description> <compname>proj_transform.py</compname> <blockclassname>/home/berg/GitHub/mas-infrastructure/src/python/fbp/fbp.json!/modules/test:capnp_fbp/components/proj_transform.py</blockclassname> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 1112 </x> <y> 280 </y> <id> 10 </id> <type>B</type> <width>96</width> <height>64</height> <description>get_timeseries</description> <compname>dwd_germany_service.py</compname> <blockclassname>/home/berg/GitHub/mas-infrastructure/src/python/services/climate/dwd_germany_service.py</blockclassname> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 1328 </x> <y> 280 </y> <id> 12 </id> <type>B</type> <width>96</width> <height>64</height> <description>write_file</description> <compname>write_file.py</compname> <blockclassname>/home/berg/GitHub/mas-infrastructure/src/python/fbp/fbp.json!/modules/test:capnp_fbp/components/write_file.py</blockclassname> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+<block> <x> 1272 </x> <y> 648 </y> <id> 14 </id> <type>B</type> <width>96</width> <height>64</height> <description>MONICA</description> <multiplex>false</multiplex><invisible>false</invisible><issubnet>false</issubnet> 
+</block> 
+</blocks> <connections>
+<connection> <fromx>176</fromx> <fromy>144</fromy> <tox>272</tox> <toy>144</toy> <fromid>2</fromid> <toid>4</toid> <id>1</id> <endsatline>false</endsatline><upstreamport>out</upstreamport><downstreamport>in</downstreamport><segno>0</segno></connection> 
+<connection> <fromx>368</fromx> <fromy>144</fromy> <tox>488</tox> <toy>144</toy> <fromid>4</fromid> <toid>6</toid> <id>2</id> <endsatline>false</endsatline><upstreamport>out_list</upstreamport><downstreamport>in_vals</downstreamport><segno>0</segno></connection> 
+<connection> <fromx>584</fromx> <fromy>144</fromy> <tox>736</tox> <toy>144</toy> <fromid>6</fromid> <toid>8</toid> <id>3</id> <endsatline>false</endsatline><upstreamport>out_coord</upstreamport><downstreamport>in_coord</downstreamport><segno>0</segno></connection> 
+<connection> <fromx>832</fromx> <fromy>144</fromy> <tox>1064</tox> <toy>280</toy> <fromid>8</fromid> <toid>10</toid> <id>4</id> <endsatline>false</endsatline><upstreamport>out_coord</upstreamport><downstreamport>in_coord</downstreamport><segno>0</segno></connection> 
+<connection> <fromx>1160</fromx> <fromy>280</fromy> <tox>1280</tox> <toy>280</toy> <fromid>10</fromid> <toid>12</toid> <id>5</id> <endsatline>false</endsatline><upstreamport>out_csv</upstreamport><downstreamport>in</downstreamport><segno>0</segno></connection> 
+<connection> <fromx>1088</fromx> <fromy>648</fromy> <tox>1224</tox> <toy>648</toy> <fromid>16</fromid> <toid>14</toid> <id>6</id> <endsatline>false</endsatline><upstreamport>OUT</upstreamport><downstreamport>IN</downstreamport><segno>0</segno></connection> 
+</connections> </net> </drawfbp_file>

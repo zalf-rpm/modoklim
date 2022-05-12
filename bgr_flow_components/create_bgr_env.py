@@ -57,73 +57,87 @@ config_capnp = capnp.load("config.capnp")
 DATA_GRID_CROPS = "germany/germany-complete_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
 
+
+#------------------------------------------------------------------------------
+
+config = {
+    "split_at": ",",
+    "in_sr": None, # string
+    "out_sr": None, # utm_coord + id attr
+    "sim.json": "sim_bgr.json",
+    "crop.json": "crop_bgr.json",
+    "site.json": "site.json",
+    "setups-file": "sim_setups_capnp_bgr.csv",
+    "pet2sr": "petname_to_sturdy_refs.json",
+    "config_sr": "capnp://insecure@10.10.24.210:35607/457537c3-bba1-4e24-a621-a73a722c8005",
+    "run-setups": "[1]",
+    "buffer_m": "1000",
+}
+common.update_config(config, sys.argv, print_config=True, allow_new_keys=False)
+
+conman = common.ConnectionManager()
+inp = conman.try_connect(config["in_sr"], cast_as=common_capnp.Channel.Reader, retry_secs=1)
+outp = conman.try_connect(config["out_sr"], cast_as=common_capnp.Channel.Writer, retry_secs=1)
+
+setups = Mrunlib.read_sim_setups(config["setups-file"])
+run_setups = json.loads(config["run-setups"])
+print("read sim setups: ", config["setups-file"])
+
+wgs84_crs = CRS.from_epsg(4326)
+utm32_crs = CRS.from_epsg(25832)
+utm32_to_latlon_transformer = Transformer.from_crs(utm32_crs, wgs84_crs, always_xy=True)
+
+ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None})
+
+
+
+try:
+    if inp and outp:
+        while True:
+            msg = inp.read().wait()
+            # check for end of data from in port
+            if msg.which() == "done":
+                break
+            
+            s : str = msg.value.as_struct(common_capnp.IP).content.as_text()
+            s = s.rstrip()
+            vals = s.split(config["split_at"])
+            x_west = float(vals[0])
+            x_east = float(vals[1])
+            y_north = float(vals[2])
+            y_south = float(vals[3])
+            id = vals[4]
+
+            for x, hor_label in enumerate(["W", "", "E"]):
+                for y, vert_label in enumerate(["S", "", "N"]):
+                    utm_coord = geo.name_to_struct_instance("utm32n")
+                    r = x_west + x*1000 + 500
+                    h = y_south + y*1000 + 500
+                    id_ = id + "_" + vert_label + hor_label
+                    geo.set_xy(utm_coord, r, h)
+                    ip = common_capnp.IP.new_message(content=utm_coord, attributes=[{"key": "id", "value": id_}])
+                    outp.write(value=ip).wait()
+
+        # close out port
+        outp.write(done=None).wait()
+
+except Exception as e:
+    print("create_bgr_env.py ex:", e)
+
+print("create_bgr_env.py: exiting run")
+
+
+
+
+
+
+
+
+
+
+
 # commandline parameters e.g "server=localhost port=6666 shared_id=2"
 def run():
-    config = {
-        "sim.json": "sim_bgr.json",
-        "crop.json": "crop_bgr.json",
-        "site.json": "site.json",
-        "setups-file": "sim_setups_capnp_bgr.csv",
-        "pet2sr": "petname_to_sturdy_refs.json",
-        "config_sr": "capnp://insecure@10.10.24.210:35607/457537c3-bba1-4e24-a621-a73a722c8005",
-        "run-setups": "[1]",
-        "buffer_m": "1000"
-    }
-    
-    # read commandline args only if script is invoked directly from commandline
-    if len(sys.argv) > 1 and __name__ == "__main__":
-        for arg in sys.argv[1:]:
-            k, v = arg.split("=")
-            if k in config:
-                config[k] = v
-
-    print("config:", config)
-
-    # read setup from csv file
-    setups = Mrunlib.read_sim_setups(config["setups-file"])
-    run_setups = json.loads(config["run-setups"])
-    print("read sim setups: ", config["setups-file"])
-
-    # load petnames file
-    with open(config["pet2sr"]) as _:
-        pet_to_srs = json.load(_)
-
-    conMan = common.ConnectionManager()
-
-    def connect(conf, sr_or_petname, cast_as):
-        sr = sr_or_petname if sr_or_petname[:8] == "capnp://" else conf.get(sr_or_petname, pet_to_srs[sr_or_petname])
-        return conMan.try_connect(sr, cast_as=cast_as)
-
-    
-    #transforms geospatial coordinates from one coordinate reference system to another
-    # transform wgs84 into gk5
-    wgs84_crs = CRS.from_epsg(4326)
-    utm32_crs = CRS.from_epsg(25832)
-    utm32_to_latlon_transformer = Transformer.from_crs(utm32_crs, wgs84_crs, always_xy=True)
-
-    ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None})
-
-    sent_env_count = 1
-    start_time = time.perf_counter()
-
-    config_service_cap = conMan.connect(config["config_sr"], config_service_capnp.Service)
-    conf_res = config_service_cap.nextConfig().wait()
-    if conf_res.noFurtherConfigs:
-        print("no further configs available")
-        return
-    serv_conf = {}
-    for e in conf_res.config.as_struct(config_capnp.Config).entries:
-        if e.sturdyRef:
-            serv_conf[e.name] = e.sturdyRef
-    print(serv_conf)
-
-    listOfClimateFiles = set()
-    # run calculations for each setup
-    for _, setup_id in enumerate(run_setups):
-
-        if setup_id not in setups:
-            continue
-        start_setup_time = time.perf_counter()      
 
         setup = setups[setup_id]
         crop_id = setup["crop-id"]
