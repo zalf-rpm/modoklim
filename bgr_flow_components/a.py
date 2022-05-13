@@ -40,6 +40,7 @@ x_capnp = capnp.load("bgr_flow_components/x.capnp", imports=abs_imports)
 #------------------------------------------------------------------------------
 
 config = {
+    "name": "_",
     "out_sr": None # utm_coord + id attr
 }
 common.update_config(config, sys.argv, print_config=True, allow_new_keys=False)
@@ -57,6 +58,7 @@ try:
     if outp:
         while True:
             outp.write(value=x).wait()
+            print("a: send x", end=" -> ", flush=True)
             #time.sleep(2)
 
         outp.write(done=None).wait()

@@ -42,15 +42,86 @@ channels.append(_)
 
 _ = sp.Popen([
     "python", 
-    "/home/berg/GitHub/klimertrag/bgr_flow_components/a.py", 
+    "/home/berg/GitHub/klimertrag/bgr_flow_components/a.py",
+    "name=a",
     "out_sr=capnp://insecure@10.10.24.210:9991/"+w1
+])
+components.append(_)
+
+r2 = str(uuid.uuid4())
+w2 = str(uuid.uuid4())
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/mas-infrastructure/src/python/common/channel.py", 
+    "port=9992",
+    "no_of_channels=1",
+    "buffer_size=1",
+    "reader_srts="+json.dumps([[r2]]),
+    "writer_srts="+json.dumps([[w2]]),
+    "use_async=True"
+])
+channels.append(_)
+
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/klimertrag/bgr_flow_components/b.py", 
+    "name=b1",
+    "in_sr=capnp://insecure@10.10.24.210:9991/"+r1, 
+    "out_sr=capnp://insecure@10.10.24.210:9992/"+w2
+])
+components.append(_)
+
+r3 = str(uuid.uuid4())
+w3 = str(uuid.uuid4())
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/mas-infrastructure/src/python/common/channel.py", 
+    "port=9993",
+    "no_of_channels=1",
+    "buffer_size=1",
+    "reader_srts="+json.dumps([[r3]]),
+    "writer_srts="+json.dumps([[w3]]),
+    "use_async=True"
+])
+channels.append(_)
+
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/klimertrag/bgr_flow_components/b.py", 
+    "name=b2",
+    "in_sr=capnp://insecure@10.10.24.210:9992/"+r2, 
+    "out_sr=capnp://insecure@10.10.24.210:9993/"+w3
+])
+components.append(_)
+
+r4 = str(uuid.uuid4())
+w4 = str(uuid.uuid4())
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/mas-infrastructure/src/python/common/channel.py", 
+    "port=9994",
+    "no_of_channels=1",
+    "buffer_size=1",
+    "reader_srts="+json.dumps([[r4]]),
+    "writer_srts="+json.dumps([[w4]]),
+    "use_async=True"
+])
+channels.append(_)
+
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/klimertrag/bgr_flow_components/b.py", 
+    "name=b3",
+    "in_sr=capnp://insecure@10.10.24.210:9993/"+r3, 
+    "out_sr=capnp://insecure@10.10.24.210:9994/"+w4
 ])
 components.append(_)
 
 _ = sp.Popen([
     "python", 
-    "/home/berg/GitHub/klimertrag/bgr_flow_components/b.py", 
-    "in_sr=capnp://insecure@10.10.24.210:9991/"+r1, 
+    "/home/berg/GitHub/klimertrag/bgr_flow_components/c.py", 
+    "name=c",
+    "in_sr=capnp://insecure@10.10.24.210:9994/"+r4, 
 ])
 components.append(_)
 

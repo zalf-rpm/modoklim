@@ -41,31 +41,27 @@ x_capnp = capnp.load("bgr_flow_components/x.capnp", imports=abs_imports)
 config = {
     "name": "_",
     "in_sr": None, # string
-    "out_sr": None,
 }
 common.update_config(config, sys.argv, print_config=True, allow_new_keys=False)
 
 conman = common.ConnectionManager()
 inp = conman.try_connect(config["in_sr"], cast_as=common_capnp.Channel.Reader, retry_secs=1)
-outp = conman.try_connect(config["out_sr"], cast_as=common_capnp.Channel.Writer, retry_secs=1)
 
 try:
-    if inp and outp:
+    if inp:
         while True:
             msg = inp.read().wait()
             # check for end of data from in port
             if msg.which() == "done":
                 break
             
-            x = msg.value#.as_interface(x_capnp.X)
-            outp.write(value=x).wait()
-            #x = msg.value.as_interface(x_capnp.X)
-            print(config["name"] + ": forward x", end=" -> ", flush=True)
+            x = msg.value.as_interface(x_capnp.X)
+            print("c: x.m(42) ->", x.m(42).wait())
 
             #time.sleep(1)
 
 except Exception as e:
-    print("b.py ex:", e)
+    print("c.py ex:", e)
 
-print("b.py: exiting run")
+print("c.py: exiting run")
 
