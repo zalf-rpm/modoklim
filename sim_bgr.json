@@ -28,19 +28,22 @@
 		"obj-outputs?": false,
 
 		"events": [
-			"daily", [
-				"Date",
-				"Crop",
-				"Yield",
-				"Precip",
-				"Globrad",
-				"Tmin",
-				"Tavg",
-				"Tmax",
-				"Wind",
-				"Relhumid",
-				["Mois", [1, 20]],
-				["STemp", [1, 20]]
+			"monthly", [
+				"Year|Year", 
+				"Month|Month",
+				["Crop|Crop_last", "LAST"],
+				["Yield|Yield_max", "MAX"],
+				["Precip|Precip_sum", "SUM"],
+				["Globrad|Globrad_sum", "SUM"],
+				["Tmin|Tmin_min", "MIN"],
+				["Tavg|Tavg_avg", "AVG"],
+				["Tmax|Tmax_max", "MAX"],
+				["Wind|Wind_avg", "AVG"],				
+				["Relhumid|Relhumid_avg", "AVG"],
+				["Mois|BF_avg_0-30_sum", [1, 3, "SUM"], "AVG"],
+				["Mois|BF_avg_30-200_sum", [4, 20, "SUM"], "AVG"],
+				["STemp|BT_avg_0-30_avg", [1, 3, "AVG"], "AVG"],
+				["STemp|BT_avg_30-200_avg", [4, 20, "AVG"], "AVG"]
 			]
 		]
 	},
