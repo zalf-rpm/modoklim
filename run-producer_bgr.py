@@ -50,7 +50,7 @@ PATHS = {
         "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "/out/debug-out/",
-        "path-to-coords": "/project/bgr/"
+        "path-to-coords": "/project/"
     }
 }
 
