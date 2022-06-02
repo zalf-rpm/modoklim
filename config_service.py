@@ -85,7 +85,8 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, com
             print("monica", i)
             Thread(
                 target=sp.run, 
-                args=(["/home/berg/GitHub/monica/_cmake_linux/monica-capnp-server", "-rsr", self._registrar_sr],)
+                args=(["/home/berg/GitHub/monica/_cmake_linux/monica-capnp-server", "-rsr", self._registrar_sr],),
+                kwargs={"env": {"MONICA_PARAMETERS": "/home/berg/GitHub/monica-parameters"}}
             ).start()
 
         # start climate service
@@ -159,7 +160,7 @@ class LocalService(config_service_capnp.Service.Server, common.Identifiable, com
             args=([
                 "python", 
                 "/home/berg/GitHub/mas-infrastructure/src/python/services/jobs/jobs_service.py",
-                "path_to_csv=/home/berg/Desktop/Koordinaten_HE_dummy_ID.csv"
+                "path_to_csv=/home/berg/Desktop/all_coord_shuffled_anonymous.csv"
             ],),
             kwargs={
                 "input": json.dumps({

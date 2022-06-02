@@ -40,7 +40,7 @@ PATHS = {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data
         "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
-        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data
+        "path-to-data-dir": "data/", # mounted path to archive or hard drive with data
         "path-debug-write-folder": "./debug-out/",
         "path-to-coords": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/rpm/projects/monica/project/klimertrag/bgr/"
     },
@@ -48,7 +48,7 @@ PATHS = {
         #"include-file-base-path": "/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/data/", # mounted path to archive or hard drive with climate data 
         "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
-        "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data 
+        "path-to-data-dir": "data/", # mounted path to archive or hard drive with data 
         "path-debug-write-folder": "/out/debug-out/",
         "path-to-coords": "/beegfs/rpm/projects/monica/project/klimertrag/bgr/"
     }
@@ -66,6 +66,28 @@ TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
 TEMPLATE_PATH_CLIMATE_CSV = "dwd/csvs/germany/row-{crow}/col-{ccol}.csv"
 
 TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
+
+def read_csv(path_to_setups_csv, key="id"):
+    "read sim setup from csv file"
+    with open(path_to_setups_csv) as _:
+        key_to_data = {}
+        # determine seperator char
+        dialect = csv.Sniffer().sniff(_.read(), delimiters=';,\t')
+        _.seek(0)
+        # read csv with seperator char
+        reader = csv.reader(_, dialect)
+        header_cols = next(reader)
+        for row in reader:
+            data = {}
+            for i, header_col in enumerate(header_cols):
+                value = row[i]
+                if value.lower() in ["true", "false"]:
+                    value = value.lower() == "true"
+                if header_col == key:
+                    value = int(value)
+                data[header_col] = value
+            key_to_data[int(data[key])] = data
+        return key_to_data
 
 # commandline parameters e.g "server=localhost port=6666 shared_id=2"
 def run_producer(server = {"server": None, "port": None}):
@@ -187,11 +209,7 @@ def run_producer(server = {"server": None, "port": None}):
         start_setup_time = time.perf_counter()      
 
         setup = setups[setup_id]
-        gcm = setup["gcm"]
-        rcm = setup["rcm"]
-        scenario = setup["scenario"]
-        ensmem = setup["ensmem"]
-        version = setup["version"]
+        scenario = ""#setup["scenario"]
         crop_id = setup["crop-id"]
 
         ## extract crop_id from crop-id name that has possible an extenstion
@@ -211,7 +229,7 @@ def run_producer(server = {"server": None, "port": None}):
         cdict = {}
         # path to latlon-to-rowcol.json
         # path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + setup["climate_path_to_latlon_file"] + "/")
-        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + setup["climate_path_to_latlon_file"] + "/")
+        path = TEMPLATE_PATH_LATLON.format(path_to_climate_dir=paths["path-to-climate-dir"] + "dwd/csvs/")
         climate_data_interpolator = Mrunlib.create_climate_geoGrid_interpolator_from_json_file(path, wgs84_crs, soil_crs, cdict)
         print("created climate_data to gk5 interpolator: ", path)
 
@@ -224,8 +242,6 @@ def run_producer(server = {"server": None, "port": None}):
         if setup["end_date"]:
             sim_json["climate.csv-options"]["end-date"] = str(setup["end_date"]) 
         #sim_json["include-file-base-path"] = paths["include-file-base-path"]
-
-        sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
         # read template site.json 
         with open(setup.get("site.json", config["site.json"])) as _:
@@ -252,19 +268,14 @@ def run_producer(server = {"server": None, "port": None}):
         })
 
         soil_id_cache = {}
-        jobs = csv.read_csv(paths["path-to-coords"] + config["coords_filename"], config["id_col_name"])
-        for id_col, data in jobs.items():
+        jobs = read_csv(paths["path-to-coords"] + config["coords_filename"], config["id_col_name"])
+        for _, data in jobs.items():
 
-            data = json.loads(j.data.as_text())
             x_west = float(data["x_west"])
             #x_east = float(data["x_east"])
             #y_north = float(data["y_north"])
             y_south = float(data["y_south"])
             id = str(data["dummy_id"])
-
-            if int(id) == 62:
-                print("bla")
-            print("id:", id)
 
             coords = []
             for x, hor_label in enumerate(["W", "", "E"]):
@@ -281,7 +292,7 @@ def run_producer(server = {"server": None, "port": None}):
 
                 lon, lat = utm32_to_latlon_transformer.transform(r, h)
 
-                soil_id = soil_interpolate(r, h)
+                soil_id = int(soil_interpolate(r, h))
 
                 crow, ccol = climate_data_interpolator(r, h)
 
@@ -428,12 +439,12 @@ def run_producer(server = {"server": None, "port": None}):
                 if dem_crs not in tcoords:
                     tcoords[dem_crs] = soil_crs_to_x_transformers[dem_crs].transform(r, h)
                 demr, demh = tcoords[dem_crs]
-                height_nn = dem_interpolate(demr, demh)
+                height_nn = float(dem_interpolate(demr, demh))
 
                 if slope_crs not in tcoords:
                     tcoords[slope_crs] = soil_crs_to_x_transformers[slope_crs].transform(r, h)
                 slr, slh = tcoords[slope_crs]
-                slope = slope_interpolate(slr, slh)
+                slope = float(slope_interpolate(slr, slh))
 
                 env_template["params"]["userCropParameters"]["__enable_T_response_leaf_expansion__"] = setup["LeafExtensionModifier"]
                     
@@ -468,7 +479,7 @@ def run_producer(server = {"server": None, "port": None}):
                     env_template["params"]["siteParameters"]["ImpenetrableLayerDepth"] = [impenetrable_layer_depth, "m"]
 
                 if setup["elevation"]:
-                    env_template["params"]["siteParameters"]["heightNN"] = float(height_nn)
+                    env_template["params"]["siteParameters"]["heightNN"] = height_nn
 
                 if setup["slope"]:
                     env_template["params"]["siteParameters"]["slope"] = slope / 100.0
@@ -514,6 +525,7 @@ def run_producer(server = {"server": None, "port": None}):
 
                 env_template["customId"] = {
                     "setup_id": setup_id,
+                    "id": int(id),
                     "coord_id": coord["id"],
                     "crop_id_short": crop_id_short,
                     "lat": lat, "lon": lon

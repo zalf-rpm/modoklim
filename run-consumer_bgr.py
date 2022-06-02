@@ -84,12 +84,14 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
         print("received work result ", process_message.received_env_count, " customId: ", str(msg.get("customId", "")))
 
         custom_id = msg["customId"]
+        #setup_id = custom_id["setup_id"]
+        id = custom_id["id"]
         coord_id = custom_id["coord_id"]
         crop_id_short = custom_id["crop_id_short"]
         
         process_message.wnof_count += 1
 
-        write_monica_csv(msg, dir=paths["path-to-output-dir"]+crop_id_short, id=coord_id)
+        write_monica_csv(msg, dir=paths["path-to-output-dir"]+crop_id_short, id=id, coord_id=coord_id)
 
         process_message.received_env_count = process_message.received_env_count + 1
 
@@ -112,8 +114,11 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     #debug_file.close()
 
 
-def write_monica_csv(result, dir, id):
+def write_monica_csv(result, dir, id, coord_id):
 
+    bin_size = 1000
+    id_bin = int(id / bin_size)
+    dir = dir + "/ids_" + str(id_bin*bin_size) + "-" + str((id_bin+1)*bin_size) 
     if os.path.isdir(dir) and os.path.exists(dir):
         pass
     else:
@@ -123,7 +128,7 @@ def write_monica_csv(result, dir, id):
             print("c: Couldn't create dir:", dir, "! Exiting.")
             exit(1)
 
-    with open(dir + "/" + str(id) + ".csv", "w", newline="") as _:
+    with open(dir + "/" + str(coord_id) + ".csv", "w", newline="") as _:
         writer = csv.writer(_, delimiter=",")
 
         for data_ in result.get("data", []):
