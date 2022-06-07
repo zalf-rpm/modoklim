@@ -86,7 +86,8 @@ def read_csv(path_to_setups_csv, key="id", key_as_int=True):
                 if header_col == key:
                     value = int(value) if key_as_int else value
                 data[header_col] = value
-            key_to_data[int(data[key])] = data
+                k = int(data[key]) if key_as_int else data[key]
+            key_to_data[k] = data
         return key_to_data
 
 # commandline parameters e.g "server=localhost port=6666 shared_id=2"
