@@ -67,7 +67,7 @@ TEMPLATE_PATH_CLIMATE_CSV = "dwd/csvs/germany/row-{crow}/col-{ccol}.csv"
 
 TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
 
-def read_csv(path_to_setups_csv, key="id"):
+def read_csv(path_to_setups_csv, key="id", key_as_int=True):
     "read sim setup from csv file"
     with open(path_to_setups_csv) as _:
         key_to_data = {}
@@ -84,7 +84,7 @@ def read_csv(path_to_setups_csv, key="id"):
                 if value.lower() in ["true", "false"]:
                     value = value.lower() == "true"
                 if header_col == key:
-                    value = int(value)
+                    value = int(value) if key_as_int else value
                 data[header_col] = value
             key_to_data[int(data[key])] = data
         return key_to_data
@@ -268,7 +268,7 @@ def run_producer(server = {"server": None, "port": None}):
         })
 
         soil_id_cache = {}
-        jobs = read_csv(paths["path-to-coords"] + config["coords_filename"], config["id_col_name"])
+        jobs = read_csv(paths["path-to-coords"] + config["coords_filename"], config["id_col_name"], key_as_int=False)
         for _, data in jobs.items():
 
             x_west = float(data["x_west"])
