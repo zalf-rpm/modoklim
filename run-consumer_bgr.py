@@ -78,19 +78,19 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             return
 
         if not hasattr(process_message, "msg_count"):
-            process_message.msg_count = defaultdict(lambda: 0)
+            process_message.msg_count = defaultdict(lambda: defaultdict(lambda: 0))
 
         print("received work result ", process_message.received_env_count, " customId: ", str(msg.get("customId", "")))
 
         custom_id = msg["customId"]
         setup_id = custom_id["setup_id"]
-        #id = custom_id["id"]
+        id = custom_id["id"]
         coord_id = custom_id["coord_id"]
         crop_id_short = custom_id["crop_id_short"]
         
-        write_monica_csv(msg, count=process_message.msg_count[setup_id], dir=paths["path-to-output-dir"]+crop_id_short, coord_id=coord_id)
+        write_monica_csv(msg, count=len(process_message.msg_count[setup_id].keys()), dir=paths["path-to-output-dir"]+crop_id_short, id=id, coord_id=coord_id)
 
-        process_message.msg_count[setup_id] += 1
+        process_message.msg_count[setup_id][id] += 1
 
         return leave
 
@@ -111,7 +111,7 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     #debug_file.close()
 
 
-def write_monica_csv(result, count, dir, coord_id):
+def write_monica_csv(result, count, dir, id, coord_id):
 
     bin_size = 1000
     count_bin = int(count / bin_size)
