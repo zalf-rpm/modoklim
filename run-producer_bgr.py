@@ -86,7 +86,7 @@ def read_csv(path_to_setups_csv, key="id", key_as_int=True):
                 if header_col == key:
                     value = int(value) if key_as_int else value
                 data[header_col] = value
-                k = int(data[key]) if key_as_int else data[key]
+            k = int(data[key]) if key_as_int else data[key]
             key_to_data[k] = data
         return key_to_data
 
