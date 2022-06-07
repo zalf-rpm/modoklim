@@ -77,23 +77,20 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
             print("There were errors in message:", msg, "\nSkipping message!")
             return
 
-        if not hasattr(process_message, "wnof_count"):
-            process_message.wnof_count = 0
-            process_message.setup_count = 0
+        if not hasattr(process_message, "msg_count"):
+            process_message.msg_count = defaultdict(lambda: 0)
 
         print("received work result ", process_message.received_env_count, " customId: ", str(msg.get("customId", "")))
 
         custom_id = msg["customId"]
-        #setup_id = custom_id["setup_id"]
-        id = custom_id["id"]
+        setup_id = custom_id["setup_id"]
+        #id = custom_id["id"]
         coord_id = custom_id["coord_id"]
         crop_id_short = custom_id["crop_id_short"]
         
-        process_message.wnof_count += 1
+        write_monica_csv(msg, count=process_message.msg_count[setup_id], dir=paths["path-to-output-dir"]+crop_id_short, coord_id=coord_id)
 
-        write_monica_csv(msg, dir=paths["path-to-output-dir"]+crop_id_short, id=id, coord_id=coord_id)
-
-        process_message.received_env_count = process_message.received_env_count + 1
+        process_message.msg_count[setup_id] += 1
 
         return leave
 
@@ -114,11 +111,11 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     #debug_file.close()
 
 
-def write_monica_csv(result, dir, id, coord_id):
+def write_monica_csv(result, count, dir, coord_id):
 
     bin_size = 1000
-    id_bin = int(id / bin_size)
-    dir = dir + "/ids_" + str(id_bin*bin_size) + "-" + str((id_bin+1)*bin_size) 
+    count_bin = int(count / bin_size)
+    dir = dir + "/ids_" + str(count_bin*bin_size) + "-" + str((count_bin+1)*bin_size) 
     if os.path.isdir(dir) and os.path.exists(dir):
         pass
     else:
