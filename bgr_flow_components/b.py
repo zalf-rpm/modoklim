@@ -60,7 +60,7 @@ try:
             x = msg.value#.as_interface(x_capnp.X)
             outp.write(value=x).wait()
             #x = msg.value.as_interface(x_capnp.X)
-            print(config["name"] + ": forward x", end=" -> ", flush=True)
+            #print(config["name"] + ": forward x", end=" -> ", flush=True)
 
             #time.sleep(1)
 

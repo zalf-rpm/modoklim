@@ -49,16 +49,22 @@ inp = conman.try_connect(config["in_sr"], cast_as=common_capnp.Channel.Reader, r
 
 try:
     if inp:
-        while True:
-            msg = inp.read().wait()
-            # check for end of data from in port
-            if msg.which() == "done":
-                break
-            
-            x = msg.value.as_interface(x_capnp.X)
-            print("c: x.m(42) ->", x.m(42).wait())
+        count = 42
+        with open(config["name"]+".out", "w") as out:
+            while True:
+                msg = inp.read().wait()
+                # check for end of data from in port
+                if msg.which() == "done":
+                    break
+                
+                #x = msg.value.as_interface(x_capnp.X)
+                x = msg.value.as_struct(x_capnp.S).c
+                res = "{}: x.m({}) -> {}\n".format(config["name"], count, x.m(count).wait())
+                out.write(res)
+                #print(config["name"],": x.m(", count, ") ->", x.m(count).wait())
+                count += 1
 
-            #time.sleep(1)
+                #time.sleep(1)
 
 except Exception as e:
     print("c.py ex:", e)

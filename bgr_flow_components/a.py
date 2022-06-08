@@ -50,15 +50,18 @@ outp = conman.try_connect(config["out_sr"], cast_as=common_capnp.Channel.Writer,
 
 class X(x_capnp.X.Server):
     def m(self, i, **kwargs):
-        return "hello " + str(i)
+        return "answer: " + str(i)
 
 x = X() #x_capnp.X._new_server(X())
 
 try:
     if outp:
+        time.sleep(1)
         while True:
-            outp.write(value=x).wait()
-            print("a: send x", end=" -> ", flush=True)
+            #outp.write(value=x).wait()
+            #time.sleep(1)
+            outp.write(value=x_capnp.S.new_message(c=x)).wait()
+            #print("a: send x", end=" -> ", flush=True)
             #time.sleep(2)
 
         outp.write(done=None).wait()
