@@ -45,7 +45,32 @@ channels.append(_)
 
 _ = sp.Popen([
     "python", 
+    "/home/berg/GitHub/mas-infrastructure/src/python/fbp/read_csv.py", 
+    "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
+    "file=sim_setups_bgr_flow.csv",
+    "path_to_capnp_struct=bgr.capnp:Setup",
+    "id_col=runId",
+    "send_ids=1",
+])
+components.append(_)
+
+rs.append(str(uuid.uuid4()))
+ws.append(str(uuid.uuid4()))
+_ = sp.Popen([
+    path_to_channel, 
+    "--host={}".format(host),
+    "--name=chan_{}".format(len(channels)+1),
+    "--port=9{:03g}".format(len(channels)+1),
+    "--reader_srts="+rs[-1],
+    "--writer_srts="+ws[-1],
+])
+
+channels.append(_)
+_ = sp.Popen([
+    "python", 
     "/home/berg/GitHub/mas-infrastructure/src/python/fbp/read_file.py", 
+    "attr_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
+    "to_attr=setup",
     "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
     "skip_lines=1",
     #"file=/home/berg/Desktop/Koordinaten_HE_dummy_ID.csv"
@@ -93,6 +118,54 @@ _ = sp.Popen([
     "to_attr=latlon",
     "from_name=utm32n",
     "to_name=latlon",
+])
+components.append(_)
+
+rs.append(str(uuid.uuid4()))
+ws.append(str(uuid.uuid4()))
+_ = sp.Popen([
+    path_to_channel, 
+    "--host={}".format(host),
+    "--name=chan_{}".format(len(channels)+1),
+    "--port=9{:03g}".format(len(channels)+1),
+    "--reader_srts="+rs[-1],
+    "--writer_srts="+ws[-1],
+])
+channels.append(_)
+
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/mas-infrastructure/src/python/fbp/lift_attributes.py", 
+    "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
+    "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
+    "lift_from_attr=setup",
+    "lift_from_type=bgr.capnp:Setup",
+    "lifted_attrs=sowingTime,harvestTime,cropId",
+])
+components.append(_)
+
+rs.append(str(uuid.uuid4()))
+ws.append(str(uuid.uuid4()))
+_ = sp.Popen([
+    path_to_channel, 
+    "--host={}".format(host),
+    "--name=chan_{}".format(len(channels)+1),
+    "--port=9{:03g}".format(len(channels)+1),
+    "--reader_srts="+rs[-1],
+    "--writer_srts="+ws[-1],
+])
+channels.append(_)
+
+_ = sp.Popen([
+    "python", 
+    "/home/berg/GitHub/mas-infrastructure/src/python/services/management/ilr_sowing_harvest_dates_fbp_component.py", 
+    "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
+    "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
+    "latlon_attr=latlon",
+    "crop_id_attr=cropId",
+    "sowing_time_attr=sowingTime",
+    "harvest_time_attr=harvestTime", 
+    "to_attr=ilr",
 ])
 components.append(_)
 
@@ -194,7 +267,7 @@ _ = sp.Popen([
     "val_type=float",
     "fbp=true",
     "from_attr=latlon",
-    "to_attr=dgm"
+    "to_attr=slope"
 ])
 components.append(_)
 

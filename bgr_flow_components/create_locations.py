@@ -57,7 +57,8 @@ try:
             if msg.which() == "done":
                 break
             
-            s : str = msg.value.as_struct(common_capnp.IP).content.as_text()
+            in_ip = msg.value.as_struct(common_capnp.IP)
+            s : str = in_ip.content.as_text()
             s = s.rstrip()
             vals = s.split(config["split_at"])
             x_west = float(vals[0])
@@ -73,8 +74,10 @@ try:
                     h = y_south + y*1000 + 500
                     id_ = id + "_" + vert_label + hor_label
                     geo.set_xy(utm_coord, r, h)
-                    ip = common_capnp.IP.new_message(content=utm_coord, attributes=[{"key": "id", "value": id_}])
-                    outp.write(value=ip).wait()
+                    
+                    out_ip = common_capnp.IP.new_message(content=utm_coord)
+                    common.copy_fbp_attr(in_ip, out_ip, "id", id_)
+                    outp.write(value=out_ip).wait()
 
         # close out port
         outp.write(done=None).wait()
