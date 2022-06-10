@@ -140,7 +140,7 @@ _ = sp.Popen([
     "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
     "lift_from_attr=setup",
     "lift_from_type=bgr.capnp:Setup",
-    "lifted_attrs=sowingTime,harvestTime,cropId",
+    "lifted_attrs=sowingTime,harvestTime,cropId,startDate,endDate",
 ])
 components.append(_)
 
@@ -187,7 +187,9 @@ _ = sp.Popen([
     "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
     "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
     "fbp=true",
-    "from_attr=latlon",
+    "latlon_attr=latlon",
+    "start_date_attr=startDate",
+    "end_date_attr=endDate",
     "to_attr=climate",
     "mode=capability"
 ])
@@ -271,7 +273,8 @@ _ = sp.Popen([
 ])
 components.append(_)
 
-rs.append(str(uuid.uuid4()))
+#rs.append(str(uuid.uuid4()))
+rs.append("monica_in")
 ws.append(str(uuid.uuid4()))
 _ = sp.Popen([
     path_to_channel, 
@@ -288,11 +291,20 @@ _ = sp.Popen([
     "/home/berg/GitHub/klimertrag/bgr_flow_components/create_bgr_env.py", 
     "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
     "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
+    "dgm_attr=dgm",
+    "slope_attr=slope",
+    "climate_attr=climate",
+    "soil_attr=soil",
+    "coord_attr=latlon",
+    "setup_attr=setup",
+    "id_attr=id",
+    "ilr_attr=ilr",
 ])
 components.append(_)
 
 rs.append(str(uuid.uuid4()))
-ws.append(str(uuid.uuid4()))
+#ws.append(str(uuid.uuid4()))
+ws.append("monica_out")
 _ = sp.Popen([
     path_to_channel, 
     "--host={}".format(host),
@@ -303,13 +315,20 @@ _ = sp.Popen([
 ])
 channels.append(_)
 
-#_ = sp.Popen([
-#    "python", 
-#    "/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-fbp-component", 
-#    "--in_sr", "capnp://insecure@10.10.24.210:9998/"+r8, 
-#    "--out_sr", "capnp://insecure@10.10.24.210:9999/"+w9
-#])
-#components.append(_)
+_ = sp.Popen([
+    "/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", 
+    "--address", "{}".format(host),
+    "--port", "9999",
+    "--sturdy-ref", "monica_sr",
+])
+components.append(_)
+
+# _ = sp.Popen([
+#     "/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-fbp-component", 
+#     "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
+#     "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
+# ])
+# components.append(_)
 
 _ = sp.Popen([
     "python", 

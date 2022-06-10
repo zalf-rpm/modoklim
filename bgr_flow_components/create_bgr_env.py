@@ -70,6 +70,7 @@ config = {
     "coord_attr": "latlon",
     "setup_attr": "setup",
     "id_attr": "id",
+    "ilr_attr": "ilr",
 }
 common.update_config(config, sys.argv, print_config=True, allow_new_keys=False)
 
@@ -132,33 +133,41 @@ try:
             timeseries = common.get_fbp_attr(in_ip, config["climate_attr"]).as_interface(climate_capnp.TimeSeries)
             soil_profile = common.get_fbp_attr(in_ip, config["soil_attr"]).as_struct(soil_capnp.Profile)
             setup = common.get_fbp_attr(in_ip, config["setup_attr"]).as_struct(bgr_capnp.Setup)
-            ilr = common.get_fbp_attr(in_ip, config["setup_attr"]).as_struct(mgmt_capnp.ILRData)
+            ilr = common.get_fbp_attr(in_ip, config["ilr_attr"]).as_struct(mgmt_capnp.ILRDates)
             id = common.get_fbp_attr(in_ip, config["id_attr"]).as_text()
 
-            lat = llcoord.lat
-            lon = llcoord.lon
-            
-            crop_id = setup.cropId
+            if len(soil_profile.layers) == 0:
+                continue
 
-            env_template = create_env(setup.simJson, setup.cropJson, setup.siteJson, crop_id)
+            env_template = create_env(setup.simJson, setup.cropJson, setup.siteJson, setup.cropId)
                 
-            #env_template["csvViaHeaderOptions"]["start-date"] = setup.startDate
-            #sim_json["climate.csv-options"]["end-date"] = setup.endDate
-
             env_template["params"]["userCropParameters"]["__enable_vernalisation_factor_fix__"] = setup.useVernalisationFix
-
 
             worksteps = env_template["cropRotation"][0]["worksteps"]
             sowing_ws = next(filter(lambda ws: ws["type"][-6:] == "Sowing", worksteps))
+            if ilr._has("sowing"):
+                s = ilr.sowing
+                sowing_ws["date"] = "{:04d}-{:02d}-{:02d}".format(s.year, s.month, s.day)
+            if ilr._has("earliestSowing"):
+                s = ilr.earliestSowing
+                sowing_ws["earliest-date"] = "{:04d}-{:02d}-{:02d}".format(s.year, s.month, s.day)
+            if ilr._has("latestSowing"):
+                s = ilr.latestSowing
+                sowing_ws["latest-date"] = "{:04d}-{:02d}-{:02d}".format(s.year, s.month, s.day)
+
             harvest_ws = next(filter(lambda ws: ws["type"][-7:] == "Harvest", worksteps))
-          
-            if len(soil_profile.layers) == 0:
-                continue
+            if ilr._has("harvest"):
+                h = ilr.harvest
+                harvest_ws["date"] = "{:04d}-{:02d}-{:02d}".format(h.year, h.month, h.day)
+            if ilr._has("latestHarvest"):
+                h = ilr.latestHarvest
+                harvest_ws["latest-date"] = "{:04d}-{:02d}-{:02d}".format(h.year, h.month, h.day)
+
 
             env_template["params"]["userCropParameters"]["__enable_T_response_leaf_expansion__"] = setup.leafExtensionModifier
                 
             #print("soil:", soil_profile)
-            env_template["params"]["siteParameters"]["SoilProfileParameters"] = soil_profile.layers
+            #env_template["params"]["siteParameters"]["SoilProfileParameters"] = soil_profile.layers
 
             # setting groundwater level
             if False and setup.groundwaterLevel:
@@ -199,14 +208,14 @@ try:
             if setup.co2 > 0:
                 env_template["params"]["userEnvironmentParameters"]["AtmosphericCO2"] = setup.co2
 
-            if setup.o3:
+            if setup.o3 > 0:
                 env_template["params"]["userEnvironmentParameters"]["AtmosphericO3"] = setup.o3
 
             if setup.fieldConditionModifier:
                 env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["species"]["FieldConditionModifier"] = setup.fieldConditionModifier
 
             if len(setup.stageTemperatureSum) > 0:
-                stage_ts = setup["StageTemperatureSum"].split('_')
+                stage_ts = setup.stageTemperatureSum.split('_')
                 stage_ts = [int(temp_sum) for temp_sum in stage_ts]
                 orig_stage_ts = env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"][
                     "StageTemperatureSum"][0]
@@ -229,14 +238,14 @@ try:
             env_template["customId"] = {
                 "setup_id": setup.runId,
                 "id": id,
-                "crop_id": crop_id,
+                "crop_id": setup.cropId,
                 "lat": llcoord.lat, "lon": llcoord.lon
             }
 
             capnp_env = model_capnp.Env.new_message()
             capnp_env.timeSeries = timeseries
             capnp_env.soilProfile = soil_profile
-            capnp_env.rest = common_capnp.StructuredText.new_message(value=json.dumps(env_template), structure={"json": None}), 
+            capnp_env.rest = common_capnp.StructuredText.new_message(value=json.dumps(env_template), structure={"json": None})
 
             out_ip = common_capnp.IP.new_message(content=capnp_env)
             outp.write(value=out_ip).wait()
