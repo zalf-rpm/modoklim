@@ -247,7 +247,7 @@ try:
             capnp_env.soilProfile = soil_profile
             capnp_env.rest = common_capnp.StructuredText.new_message(value=json.dumps(env_template), structure={"json": None})
 
-            out_ip = common_capnp.IP.new_message(content=capnp_env)
+            out_ip = common_capnp.IP.new_message(content=capnp_env, attributes=[{"key": "id", "value": id}])
             outp.write(value=out_ip).wait()
 
         # close out port

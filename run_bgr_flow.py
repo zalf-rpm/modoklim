@@ -26,7 +26,7 @@ import uuid
 components = []
 channels = []
 
-path_to_channel = "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_linux_debug/channel"
+path_to_channel = "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_linux_release/channel"
 host = "10.10.24.218"
 rs = []
 ws = []
@@ -273,8 +273,8 @@ _ = sp.Popen([
 ])
 components.append(_)
 
-#rs.append(str(uuid.uuid4()))
-rs.append("monica_in")
+rs.append(str(uuid.uuid4()))
+#rs.append("monica_in")
 ws.append(str(uuid.uuid4()))
 _ = sp.Popen([
     path_to_channel, 
@@ -303,8 +303,8 @@ _ = sp.Popen([
 components.append(_)
 
 rs.append(str(uuid.uuid4()))
-#ws.append(str(uuid.uuid4()))
-ws.append("monica_out")
+ws.append(str(uuid.uuid4()))
+#ws.append("monica_out")
 _ = sp.Popen([
     path_to_channel, 
     "--host={}".format(host),
@@ -315,26 +315,20 @@ _ = sp.Popen([
 ])
 channels.append(_)
 
-_ = sp.Popen([
-    "/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-server", 
-    "--address", "{}".format(host),
-    "--port", "9999",
-    "--sturdy-ref", "monica_sr",
-])
-components.append(_)
-
-# _ = sp.Popen([
-#     "/home/berg/GitHub/monica/_cmake_linux_debug/monica-capnp-fbp-component", 
-#     "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
-#     "out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
-# ])
-# components.append(_)
+for m in range(10):
+    _ = sp.Popen([
+    "/home/berg/GitHub/monica/_cmake_linux_release/monica-capnp-fbp-component", 
+    "--in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels)-1, srt=rs[-2]),
+    "--out_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=ws[-1]),
+    ])
+    components.append(_)
 
 _ = sp.Popen([
     "python", 
     "/home/berg/GitHub/mas-infrastructure/src/python/fbp/write_monica_csv.py", 
     "in_sr=capnp://insecure@{host}:9{port:03g}/{srt}".format(host=host, port=len(channels), srt=rs[-1]),
-    "filepath_pattern=out_fbp/csv_{id}.csv",
+    "path_to_out_dir=out_fbp/",
+    "file_pattern=csv_{id}.csv",
     "id_attr=id"
 ])
 components.append(_)
