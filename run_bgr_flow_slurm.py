@@ -58,40 +58,80 @@ node_ip = socket.gethostbyname(node_fqdn)
 parts = []
 shared_in_srt = str(uuid.uuid4())
 shared_channel_port = get_free_port()
-_ = sp.Popen([
-    "python", 
-    "{}/run_bgr_flow_part_1.py".format(config["path_to_klimertrag"]), 
-    "hpc={}".format(config["hpc"]),
-    "shared_in_srt={}".format(shared_in_srt),
-    "shared_channel_port={}".format(shared_channel_port),
-    "use_infiniband={}".format(config["use_infiniband"]),
-    "path_to_channel={}".format(config["path_to_channel"]),
-    "path_to_mas={}".format(config["path_to_mas"]),
-    "setups_file={}".format(config["setups_file"]),
-    "coords_file={}".format(config["coords_file"]),
-])
+
+if config["hpc"]:
+    _ = sp.Popen([
+        "srun",
+        "-N1",
+        "python", 
+        "{}/run_bgr_flow_part_1.py".format(config["path_to_klimertrag"]), 
+        "hpc={}".format(config["hpc"]),
+        "shared_in_srt={}".format(shared_in_srt),
+        "shared_channel_port={}".format(shared_channel_port),
+        "use_infiniband={}".format(config["use_infiniband"]),
+        "path_to_channel={}".format(config["path_to_channel"]),
+        "path_to_mas={}".format(config["path_to_mas"]),
+        "setups_file={}".format(config["setups_file"]),
+        "coords_file={}".format(config["coords_file"]),
+    ])
+else:
+    _ = sp.Popen([
+        "python", 
+        "{}/run_bgr_flow_part_1.py".format(config["path_to_klimertrag"]), 
+        "hpc={}".format(config["hpc"]),
+        "shared_in_srt={}".format(shared_in_srt),
+        "shared_channel_port={}".format(shared_channel_port),
+        "use_infiniband={}".format(config["use_infiniband"]),
+        "path_to_channel={}".format(config["path_to_channel"]),
+        "path_to_mas={}".format(config["path_to_mas"]),
+        "setups_file={}".format(config["setups_file"]),
+        "coords_file={}".format(config["coords_file"]),
+    ])
 parts.append(_)
 
-_ = sp.Popen([
-    "python", 
-    "{}/run_bgr_flow_part_2.py".format(config["path_to_klimertrag"]), 
-    "hpc={}".format(config["hpc"]),
-    "shared_in_srt={}".format(shared_in_srt),
-    "shared_channel_port={}".format(shared_channel_port),
-    "use_infiniband={}".format(config["use_infiniband"]),
-    "path_to_channel={}".format(config["path_to_channel"]),
-    "path_to_monica={}".format(config["path_to_monica"]),
-    "path_to_mas={}".format(config["path_to_mas"]),
-    "path_to_klimertrag={}".format(config["path_to_klimertrag"]),
-    "path_to_out_dir={}".format(config["path_to_out_dir"]),
-    "setups_file={}".format(config["setups_file"]),
-    "coords_file={}".format(config["coords_file"]),
-    "monica_count={}".format(config["monica_count"]),
-    "proj_transformer_count={}".format(config["proj_transformer_count"]),
-    "ilr_count={}".format(config["ilr_count"]),
-    "dwd_count={}".format(config["dwd_count"]),
-    "writer_count={}".format(config["writer_count"]),
-])
+if config["hpc"]:
+    _ = sp.Popen([
+        "srun",
+        "python", 
+        "{}/run_bgr_flow_part_2.py".format(config["path_to_klimertrag"]), 
+        "hpc={}".format(config["hpc"]),
+        "shared_in_srt={}".format(shared_in_srt),
+        "shared_channel_port={}".format(shared_channel_port),
+        "use_infiniband={}".format(config["use_infiniband"]),
+        "path_to_channel={}".format(config["path_to_channel"]),
+        "path_to_monica={}".format(config["path_to_monica"]),
+        "path_to_mas={}".format(config["path_to_mas"]),
+        "path_to_klimertrag={}".format(config["path_to_klimertrag"]),
+        "path_to_out_dir={}".format(config["path_to_out_dir"]),
+        "setups_file={}".format(config["setups_file"]),
+        "coords_file={}".format(config["coords_file"]),
+        "monica_count={}".format(config["monica_count"]),
+        "proj_transformer_count={}".format(config["proj_transformer_count"]),
+        "ilr_count={}".format(config["ilr_count"]),
+        "dwd_count={}".format(config["dwd_count"]),
+        "writer_count={}".format(config["writer_count"]),
+    ])
+else:
+    _ = sp.Popen([
+        "python", 
+        "{}/run_bgr_flow_part_2.py".format(config["path_to_klimertrag"]), 
+        "hpc={}".format(config["hpc"]),
+        "shared_in_srt={}".format(shared_in_srt),
+        "shared_channel_port={}".format(shared_channel_port),
+        "use_infiniband={}".format(config["use_infiniband"]),
+        "path_to_channel={}".format(config["path_to_channel"]),
+        "path_to_monica={}".format(config["path_to_monica"]),
+        "path_to_mas={}".format(config["path_to_mas"]),
+        "path_to_klimertrag={}".format(config["path_to_klimertrag"]),
+        "path_to_out_dir={}".format(config["path_to_out_dir"]),
+        "setups_file={}".format(config["setups_file"]),
+        "coords_file={}".format(config["coords_file"]),
+        "monica_count={}".format(config["monica_count"]),
+        "proj_transformer_count={}".format(config["proj_transformer_count"]),
+        "ilr_count={}".format(config["ilr_count"]),
+        "dwd_count={}".format(config["dwd_count"]),
+        "writer_count={}".format(config["writer_count"]),
+    ])
 parts.append(_)
 
 for part in parts:
