@@ -36,6 +36,14 @@ import monica_run_lib as Mrunlib
 
 PATHS = {
      # adjust the local path to your environment
+    "mbm-local-local": {
+        #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
+        "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data
+        "monica-path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive accessable by monica executable
+        "path-to-data-dir": "data/", # mounted path to archive or hard drive with data
+        "path-debug-write-folder": "./debug-out/",
+        "path-to-coords": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/rpm/projects/monica/project/klimertrag/bgr/"
+    },
     "mbm-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
         "path-to-climate-dir": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/", # mounted path to archive or hard drive with climate data
@@ -98,15 +106,15 @@ def run_producer(server = {"server": None, "port": None}):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
+        "mode": "mbm-local-local", ## local:"cj-local-remote" remote "mbm-local-remote"
         "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
-        "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
+        "server": server["server"] if server["server"] else "localhost", #"login01.cluster.zalf.de",
         "sim.json": "sim_bgr.json",
         "crop.json": "crop_bgr.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_capnp_bgr.csv",
         "run-setups": "[1]",
-        "coords_filename": "all_coord_shuffled_anonymous_additional.csv",
+        "coords_filename": "all_coord_shuffled_anonymous.csv",
         "id_col_name": "dummy_id",
     }
     
