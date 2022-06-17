@@ -18,6 +18,7 @@
 import socket
 import subprocess as sp
 import sys
+import time
 import uuid
 
 def get_free_port():
@@ -27,6 +28,7 @@ def get_free_port():
 
 config = {
     "hpc": False,
+    "nodes": "3",
     "use_infiniband": False,
     "path_to_channel": "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_linux_release/channel",
     "path_to_monica": "/home/berg/GitHub/monica/_cmake_linux_release/monica-capnp-fbp-component",
@@ -35,11 +37,11 @@ config = {
     "path_to_out_dir": "/home/berg/GitHub/klimertrag/out_fbp",
     "setups_file": "/home/berg/GitHub/klimertrag/sim_setups_bgr_flow.csv",
     "coords_file": "/home/berg/Desktop/all_coord_shuffled_anonymous.csv",
-    "monica_count": "1",
-    "proj_transformer_count": "1",
-    "ilr_count": "1",
-    "dwd_count": "1",
-    "writer_count": "1",
+    "monica_count": "10",
+    "proj_transformer_count": "5",
+    "ilr_count": "5",
+    "dwd_count": "5",
+    "writer_count": "3",
 }
 if len(sys.argv) > 1 and __name__ == "__main__":
     for arg in sys.argv[1:]:
@@ -49,20 +51,29 @@ if len(sys.argv) > 1 and __name__ == "__main__":
                 config[k] = v.lower() == "true"
             else:
                 config[k] = v
+print(config)
 
+node_count = int(config["nodes"])
 use_infiniband = config["use_infiniband"]
 node_hostname = socket.gethostname()
-node_fqdn = node_hostname + (".opa" if use_infiniband else ".service") if config["hpc"] else ""
-node_ip = socket.gethostbyname(node_fqdn)
+if config["use_infiniband"]:
+    node_hostname.replace(".service", ".opa")
+node_ip = socket.gethostbyname(node_hostname)
+node_name = node_hostname.replace(".service", "").replace(".opa", "")
 
 parts = []
 shared_in_srt = str(uuid.uuid4())
 shared_channel_port = get_free_port()
+shared_in_sr = "capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=shared_channel_port, srt=shared_in_srt),
 
 if config["hpc"]:
     _ = sp.Popen([
         "srun",
         "-N1",
+        "-n1",
+        "-w{}".format(node_name),
+        "-ohpc_bgr_flow_py_part_1.out",
+        "-ehpc_bgr_flow_py_part_1.err",
         "python", 
         "{}/run_bgr_flow_part_1.py".format(config["path_to_klimertrag"]), 
         "hpc={}".format(config["hpc"]),
@@ -88,15 +99,21 @@ else:
         "coords_file={}".format(config["coords_file"]),
     ])
 parts.append(_)
+print("started part 1")
+
+time.sleep(3)
 
 if config["hpc"]:
     _ = sp.Popen([
         "srun",
+        "-N{}".format(node_count-1),
+        "-n{}".format(node_count-1),
+        "-ohpc_bgr_flow_py_part_2.out",
+        "-ehpc_bgr_flow_py_part_2.err",
         "python", 
         "{}/run_bgr_flow_part_2.py".format(config["path_to_klimertrag"]), 
         "hpc={}".format(config["hpc"]),
-        "shared_in_srt={}".format(shared_in_srt),
-        "shared_channel_port={}".format(shared_channel_port),
+        "shared_in_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=shared_channel_port, srt=shared_in_srt),
         "use_infiniband={}".format(config["use_infiniband"]),
         "path_to_channel={}".format(config["path_to_channel"]),
         "path_to_monica={}".format(config["path_to_monica"]),
@@ -116,8 +133,7 @@ else:
         "python", 
         "{}/run_bgr_flow_part_2.py".format(config["path_to_klimertrag"]), 
         "hpc={}".format(config["hpc"]),
-        "shared_in_srt={}".format(shared_in_srt),
-        "shared_channel_port={}".format(shared_channel_port),
+        "shared_in_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=shared_channel_port, srt=shared_in_srt),
         "use_infiniband={}".format(config["use_infiniband"]),
         "path_to_channel={}".format(config["path_to_channel"]),
         "path_to_monica={}".format(config["path_to_monica"]),
@@ -133,6 +149,7 @@ else:
         "writer_count={}".format(config["writer_count"]),
     ])
 parts.append(_)
+print("started part 2")
 
 for part in parts:
     part.wait()

@@ -53,11 +53,13 @@ if len(sys.argv) > 1 and __name__ == "__main__":
                 config[k] = v.lower() == "true"
             else:
                 config[k] = v
+print(config)
 
 use_infiniband = config["use_infiniband"]
 node_hostname = socket.gethostname()
-node_fqdn = node_hostname + (".opa" if use_infiniband else ".service") if config["hpc"] else ""
-node_ip = socket.gethostbyname(node_fqdn)
+if config["use_infiniband"]:
+    node_hostname.replace(".service", ".opa")
+node_ip = socket.gethostbyname(node_hostname)
 
 components = []
 channels = []

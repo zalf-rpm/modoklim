@@ -37,8 +37,7 @@ def start_channel(path_to_channel, host, chan_port, reader_srt, writer_srt):
 
 config = {
     "hpc": False,
-    "shared_in_srt": str(uuid.uuid4()),
-    "shared_channel_port": str(get_free_port()),
+    "shared_in_sr": "",
     "use_infiniband": False,
     "path_to_channel": "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_linux_release/channel",
     "path_to_monica": "/home/berg/GitHub/monica/_cmake_linux_release/monica-capnp-fbp-component",
@@ -62,11 +61,13 @@ if len(sys.argv) > 1 and __name__ == "__main__":
                 config[k] = v.lower() == "true"
             else:
                 config[k] = v
+print(config)
 
 use_infiniband = config["use_infiniband"]
 node_hostname = socket.gethostname()
-node_fqdn = node_hostname + (".opa" if use_infiniband else ".service") if config["hpc"] else ""
-node_ip = socket.gethostbyname(node_fqdn)
+if config["use_infiniband"]:
+    node_hostname.replace(".service", ".opa")
+node_ip = socket.gethostbyname(node_hostname)
 
 components = []
 channels = []
@@ -82,7 +83,7 @@ channels.append(start_channel(config["path_to_channel"], node_ip, ps[-1], rs[-1]
 _ = sp.Popen([
     "python", 
     "{}/bgr_flow_components/create_locations.py".format(config["path_to_klimertrag"]), 
-    "in_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=config["shared_channel_port"], srt=config["shared_in_srt"]),
+    "in_sr={}".format(config["shared_in_sr"]),
     "out_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=ps[-1], srt=ws[-1]),
 ])
 components.append(_)
@@ -212,7 +213,8 @@ for _ in range(int(config["dwd_count"])):
         "start_date_attr=startDate",
         "end_date_attr=endDate",
         "to_attr=climate",
-        "mode=capability"
+        "mode=capability",
+        "path_to_data=/beegfs/common/data/climate/dwd/csvs"
     ])
     components.append(_)
 
