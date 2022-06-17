@@ -35,6 +35,7 @@ config = {
     "path_to_mas": "/home/berg/GitHub/mas-infrastructure",
     "path_to_klimertrag": "/home/berg/GitHub/klimertrag",
     "path_to_out_dir": "/home/berg/GitHub/klimertrag/out_fbp",
+    "path_to_dwd_csvs": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/dwd/csvs",
     "setups_file": "/home/berg/GitHub/klimertrag/sim_setups_bgr_flow.csv",
     "coords_file": "/home/berg/Desktop/all_coord_shuffled_anonymous.csv",
     "monica_count": "10",
@@ -45,7 +46,7 @@ config = {
 }
 if len(sys.argv) > 1 and __name__ == "__main__":
     for arg in sys.argv[1:]:
-        k,v = arg.split("=")
+        k,v = arg.split("=", maxsplit=1)
         if k in config:
             if v.lower() in ["true", "false"]:
                 config[k] = v.lower() == "true"
@@ -120,6 +121,7 @@ if config["hpc"]:
         "path_to_mas={}".format(config["path_to_mas"]),
         "path_to_klimertrag={}".format(config["path_to_klimertrag"]),
         "path_to_out_dir={}".format(config["path_to_out_dir"]),
+        "path_to_dwd_csvs={}".format(config["path_to_dwd_csvs"]),
         "setups_file={}".format(config["setups_file"]),
         "coords_file={}".format(config["coords_file"]),
         "monica_count={}".format(config["monica_count"]),
@@ -140,6 +142,7 @@ else:
         "path_to_mas={}".format(config["path_to_mas"]),
         "path_to_klimertrag={}".format(config["path_to_klimertrag"]),
         "path_to_out_dir={}".format(config["path_to_out_dir"]),
+        "path_to_dwd_csvs={}".format(config["path_to_dwd_csvs"]),
         "setups_file={}".format(config["setups_file"]),
         "coords_file={}".format(config["coords_file"]),
         "monica_count={}".format(config["monica_count"]),

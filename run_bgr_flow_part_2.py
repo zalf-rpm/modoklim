@@ -44,6 +44,7 @@ config = {
     "path_to_mas": "/home/berg/GitHub/mas-infrastructure",
     "path_to_klimertrag": "/home/berg/GitHub/klimertrag",
     "path_to_out_dir": "/home/berg/GitHub/klimertrag/fbp_out",
+    "path_to_dwd_csvs": "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/dwd/csvs",
     "setups_file": "/home/berg/GitHub/mas-infrastructure/sim_setups_bgr_flow.csv",
     "coords_file": "/home/berg/Desktop/all_coord_shuffled_anonymous.csv",
     "monica_count": "5",
@@ -55,7 +56,7 @@ config = {
 }
 if len(sys.argv) > 1 and __name__ == "__main__":
     for arg in sys.argv[1:]:
-        k,v = arg.split("=")
+        k,v = arg.split("=", maxsplit=1)
         if k in config:
             if v.lower() in ["true", "false"]:
                 config[k] = v.lower() == "true"
@@ -214,7 +215,7 @@ for _ in range(int(config["dwd_count"])):
         "end_date_attr=endDate",
         "to_attr=climate",
         "mode=capability",
-        "path_to_data=/beegfs/common/data/climate/dwd/csvs"
+        "path_to_data={}".format(config["path_to_dwd_csvs"]),
     ])
     components.append(_)
 
@@ -252,14 +253,31 @@ for _ in range(int(config["monica_count"])):
     ])
     components.append(_)
 
+rs.append(str(uuid.uuid4()))
+ws.append(str(uuid.uuid4()))
+ps.append(get_free_port())
+channels.append(start_channel(config["path_to_channel"], node_ip, ps[-1], rs[-1], ws[-1]))
+
+_ = sp.Popen([
+    "python", 
+    "{}/bgr_flow_components/create_out_path.py".format(config["path_to_klimertrag"]), 
+    "in_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=ps[-2], srt=rs[-2]),
+    "out_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=ps[-1], srt=ws[-1]),
+    "id_attr=id",
+    "to_attr=out_path",
+    "bin_size=1000",
+    "dir_template={}/{}".format(config["path_to_out_dir"], "{}"),
+])
+components.append(_)
+
 for _ in range(int(config["writer_count"])):
     _ = sp.Popen([
         "python", 
         "{}/src/python/fbp/write_monica_csv.py".format(config["path_to_mas"]), 
         "in_sr=capnp://insecure@{host}:{port}/{srt}".format(host=node_ip, port=ps[-1], srt=rs[-1]),
-        "path_to_out_dir="+config["path_to_out_dir"],
         "file_pattern=csv_{id}.csv",
-        "id_attr=id"
+        "id_attr=id",
+        "out_path_attr=out_path",
     ])
     components.append(_)
 
