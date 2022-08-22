@@ -58,10 +58,11 @@ try:
                     break
                 
                 #x = msg.value.as_interface(x_capnp.X)
-                x = msg.value.as_struct(x_capnp.S).c
-                res = "{}: x.m({}) -> {}\n".format(config["name"], count, x.m(count).wait())
-                out.write(res)
-                #print(config["name"],": x.m(", count, ") ->", x.m(count).wait())
+                s = msg.value.as_struct(x_capnp.S)
+                x = s.c
+                res = "{}: i={} x.m({}) -> {}\n".format(config["name"], s.i, count, s.c.m(count).wait())
+                #out.write(res)
+                print(config["name"],": i=", s.i, " x.m(", count, ") ->", x.m(count).wait())
                 count += 1
 
                 #time.sleep(1)

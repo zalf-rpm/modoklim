@@ -28,7 +28,7 @@ channels = []
 rs = []
 ws = []
 
-path_to_channel = "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_linux_debug/channel"
+path_to_channel = "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_release/channel"
 
 # r1 = "r1"#str(uuid.uuid4())
 # w1 = "w1"#str(uuid.uuid4())
@@ -59,6 +59,7 @@ _ = sp.Popen([
    path_to_channel,
    "--host=10.10.24.218",
    "--name=chan1",
+   "--buffer-size=10",
    "--port=99{:02g}".format(1),
    "--reader_srts="+rs[-1],
    "--writer_srts="+ws[-1],
@@ -73,7 +74,7 @@ _ = sp.Popen([
 ])
 components.append(_)
 
-for i in range(2, 3):
+for i in range(2, 10):
     rs.append(str(uuid.uuid4()))
     ws.append(str(uuid.uuid4()))
 

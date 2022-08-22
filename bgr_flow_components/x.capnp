@@ -2,6 +2,7 @@
 
 struct S {
     c @0 :X;
+    i @1 :Int64;
 }
 
 interface X {

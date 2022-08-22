@@ -106,15 +106,15 @@ def run_producer(server = {"server": None, "port": None}):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-local", ## local:"cj-local-remote" remote "mbm-local-remote"
+        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
         "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
-        "server": server["server"] if server["server"] else "localhost", #"login01.cluster.zalf.de",
+        "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "sim.json": "sim_bgr.json",
         "crop.json": "crop_bgr.json",
         "site.json": "site.json",
-        "setups-file": "sim_setups_capnp_bgr.csv",
-        "run-setups": "[1]",
-        "coords_filename": "all_coord_shuffled_anonymous.csv",
+        "setups-file": "sim_setups_bgr.csv",
+        "run-setups": "[1,2,3,4,5,6,7,8]",
+        "coords_filename": "all_coord_shuffled_anonymous_additional2.csv",
         "id_col_name": "dummy_id",
     }
     

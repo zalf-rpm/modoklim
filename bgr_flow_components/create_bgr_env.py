@@ -115,6 +115,8 @@ def create_env(sim, crop, site, crop_id):
         "climate": ""
     })
 
+    env_template["csvViaHeaderOptions"] = sim_json["climate.csv-options"]
+
     create_env.cache[scsc] = env_template
     return env_template
 
@@ -130,7 +132,7 @@ try:
             llcoord = common.get_fbp_attr(in_ip, config["coord_attr"]).as_struct(geo_capnp.LatLonCoord)
             height_nn = common.get_fbp_attr(in_ip, config["dgm_attr"]).as_struct(grid_capnp.Grid.Value).f
             slope = common.get_fbp_attr(in_ip, config["slope_attr"]).as_struct(grid_capnp.Grid.Value).f
-            timeseries = common.get_fbp_attr(in_ip, config["climate_attr"]).as_interface(climate_capnp.TimeSeries)
+            #timeseries = common.get_fbp_attr(in_ip, config["climate_attr"]).as_interface(climate_capnp.TimeSeries)
             soil_profile = common.get_fbp_attr(in_ip, config["soil_attr"]).as_struct(soil_capnp.Profile)
             setup = common.get_fbp_attr(in_ip, config["setup_attr"]).as_struct(bgr_capnp.Setup)
             ilr = common.get_fbp_attr(in_ip, config["ilr_attr"]).as_struct(mgmt_capnp.ILRDates)
@@ -235,6 +237,9 @@ try:
             env_template["params"]["simulationParameters"]["EmergenceMoistureControlOn"] = setup.emergenceMoistureControlOn
             env_template["params"]["simulationParameters"]["EmergenceFloodingControlOn"] = setup.emergenceFloodingControlOn
 
+            
+            env_template["pathToClimateCSV"] = "/run/user/1000/gvfs/sftp:host=login01.cluster.zalf.de,user=rpm/beegfs/common/data/climate/dwd/csvs/germany/row-0/col-181.csv"
+
             env_template["customId"] = {
                 "setup_id": setup.runId,
                 "id": id,
@@ -243,7 +248,7 @@ try:
             }
 
             capnp_env = model_capnp.Env.new_message()
-            capnp_env.timeSeries = timeseries
+            #capnp_env.timeSeries = timeseries
             capnp_env.soilProfile = soil_profile
             capnp_env.rest = common_capnp.StructuredText.new_message(value=json.dumps(env_template), structure={"json": None})
 

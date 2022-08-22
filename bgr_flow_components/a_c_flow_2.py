@@ -28,9 +28,9 @@ channels = []
 rs = []
 ws = []
 
-path_to_channel = "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_linux_debug/channel"
+path_to_channel = "/home/berg/GitHub/mas-infrastructure/src/cpp/common/_cmake_debug/channel"
 
-rss = list([str(uuid.uuid4()) for _ in range(10)])
+rss = list([str(uuid.uuid4()) for _ in range(3)])
 rss_str = ",".join(rss)
 rs.append(rss_str)
 ws.append(str(uuid.uuid4()))

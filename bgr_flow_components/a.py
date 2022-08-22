@@ -57,10 +57,12 @@ x = X() #x_capnp.X._new_server(X())
 try:
     if outp:
         time.sleep(1)
+        i = 0
         while True:
             #outp.write(value=x).wait()
             #time.sleep(1)
-            outp.write(value=x_capnp.S.new_message(c=x)).wait()
+            outp.write(value=x_capnp.S.new_message(c=x, i=i)).wait()
+            i += 1
             #print("a: send x", end=" -> ", flush=True)
             #time.sleep(2)
 
