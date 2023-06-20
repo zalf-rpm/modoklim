@@ -94,7 +94,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = ["Mois", "STemp"]
     elif is_yields:
         output_grids = {
-            # "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
             # "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
@@ -102,7 +102,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             # "precipsum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "nstressavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "heatredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            "frostredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2}
+            #"frostredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2}
             # "nstresslast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "oxredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "tradeflast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2}
