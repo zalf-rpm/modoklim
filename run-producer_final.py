@@ -97,7 +97,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "sim.json": "sim_final.json",
         "crop.json": "crop_final.json",
         "site.json": "site.json",
-        "setups-file": "sim_setups_final.csv",
+        "setups-file": "sim_setups_modoklim.csv",
         "run-setups": "[1]",
         "shared_id": shared_id
     }
