@@ -227,7 +227,7 @@
 				"DOY|s7doy"
 			]
 		],
-		"_backup-pheno-events": [
+		"backup-pheno-events": [
 			"Sowing", [
 				"CM-count",
 				"Crop",
