@@ -250,7 +250,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         elif setup["yields"]:
             sim_json["output"]["events"] = sim_json["output"]["yields-events"]
         elif setup["pheno"]:
-            sim_json["output"]["events"] = sim_json["output"]["pheno-events"]
+            sim_json["output"]["events"] = sim_json["output"]["backup-pheno-events"]
 
         sim_json["output"]["obj-outputs?"] = not setup["nc_mode"] and not setup["bgr"]
 
