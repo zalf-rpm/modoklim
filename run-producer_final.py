@@ -36,9 +36,9 @@ import monica_run_lib as Mrunlib
 
 PATHS = {
      # adjust the local path to your environment
-    "cj-local-remote": {
+    "re-local-remote": {
         #"include-file-base-path": "/home/berg/GitHub/monica-parameters/", # path to monica-parameters
-        "path-to-climate-dir": "D:/projects/KlimErtrag/", # local path
+        "path-to-climate-dir": "data/", # local path
         "monica-path-to-climate-dir": "/monica_data/climate-data/", # mounted path to archive accessable by monica executable
         "path-to-data-dir": "./data/", # mounted path to archive or hard drive with data
         "path-debug-write-folder": "./debug-out/",
@@ -69,7 +69,8 @@ DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
 # DATA_GRID_CROPS = "germany/dwd-stations-pheno_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_CROPS = "germany/germany-complete_1000_25832_etrs89-utm32n.asc"
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
-TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv"
+# TEMPLATE_PATH_LATLON = "data/latlon-to-rowcol.json"
+TEMPLATE_PATH_CLIMATE_CSV = "{gcm}/{rcm}/{scenario}/{ensmem}/{version}/row-{crow}/col-{ccol}.csv.gz"
 
 TEMPLATE_PATH_HARVEST = "{path_to_data_dir}/projects/monica-germany/ILR_SEED_HARVEST_doys_{crop_id}.csv"
 
@@ -88,8 +89,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     #config_and_no_data_socket = context.socket(zmq.PUSH)
 
     config = {
-        "mode": "mbm-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
-        "server-port": server["port"] if server["port"] else "6666", ## local: 6667, remote 6666
+        "mode": "re-local-remote", ## local:"cj-local-remote" remote "mbm-local-remote"
+        "server-port": server["port"] if server["port"] else "6667", ## local: 6667, remote 6666
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de",
         "start-row": "0", 
         "end-row": "-1", 
@@ -366,6 +367,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
                 # set external seed/harvest dates
                 if seed_harvest_cs:
+                    # if isinstance(seed_harvest_cs, np.ndarray):
+                    #     seed_harvest_cs = seed_harvest_cs.item() if seed_harvest_cs.size == 1 else tuple(
+                    #         seed_harvest_cs)
                     seed_harvest_data = ilr_seed_harvest_data[crop_id_short]["data"][seed_harvest_cs]
                     if seed_harvest_data:
                         is_winter_crop = ilr_seed_harvest_data[crop_id_short]["is-winter-crop"]
@@ -588,7 +592,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
                 env_template["csvViaHeaderOptions"] = sim_json["climate.csv-options"]
                 
-                subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=str(crow), ccol=str(ccol))
+                subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=int(crow), ccol=int(ccol))
                 for _ in range(4):
                     subpath_to_csv = subpath_to_csv.replace("//", "/")
                 env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]

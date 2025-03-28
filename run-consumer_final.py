@@ -34,7 +34,7 @@ import soil_io3
 import monica_run_lib as Mrunlib
 
 PATHS = {
-    "cj-local-remote": {
+    "re-local-remote": {
         "path-to-data-dir": "data/",
         "path-to-output-dir": "D:/projects/KlimErtrag/out_remote_local/",
         "path-to-csv-output-dir": "D:/projects/KlimErtrag/out_remote_local/"
@@ -291,8 +291,8 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
     "collect data from workers"
 
     config = {
-        "mode": "mbm-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
-        "port": server["port"] if server["port"] else "7777", ## local 7778,  remote 7777
+        "mode": "re-local-remote",  ## remote "mbm-local-remote", local "cj-local-remote"
+        "port": server["port"] if server["port"] else "7778", ## local 7778,  remote 7777
         "server": server["server"] if server["server"] else "login01.cluster.zalf.de", 
         "start-row": "0",
         "end-row": "-1",
@@ -518,6 +518,13 @@ def run_consumer(leave_after_finished_run = True, server = {"server": None, "por
 
                         for row in monica_io3.write_output(output_ids, results):
                             writer.writerow(row)
+
+                        # for result in results:
+                        #     row = []
+                        #     for output_id in output_ids:
+                        #         field_name = output_id["name"]
+                        #         row.append(result.get(field_name, ""))
+                        #     writer.writerow(row)
 
                     writer.writerow([])
 
