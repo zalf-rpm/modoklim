@@ -132,7 +132,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
     utm32_crs = CRS.from_epsg(25832)
     #transformers[wgs84] = Transformer.from_crs(wgs84_crs, gk5_crs, always_xy=True)
 
-    ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None})
+    ilr_seed_harvest_data = defaultdict(lambda: {"interpolate": None, "data": defaultdict(dict), "is-winter-crop": None}) #Was bedeutet das?#
 
     # Load grids
     ## note numpy is able to load from a compressed file, ending with .gz or .bz2
@@ -216,7 +216,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         # add crop id from setup file
         try:
             #read seed/harvest dates for each crop_id
-            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id_short)
+            path_harvest = TEMPLATE_PATH_HARVEST.format(path_to_data_dir=paths["path-to-data-dir"],  crop_id=crop_id_short) #Was bedeutet das?#
             print("created seed harvest gk5 interpolator and read data: ", path_harvest)
             Mrunlib.create_seed_harvest_geoGrid_interpolator_and_read_data(path_harvest, wgs84_crs, utm32_crs, ilr_seed_harvest_data)
         except IOError:
