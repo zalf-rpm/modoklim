@@ -242,7 +242,7 @@
 			],
 			"Stage-1", [
 				"CM-count",
-				"DOY|s2doy"
+				"DOY|s1doy"
 			],
 			"Stage-2", [
 				"CM-count",
