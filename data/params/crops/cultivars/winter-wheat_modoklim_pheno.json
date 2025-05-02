@@ -1,8 +1,7 @@
 {
   "metadata": {
-    "description": "Reparameterization for Klimertrag project and vernalisation factor fix",
-    "date": "09-20201"
-  },
+    "description": "Klimertrag parameters. First parameterized on Braunschweig FACE experiment, then phenology adapted to DWD Jahreszaeler observations.",
+    "date": "01-2022"},
   "CultivarName": "winter wheat",
   "WinterCrop": true,
   "AssimilatePartitioningCoeff": [
@@ -55,7 +54,7 @@
     "h"
   ],
   "BeginSensitivePhaseHeatStress": [
-    540,
+    620,
     "°C d"
   ],
   "CriticalTemperatureHeatStress": [
@@ -86,7 +85,7 @@
     0.8
   ],
   "EndSensitivePhaseHeatStress": [
-    720,
+    800,
     "°C d"
   ],
   "FrostDehardening": 5.05,
@@ -200,12 +199,12 @@
   ],
   "StageTemperatureSum": [
     [
-      148,
-      210,
-      330,
-      180,
-      380,
-      25
+      146,
+      276,
+      336,
+      112,
+      586,
+      15
     ],
     "°C d"
   ],
