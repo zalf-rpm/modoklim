@@ -248,7 +248,7 @@
 				"CM-count",
 				"DOY|s2doy"
 			],
-			"stem-elongation", [
+			"cereal-stem-elongation", [
 				"CM-count",
 				"DOY|sedoy"
 			],
@@ -276,6 +276,10 @@
 				"CM-count",
 				"Year",
 				"DOY|hdoy"
+			],
+			"Harvest", [
+				"CM-count",
+				"Stage|hstage"
 			]
 		],
 
