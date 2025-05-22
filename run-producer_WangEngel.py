@@ -96,7 +96,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "end-row": "-1", 
         "path_to_dem_grid": "",
         "sim.json": "sim_final.json",
-        "crop.json": "crop_EngelWang.json",
+        "crop.json": "crop_WangEngel.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_WangEngel.csv",
         "run-setups": "[1]",
