@@ -382,8 +382,6 @@
 	
 	"CropParameters": {
 		"=": ["include-from-file", "general/crop.json"],
-		"__enable_vernalisation_factor_fix__": true,
-		"__enable_Phenology_WangEngelTemperatureResponse__": true,
-		"__enable_Photosynthesis_WangEngelTemperatureResponse__": true
+		"__enable_vernalisation_factor_fix__": true
 	}
 }
