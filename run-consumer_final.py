@@ -94,16 +94,16 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         output_keys = ["Mois", "STemp"]
     elif is_yields:
         output_grids = {
-             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-             "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-             "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-             "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-             "oxredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-             "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digit": 2},
-            "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-             "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-             "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+            "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            # "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "oxredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
+            # "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digit": 2},
+            # "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
+            # "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
             # "precipsum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "nstressavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
             # "heatredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
