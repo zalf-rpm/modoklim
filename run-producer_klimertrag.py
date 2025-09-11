@@ -95,7 +95,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "end-row": "-1", 
         "path_to_dem_grid": "",
         "sim.json": "sim_klimertrag.json",
-        "crop.json": "crop_klimertrag.json",
+        "crop.json": "crop_final.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_klimertrag.csv",
         "run-setups": "[1]",
@@ -565,18 +565,18 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 if setup["FieldConditionModifier"]:
                     env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["species"]["FieldConditionModifier"] = float(setup["FieldConditionModifier"])
 
-                if setup["StageTemperatureSum"]:
-                    stage_ts = setup["StageTemperatureSum"].split('_')
-                    stage_ts = [int(temp_sum) for temp_sum in stage_ts]
-                    orig_stage_ts = env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"][
-                        "StageTemperatureSum"][0]
-                    if len(stage_ts) != len(orig_stage_ts):
-                        stage_ts = orig_stage_ts
-                        print('The provided StageTemperatureSum array is not '
-                              'sufficiently long. Falling back to original StageTemperatureSum')
+                # if setup["StageTemperatureSum"]:
+                #     stage_ts = setup["StageTemperatureSum"].split('_')
+                #     stage_ts = [int(temp_sum) for temp_sum in stage_ts]
+                #     orig_stage_ts = env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"][
+                #         "StageTemperatureSum"][0]
+                #     if len(stage_ts) != len(orig_stage_ts):
+                #         stage_ts = orig_stage_ts
+                #         print('The provided StageTemperatureSum array is not '
+                #               'sufficiently long. Falling back to original StageTemperatureSum')
 
-                    env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"][
-                        "StageTemperatureSum"][0] = stage_ts
+                #     env_template["cropRotation"][0]["worksteps"][0]["crop"]["cropParams"]["cultivar"][
+                #         "StageTemperatureSum"][0] = stage_ts
 
                 env_template["params"]["simulationParameters"]["UseNMinMineralFertilisingMethod"] = setup["fertilization"]
                 env_template["params"]["simulationParameters"]["UseAutomaticIrrigation"] = setup["irrigation"]
