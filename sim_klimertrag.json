@@ -119,7 +119,7 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
-				["Yield", "LAST"]
+				["SumNUp|Yield", "LAST"]
 			]
 		],
 
