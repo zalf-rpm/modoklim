@@ -126,7 +126,7 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
-				["Nmin|Yield", [1, 20, "AVG"]]
+				["Yield", "LAST"]
 			]
 		],
 
