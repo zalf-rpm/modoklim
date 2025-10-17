@@ -121,7 +121,7 @@
 			]
 		],
 
-		"yields-events": [
+		"_yields-events_backup": [
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
@@ -157,7 +157,7 @@
 			]
 		],
 
-		"_yields-events_backup": [
+		"yields-events": [
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
