@@ -95,32 +95,29 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     elif is_yields:
         output_grids = {
             "Yield": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            # "tradefavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "heatredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "frostredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "oxredavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digit": 2},
-            # "s5doy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "sdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "hdoy": {"data" : make_dict_nparr(), "cast-to": "int"},
-            # "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
-            # "precipsum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "nstressavg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "heatredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            #"frostredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2}
-            # "nstresslast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "oxredlast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            # "tradeflast": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2}
-            #"HeatRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            #"FrostRed": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 2},
-            #"Yield-31-7": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"tavg-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"tmin-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"tmin-min": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"tmax-avg": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"tmax-max": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"precip-sum": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-            #"Pot_ET": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+            "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "NFert": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "N": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "N_30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "N_90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Nstress": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "SumNUp": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "PASW": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "PASW_30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "PASW_90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Mois": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Mois_30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Mois_90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Act_ET": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "TraDef": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Nstress_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "SumNUp_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "PASW_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "PASW_30_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "PASW_90_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Act_ET_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "TraDef_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+
         }
         output_keys = list(output_grids.keys())
     elif is_pheno:

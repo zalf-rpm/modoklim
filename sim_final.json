@@ -99,7 +99,7 @@
 			]
 		],
 
-		"_yields-events": [
+		"_yields-events_backup": [
 			{"from": "xxxx-04-01", "to": "xxxx-07-31"}, [
 				["CM-count", "LAST"],
 				["Year", "LAST"],
@@ -121,7 +121,7 @@
 			]
 		],
 
-		"_yields-events_backup": [
+		"yields-events": [
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
@@ -157,7 +157,7 @@
 			]
 		],
 
-		"yields-events": [
+		"_yields-events": [
 			"crop", [
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
