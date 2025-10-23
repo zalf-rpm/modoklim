@@ -136,7 +136,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             "Tra_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             "TraDef_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
-            "Precip_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+            "Precip_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
 
         }
         output_keys = list(output_grids.keys())
