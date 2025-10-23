@@ -150,7 +150,7 @@
 				["Tra", "SUM"],
 				["TraDef", "AVG"],
 				["Precip", "SUM"],
-				["PercolationRate|Drain", 20, "SUM"]
+				["PercolationRate|Drain", [20, "SUM"]]
 			],
 			{"from": "xxxx-03-01", "to": "xxxx-05-31"}, [
 				["CM-count", "LAST"],
