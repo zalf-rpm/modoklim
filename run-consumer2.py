@@ -91,7 +91,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=float))
 
     output_grids = {
-        "Yield": {"data": make_dict_nparr(), "cast-to": "float", "digits": 1}
+        "Yield": {"data": make_dict_nparr(), "cast-to": "float", "digits": 1},
         "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         "EffRootDep": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
