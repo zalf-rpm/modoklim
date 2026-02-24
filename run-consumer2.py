@@ -183,6 +183,24 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         del row_col_data[row]
 
 
+def finalize_outputs(setup_id: int, total_rows: int, ncols: int):
+    if not hasattr(write_row_to_grids, "list_of_output_files"):
+        return
+    if not hasattr(write_row_to_grids, "file_rows_written"):
+        return
+
+    nodata_line = " ".join(["-9999"] * ncols) + "\n"
+
+    for path_to_file in write_row_to_grids.list_of_output_files.get(setup_id, []):
+        already = write_row_to_grids.file_rows_written.get(path_to_file, 0)
+        missing = total_rows - already
+        if missing > 0:
+            with open(path_to_file, "a") as f:
+                for _ in range(missing):
+                    f.write(nodata_line)
+            write_row_to_grids.file_rows_written[path_to_file] = total_rows
+
+
 def run_consumer(leave_after_finished_run=True, server={"server": None, "port": None}, shared_id=None):
     """collect data from workers"""
 
@@ -455,6 +473,8 @@ def run_consumer(leave_after_finished_run=True, server={"server": None, "port": 
             # print("time to process message" + str(elapsed))
         except zmq.error.Again as _e:
             print('no response from the server (with "timeout"=%d ms) ' % socket.RCVTIMEO)
+            for setup_id, data in setup_id_to_data.items():
+                finalize_outputs(setup_id, data["nrows"], data["ncols"])
             return
         except Exception as e:
             print("Exception:", e)
