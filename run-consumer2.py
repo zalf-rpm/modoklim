@@ -60,14 +60,16 @@ def create_output(msg):
         for vals in results:
             if "CM-count" in vals:
                 cm_count_to_vals[vals["CM-count"]].update(vals)
-            elif is_daily_section:
+            elif is_daily_section and "Date" in vals:
                 cm_count_to_vals[vals["Date"]].update(vals)
 
-    cmcs = list(cm_count_to_vals.keys())
-    cmcs.sort()
+    if not cm_count_to_vals:
+        return cm_count_to_vals
+
+    cmcs = sorted(cm_count_to_vals.keys())
     last_cmc = cmcs[-1]
     if "Year" not in cm_count_to_vals[last_cmc]:
-        cm_count_to_vals.pop(last_cmc)
+        cm_count_to_vals.pop(last_cmc, None)
 
     return cm_count_to_vals
 
@@ -75,9 +77,16 @@ def create_output(msg):
 def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, path_to_csv_output_dir, setup_id):
     """write grids row by row"""
 
-    if not hasattr(write_row_to_grids, "nodata_row_count"):
-        write_row_to_grids.nodata_row_count = defaultdict(lambda: 0)
+    if not hasattr(write_row_to_grids, "list_of_output_files"):
         write_row_to_grids.list_of_output_files = defaultdict(list)
+
+    if not hasattr(write_row_to_grids, "cmc_to_crop"):
+        write_row_to_grids.cmc_to_crop = defaultdict(dict)
+
+    if not hasattr(write_row_to_grids, "file_rows_written"):
+        write_row_to_grids.file_rows_written = defaultdict(int)
+
+    cmc_to_crop = write_row_to_grids.cmc_to_crop[setup_id]
 
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=float))
 
@@ -86,100 +95,89 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     }
     output_keys = list(output_grids.keys())
 
-    cmc_to_crop = {}
+    def ensure_file_ready(path_to_file: str, current_row: int):
+        if not os.path.isfile(path_to_file):
+            with open(path_to_file, "w") as f:
+                f.write(header)
+            write_row_to_grids.list_of_output_files[setup_id].append(path_to_file)
+            write_row_to_grids.file_rows_written[path_to_file] = 0
 
-    is_no_data_row = True
+        already = write_row_to_grids.file_rows_written[path_to_file]
+        missing = current_row - already
+        if missing > 0:
+            nodata_line = " ".join(["-9999"] * ncols) + "\n"
+            with open(path_to_file, "a") as f:
+                for _ in range(missing):
+                    f.write(nodata_line)
+            write_row_to_grids.file_rows_written[path_to_file] = current_row
+
     # skip this part if we write just a nodata line
     if row in row_col_data:
-        no_data_cols = ncols
         for col in range(0, ncols):
-            if col in row_col_data[row]:
-                rcd_val = row_col_data[row][col]
-                if rcd_val == -9999:
-                    continue
-                else:
-                    no_data_cols -= 1
-                    cmc_and_year_to_vals = defaultdict(lambda: defaultdict(list))
-                    for cell_data in rcd_val:
-                        # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
-                        for cm_count, data in cell_data.items():
-                            for key in output_keys:
-                                # store mapping cm_count to crop name for later file name creation
-                                if cm_count not in cmc_to_crop and "Crop" in data:
-                                    cmc_to_crop[cm_count] = data["Crop"]
+            if col not in row_col_data[row]:
+                continue
 
-                                # only further process/store data we actually received
-                                if key in data:
-                                    v = data[key]
-                                    if isinstance(v, list):
-                                        for i, v_ in enumerate(v):
-                                            cmc_and_year_to_vals[(cm_count, data["Year"])][f'{key}_{i + 1}'].append(v_)
-                                    else:
-                                        cmc_and_year_to_vals[(cm_count, data["Year"])][key].append(v)
-                                # if a key is missing, because that monica event was never raised/reached, create the empty list
-                                # so a no-data value is being produced
-                                else:
-                                    cmc_and_year_to_vals[(cm_count, data["Year"])][key]
+            rcd_val = row_col_data[row][col]
 
-                    # potentially aggregate multiple data per cell and finally store them for this row
-                    for (cm_count, year), key_to_vals in cmc_and_year_to_vals.items():
-                        for key, vals in key_to_vals.items():
-                            output_vals = output_grids[key]["data"]
-                            if len(vals) > 0:
-                                output_vals[(cm_count, year)][col] = sum(vals) / len(vals)
+            if rcd_val == -9999:
+                continue
+
+            cmc_and_year_to_vals = defaultdict(lambda: defaultdict(list))
+
+            for cell_data in rcd_val:
+                # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
+                for cm_count, data in cell_data.items():
+                    if "Crop" in data:
+                        c = str(data["Crop"]).strip()
+                        if c:
+                            cmc_to_crop[cm_count] = c
+
+                    year = data.get("Year", None)
+                    if year is None:
+                        continue
+
+                    for key in output_keys:
+                        # only further process/store data we actually received
+                        if key in data:
+                            v = data[key]
+                            if isinstance(v, list):
+                                for i, v_ in enumerate(v):
+                                    cmc_and_year_to_vals[(cm_count, year)][f"{key}_{i + 1}"].append(v_)
                             else:
-                                output_vals[(cm_count, year)][col] = -9999
+                                cmc_and_year_to_vals[(cm_count, year)][key].append(v)
+                        # if a key is missing, because that monica event was never raised/reached, create the empty list
+                        # so a no-data value is being produced
+                        else:
+                            cmc_and_year_to_vals[(cm_count, year)][key]
 
-        is_no_data_row = no_data_cols == ncols
-
-    if is_no_data_row:
-        write_row_to_grids.nodata_row_count[setup_id] += 1
-
-    def write_nodata_rows(file_):
-        for _ in range(write_row_to_grids.nodata_row_count[setup_id]):
-            rowstr = " ".join(["-9999" for __ in range(ncols)])
-            file_.write(rowstr + "\n")
+            # potentially aggregate multiple data per cell and finally store them for this row
+            for (cm_count, year), key_to_vals in cmc_and_year_to_vals.items():
+                for key, vals in key_to_vals.items():
+                    if key not in output_grids:
+                        continue
+                    out = output_grids[key]["data"]
+                    out[(cm_count, year)][col] = (sum(vals) / len(vals)) if vals else -9999
 
     # iterate over all prepared data for a single row and write row
     for key, y2d_ in output_grids.items():
         y2d = y2d_["data"]
-        cast_to = y2d_["cast-to"]
         digits = y2d_.get("digits", 0)
-        if cast_to == "int":
-            mold = lambda x: str(int(x))
-        else:
-            mold = lambda x: str(round(x, digits))
+
+        mold = (lambda x: str(round(float(x), digits)))
 
         for (cm_count, year), row_arr in y2d.items():
-            crop = cmc_to_crop[cm_count] if cm_count in cmc_to_crop else "none"
+            crop = str(cmc_to_crop.get(cm_count, "none")).strip() or "none"
             crop = crop.replace("/", "").replace(" ", "")
             key2 = key.replace("/", "_")
-            path_to_file = path_to_output_dir + crop + "_" + key2 + "_" + str(year) + "_" + str(cm_count) + ".asc"
+            path_to_file = f"{path_to_output_dir}{crop}_{key2}_{year}_{cm_count}.asc"
 
-            if not os.path.isfile(path_to_file):
-                with open(path_to_file, "w") as _:
-                    _.write(header)
-                    write_row_to_grids.list_of_output_files[setup_id].append(path_to_file)
+            ensure_file_ready(path_to_file, row)
 
-            with open(path_to_file, "a") as file_:
-                write_nodata_rows(file_)
-                rowstr = " ".join(["-9999" if int(x) == -9999 else mold(x) for x in row_arr])
-                file_.write(rowstr + "\n")
+            rowstr = " ".join(["-9999" if int(x) == -9999 else mold(x) for x in row_arr])
+            with open(path_to_file, "a") as f:
+                f.write(rowstr + "\n")
 
-    # clear the no-data row count when no-data rows have been written before a data row
-    if not is_no_data_row:
-        write_row_to_grids.nodata_row_count[setup_id] = 0
-
-    # if we're at the end of the output and just empty lines are left, then they won't be written in the
-    # above manner because there won't be any rows with data where they could be written before
-    # so add no-data rows simply to all files we've written to before
-    if is_no_data_row \
-            and write_row_to_grids.list_of_output_files[setup_id] \
-            and write_row_to_grids.nodata_row_count[setup_id] > 0:
-        for path_to_file in write_row_to_grids.list_of_output_files[setup_id]:
-            with open(path_to_file, "a") as file_:
-                write_nodata_rows(file_)
-        write_row_to_grids.nodata_row_count[setup_id] = 0
+            write_row_to_grids.file_rows_written[path_to_file] += 1
 
     if row in row_col_data:
         del row_col_data[row]
@@ -291,8 +289,17 @@ def run_consumer(leave_after_finished_run=True, server={"server": None, "port": 
 
     def process_message(msg):
         if len(msg["errors"]) > 0:
-            print("There were errors in message:", msg, "\nSkipping message!")
-            return
+            cid = msg.get("customId", {})
+            print("There were errors for", cid, "errors:", msg["errors"])
+
+            setup_id = cid.get("setup_id")
+            row = cid.get("srow")
+            col = cid.get("scol")
+            if setup_id is not None and row is not None and col is not None:
+                data = setup_id_to_data[setup_id]
+                data["row-col-data"][row][col] = -9999
+                data["datacell-count"][row] -= 1
+            return False
 
         if not hasattr(process_message, "wnof_count"):
             process_message.wnof_count = 0
@@ -421,28 +428,11 @@ def run_consumer(leave_after_finished_run=True, server={"server": None, "port": 
                         # for row in monica_io3.write_output(output_ids, results):
                         #     writer.writerow(row)
 
-                        # for result in results:
-                        #     row = []
-                        #     for output_id in output_ids:
-                        #         field_name = output_id["name"]
-                        #         row.append(result.get(field_name, ""))
-                        #     writer.writerow(row)
-
                         for result in results:
-                            if not result:
-                                continue
-
                             row = []
                             for output_id in output_ids:
                                 field_name = output_id["name"]
-                                v = result.get(field_name, "")
-
-                                # Convert yield from kg/ha to dt/ha
-                                if field_name == "Yield" and v != "" and v is not None:
-                                    v = round(float(v) / 100.0, 2)
-
-                                row.append(v)
-
+                                row.append(result.get(field_name, ""))
                             writer.writerow(row)
 
                 writer.writerow([])
