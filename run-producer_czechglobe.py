@@ -254,8 +254,29 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         with open(setup.get("site.json", config["site.json"])) as _:
             site_json = json.load(_)
 
-        if len(scenario) > 0 and scenario[:3].lower() == "rcp":
-            site_json["EnvironmentParameters"]["rcp"] = scenario
+        # if len(scenario) > 0 and scenario[:3].lower() == "rcp":
+        #     site_json["EnvironmentParameters"]["rcp"] = scenario
+
+        rcp_scenario = climate_scenario.lower()
+
+        # Map of SSP scenarios to corresponding RCP scenarios
+        ssp_to_rcp = {
+            "ssp119": "rcp19",
+            "ssp126": "rcp26",
+            "ssp245": "rcp45",
+            "ssp460": "rcp60",
+            "ssp370": "rcp70",
+            "ssp585": "rcp85"
+        }
+
+        if rcp_scenario:
+            # Convert SSP to RCP if needed
+            if rcp_scenario in ssp_to_rcp:
+                rcp_scenario = ssp_to_rcp[rcp_scenario]
+
+            if rcp_scenario.startswith("rcp"):
+                site_json["EnvironmentParameters"]["rcp"] = rcp_scenario
+
 
         # read template crop.json
         with open(setup.get("crop.json", config["crop.json"])) as _:
@@ -582,7 +603,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
 
                 env_template["csvViaHeaderOptions"] = sim_json["climate.csv-options"]
                 
-                subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=scenario, ensmem=ensmem, version=version, crow=int(crow), ccol=int(ccol))
+                subpath_to_csv = TEMPLATE_PATH_CLIMATE_CSV.format(gcm=gcm, rcm=rcm, scenario=climate_scenario, ensmem=ensmem, version=version, crow=int(crow), ccol=int(ccol))
                 for _ in range(4):
                     subpath_to_csv = subpath_to_csv.replace("//", "/")
                 env_template["pathToClimateCSV"] = [paths["monica-path-to-climate-dir"] + setup["climate_path_to_csvs"] + "/" + subpath_to_csv]
