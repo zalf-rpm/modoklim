@@ -257,7 +257,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         # if len(scenario) > 0 and scenario[:3].lower() == "rcp":
         #     site_json["EnvironmentParameters"]["rcp"] = scenario
 
-        rcp_scenario = climate_scenario.lower()
+        climate_scenario = scenario
 
         # Map of SSP scenarios to corresponding RCP scenarios
         ssp_to_rcp = {
@@ -268,6 +268,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
             "ssp370": "rcp70",
             "ssp585": "rcp85"
         }
+
+        rcp_scenario = climate_scenario.lower()
 
         if rcp_scenario:
             # Convert SSP to RCP if needed
