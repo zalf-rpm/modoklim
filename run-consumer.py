@@ -92,8 +92,8 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
 
     output_grids = {
         "Yield": {"data": make_dict_nparr(), "cast-to": "float", "digits": 1},
-        # "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        # "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "EffRootDep": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
         # # "NFert": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
@@ -109,20 +109,20 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         # # "AbBiomNc_max": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # # "NLeach": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             
-        # "PASW": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        "PASW": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "PASW_30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "PASW_90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "Mois": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "Mois_30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "Mois_90": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        # "WaterContent": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        "WaterContent": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
         # "Act_ET": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "Evaporation": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "Tra": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "TraDef": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
-        # "Precip": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        "Precip": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # # "Drain": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},            
 
         # # "Nstress_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
@@ -138,7 +138,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         # "Tra_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "TraDef_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
-        # "Precip_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
+        "Precip_spring": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1}
     }
     output_keys = list(output_grids.keys())
 
