@@ -64,6 +64,14 @@
 				"cultivar": ["include-from-file", "crops/cultivars/moderately-early-potato.json"]
 			},
 			"residueParams": ["include-from-file", "crops/residues/potato.json"]
+		},
+		"SBee": {
+			"is-winter-crop": true,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/soybean.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/00.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/soybean.json"]
 		}
 	},
 	"fert-params": {
@@ -368,6 +376,22 @@
 				{
 					"type": "AutomaticHarvest",
 					"latest-date": "0000-09-15",
+					"min-%-asw": 0,
+					"max-%-asw": 99.0,
+					"max-3d-precip-sum": 5,
+					"max-curr-day-precip": 0.5,
+					"harvest-time": "maturity"
+				}
+			]
+		}],
+		"SBee_sfix_hauto": [{
+			"worksteps": [
+				{
+					"date": "0000-03-31", "type": "Sowing", "crop": ["ref", "crops", "SBee"]
+				},
+				{
+					"type": "AutomaticHarvest",
+					"latest-date": "0000-10-31",
 					"min-%-asw": 0,
 					"max-%-asw": 99.0,
 					"max-3d-precip-sum": 5,
