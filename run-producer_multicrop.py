@@ -70,24 +70,24 @@ DATA_GRID_LAND_USE = "germany/landuse_1000_31469_gk5.asc"
 DATA_GRID_SOIL = "germany/buek200_1000_25832_etrs89-utm32n.asc"
 DATA_GRID_CROPS_DIR = "germany/multicropmaps"
 
-CROP_MAP = {
-    1: "SM_sfix_hauto",  # silage maize
-    2: "WW_sfix_hauto",  # winter wheat
-    3: "WB_sfix_hauto",  # winter barley
-    4: "SB_sfix_hauto",  # spring barley
+CROP_MAP = { #the orange names are not correct yet#
+    1: "SM_sfix_hauto",  # grain maize
+    2: "WW_sfix_hauto",  # silage maize
+    3: "WB_sfix_hauto",  # winter wheat
+    4: "SB_sfix_hauto",  # winter barley
     5: "WR_sfix_hauto",  # winter rye
-    6: "SM_sfix_hauto",  # silage maize
-    7: "WW_sfix_hauto",  # winter wheat
-    8: "WB_sfix_hauto",  # winter barley
-    9: "SB_sfix_hauto",  # spring barley
-    10: "WR_sfix_hauto",  # winter rye
-    11: "SM_sfix_hauto",  # silage maize
-    12: "WW_sfix_hauto",  # winter wheat
-    13: "WB_sfix_hauto",  # winter barley
-    14: "SB_sfix_hauto",  # spring barley
-    15: "WR_sfix_hauto",  # winter rye
-    16: "SM_sfix_hauto",  # silage maize
-    17: "WW_sfix_hauto",  # winter wheat
+    6: "SM_sfix_hauto",  # winter triticale
+    7: "WW_sfix_hauto",  # spring wheat
+    8: "WB_sfix_hauto",  # spring barley
+    9: "SB_sfix_hauto",  # spring oat
+    10: "WR_sfix_hauto",  # winter rapeseed
+    11: "SM_sfix_hauto",  # sugar beet
+    12: "WW_sfix_hauto",  # potato
+    13: "WB_sfix_hauto",  # soybean
+    14: "SB_sfix_hauto",  # leafy vegetable
+    15: "WR_sfix_hauto",  # sunflower
+    16: "SM_sfix_hauto",  # onion
+    17: "WW_sfix_hauto",  # carrot
 }
 
 TEMPLATE_PATH_LATLON = "{path_to_climate_dir}/latlon-to-rowcol.json"
