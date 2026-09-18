@@ -50,6 +50,11 @@ DATA_SOIL_DB = "germany/buek200.sqlite"
 USE_LANDUSE = False
 
 
+def is_phacelia(crop_name):
+    species_name = str(crop_name or "").strip().casefold().split("/", 1)[0].strip()
+    return species_name in {"phacelia", "pha"}
+
+
 def create_output(msg):
     cm_count_to_vals = defaultdict(dict)
     for data in msg.get("data", []):
@@ -58,6 +63,9 @@ def create_output(msg):
         is_daily_section = data.get("origSpec", "") == '"daily"'
 
         for vals in results:
+            if is_phacelia(vals.get("Crop")):
+                continue
+
             if "CM-count" in vals:
                 cm_count_to_vals[vals["CM-count"]].update(vals)
             elif is_daily_section and "Date" in vals:
@@ -174,6 +182,9 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             for cell_data in rcd_val:
                 # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
                 for cm_count, data in cell_data.items():
+                    if is_phacelia(data.get("Crop")):
+                        continue
+
                     if "Crop" in data:
                         c = str(data["Crop"]).strip()
                         if c:
@@ -184,10 +195,6 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                         continue
 
                     for key in output_keys:
-                        crop_name = str(data.get("Crop", "")).lower()
-                        if "phacelia" in crop_name:
-                            continue
-
                         # only further process/store data we actually received
                         if key in data:
                             v = data[key]
@@ -218,6 +225,9 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
 
         for (cm_count, year), row_arr in y2d.items():
             crop = str(cmc_to_crop.get(cm_count, "none")).strip() or "none"
+            if is_phacelia(crop):
+                continue
+
             crop = crop.replace("/", "").replace(" ", "")
             key2 = key.replace("/", "_")
             path_to_file = f"{path_to_output_dir}{crop}_{key2}_{year}_{cm_count}.asc"
