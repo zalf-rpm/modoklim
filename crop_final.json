@@ -72,6 +72,14 @@
 				"cultivar": ["include-from-file", "crops/cultivars/00.json"]
 			},
 			"residueParams": ["include-from-file", "crops/residues/soybean.json"]
+		},
+		"PHA": {
+			"is-winter-crop": false,
+			"cropParams": {
+				"species": ["include-from-file", "crops/species/phacelia.json"],
+				"cultivar": ["include-from-file", "crops/cultivars/phacelia.json"]
+			},
+			"residueParams": ["include-from-file", "crops/residues/phacelia.json"]
 		}
 	},
 	"fert-params": {
@@ -397,6 +405,22 @@
 					"max-3d-precip-sum": 5,
 					"max-curr-day-precip": 0.5,
 					"harvest-time": "maturity"
+				}
+			]
+		}],
+		"PHA": [{
+			"can-be-skipped": true,
+			"worksteps": [
+				{
+					"after": "AutomaticHarvest",
+					"type": "Sowing",
+					"days": 5,
+					"crop": ["ref", "crops", "PHA"]
+				},
+				{
+					"date": "0000-01-31",
+					"type": "Harvest",
+					"exported": false
 				}
 			]
 		}]
