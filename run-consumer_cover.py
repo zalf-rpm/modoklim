@@ -94,6 +94,9 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     if not hasattr(write_row_to_grids, "file_rows_written"):
         write_row_to_grids.file_rows_written = defaultdict(int)
 
+    if not hasattr(write_row_to_grids, "output_file_handles"):
+        write_row_to_grids.output_file_handles = defaultdict(dict)
+
     cmc_to_crop = write_row_to_grids.cmc_to_crop[setup_id]
 
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=float))
@@ -151,9 +154,16 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     output_keys = list(output_grids.keys())
 
     def ensure_file_ready(path_to_file: str, current_row: int):
-        if not os.path.isfile(path_to_file):
-            with open(path_to_file, "w") as f:
-                f.write(header)
+        output_file_handles = write_row_to_grids.output_file_handles[setup_id]
+        output_file = output_file_handles.get(path_to_file)
+
+        if output_file is None:
+            file_exists = os.path.isfile(path_to_file)
+            output_file = open(path_to_file, "a" if file_exists else "w", buffering=1024 * 1024)
+            output_file_handles[path_to_file] = output_file
+
+            if not file_exists:
+                output_file.write(header)
             write_row_to_grids.list_of_output_files[setup_id].append(path_to_file)
             write_row_to_grids.file_rows_written[path_to_file] = 0
 
@@ -161,10 +171,11 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         missing = current_row - already
         if missing > 0:
             nodata_line = " ".join(["-9999"] * ncols) + "\n"
-            with open(path_to_file, "a") as f:
-                for _ in range(missing):
-                    f.write(nodata_line)
+            for _ in range(missing):
+                output_file.write(nodata_line)
             write_row_to_grids.file_rows_written[path_to_file] = current_row
+
+        return output_file
 
     # skip this part if we write just a nodata line
     if row in row_col_data:
@@ -232,11 +243,10 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             key2 = key.replace("/", "_")
             path_to_file = f"{path_to_output_dir}{crop}_{key2}_{year}_{cm_count}.asc"
 
-            ensure_file_ready(path_to_file, row)
+            output_file = ensure_file_ready(path_to_file, row)
 
             rowstr = " ".join(["-9999" if int(x) == -9999 else mold(x) for x in row_arr])
-            with open(path_to_file, "a") as f:
-                f.write(rowstr + "\n")
+            output_file.write(rowstr + "\n")
 
             write_row_to_grids.file_rows_written[path_to_file] += 1
 
@@ -252,14 +262,22 @@ def finalize_outputs(setup_id: int, total_rows: int, ncols: int):
 
     nodata_line = " ".join(["-9999"] * ncols) + "\n"
 
-    for path_to_file in write_row_to_grids.list_of_output_files.get(setup_id, []):
-        already = write_row_to_grids.file_rows_written.get(path_to_file, 0)
-        missing = total_rows - already
-        if missing > 0:
-            with open(path_to_file, "a") as f:
+    output_file_handles = getattr(write_row_to_grids, "output_file_handles", {}).get(setup_id, {})
+
+    try:
+        for path_to_file in write_row_to_grids.list_of_output_files.get(setup_id, []):
+            already = write_row_to_grids.file_rows_written.get(path_to_file, 0)
+            missing = total_rows - already
+            if missing > 0:
+                output_file = output_file_handles[path_to_file]
                 for _ in range(missing):
-                    f.write(nodata_line)
-            write_row_to_grids.file_rows_written[path_to_file] = total_rows
+                    output_file.write(nodata_line)
+                write_row_to_grids.file_rows_written[path_to_file] = total_rows
+    finally:
+        for output_file in output_file_handles.values():
+            output_file.close()
+        if hasattr(write_row_to_grids, "output_file_handles"):
+            write_row_to_grids.output_file_handles.pop(setup_id, None)
 
 
 def run_consumer(leave_after_finished_run=True, server={"server": None, "port": None}, shared_id=None):
