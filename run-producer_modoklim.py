@@ -550,8 +550,8 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                     clat, _ = cdict[(crow, ccol)]
                     env_template["params"]["siteParameters"]["Latitude"] = clat
 
-                # if setup["CO2"]:
-                #     env_template["params"]["userEnvironmentParameters"]["AtmosphericCO2"] = float(setup["CO2"])
+                if setup["CO2"]:
+                    env_template["params"]["userEnvironmentParameters"]["AtmosphericCO2"] = float(setup["CO2"])
 
                 # if setup["O3"]:
                 #     env_template["params"]["userEnvironmentParameters"]["AtmosphericO3"] = float(setup["O3"])
