@@ -171,8 +171,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         missing = current_row - already
         if missing > 0:
             nodata_line = " ".join(["-9999"] * ncols) + "\n"
-            for _ in range(missing):
-                output_file.write(nodata_line)
+            output_file.write(nodata_line * missing)
             write_row_to_grids.file_rows_written[path_to_file] = current_row
 
         return output_file
@@ -231,8 +230,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     for key, y2d_ in output_grids.items():
         y2d = y2d_["data"]
         digits = y2d_.get("digits", 0)
-
-        mold = (lambda x: str(round(float(x), digits)))
+        fmt = f"%.{digits}f"
 
         for (cm_count, year), row_arr in y2d.items():
             crop = str(cmc_to_crop.get(cm_count, "none")).strip() or "none"
@@ -245,8 +243,9 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
 
             output_file = ensure_file_ready(path_to_file, row)
 
-            rowstr = " ".join(["-9999" if int(x) == -9999 else mold(x) for x in row_arr])
-            output_file.write(rowstr + "\n")
+            nodata_mask = row_arr == -9999
+            formatted = np.where(nodata_mask, "-9999", np.char.mod(fmt, row_arr))
+            output_file.write(" ".join(formatted.tolist()) + "\n")
 
             write_row_to_grids.file_rows_written[path_to_file] += 1
 
@@ -270,8 +269,7 @@ def finalize_outputs(setup_id: int, total_rows: int, ncols: int):
             missing = total_rows - already
             if missing > 0:
                 output_file = output_file_handles[path_to_file]
-                for _ in range(missing):
-                    output_file.write(nodata_line)
+                output_file.write(nodata_line * missing)
                 write_row_to_grids.file_rows_written[path_to_file] = total_rows
     finally:
         for output_file in output_file_handles.values():
