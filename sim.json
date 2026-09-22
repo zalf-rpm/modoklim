@@ -159,7 +159,12 @@
 				["TraDef", "AVG"],
 
 				["Precip", "SUM"],
-				["PercolationRate|Drain", [20, "SUM"]]
+				["PercolationRate|Drain", [20, "SUM"]],
+
+				["SOC|SOC_percent", [1, 20, "SUM"], "LAST"],
+				["SOC-X-Y|SOC_total", [1, 20, "SUM"], "LAST"],
+				["NEE", "SUM"],
+				["N2O","SUM"]
 			],
 			{"from": "xxxx-03-01", "to": "xxxx-05-31"}, [
 				["CM-count", "LAST"],
