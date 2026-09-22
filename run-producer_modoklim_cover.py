@@ -144,7 +144,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
         "start-row": "0", 
         "end-row": "-1", 
         "path_to_dem_grid": "",
-        "sim.json": "sim_final.json",
+        "sim.json": "sim.json",
         "crop.json": "crop_final.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_modoklim.csv",
@@ -365,9 +365,6 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 break
 
             for scol in range(0, scols):
-                main_crop = deepcopy(main_crop_template)
-                env_template["cropRotation"] = [main_crop]
-
                 soil_id = int(soil_grid[srow, scol])
                 if soil_id == nodata_value:
                     continue
@@ -376,6 +373,7 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                 # print(crop_grid_id)
                 if crop_grid_id != 1:
                     # print("row/col:", srow, "/", scol, "is not a crop pixel.")
+                    env_template["cropRotation"] = [main_crop_template]
                     env_template["customId"] = {
                         "setup_id": setup_id,
                         "expected_setup_count": expected_setup_count,
@@ -393,6 +391,9 @@ def run_producer(server = {"server": None, "port": None}, shared_id = None):
                         # print("sent nodata env ", sent_env_count, " customId: ", env_template["customId"])
                         sent_env_count += 1
                     continue
+
+                main_crop = deepcopy(main_crop_template)
+                env_template["cropRotation"] = [main_crop]
 
                 # get coordinate of closeest climate element of real soil-cell
                 sh = yllcorner + (scellsize / 2) + (srows - srow - 1) * scellsize

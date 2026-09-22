@@ -512,7 +512,7 @@ def run_producer(server={"server": None, "port": None}, shared_id=None):
                         cell_crop_ids.append((year, CROP_MAP[crop_value]))
 
                 if not cell_crop_ids:
-                    env = copy.deepcopy(env_template)
+                    env = dict(env_template)
                     env["customId"] = {
                         "setup_id": setup_id,
                         "expected_setup_count": expected_setup_count,
