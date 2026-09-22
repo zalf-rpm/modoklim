@@ -88,8 +88,8 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     if not hasattr(write_row_to_grids, "list_of_output_files"):
         write_row_to_grids.list_of_output_files = defaultdict(list)
 
-    if not hasattr(write_row_to_grids, "cmc_to_crop"):
-        write_row_to_grids.cmc_to_crop = defaultdict(dict)
+    if not hasattr(write_row_to_grids, "year_to_crop"):
+        write_row_to_grids.year_to_crop = defaultdict(dict)
 
     if not hasattr(write_row_to_grids, "file_rows_written"):
         write_row_to_grids.file_rows_written = defaultdict(int)
@@ -97,7 +97,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     if not hasattr(write_row_to_grids, "output_file_handles"):
         write_row_to_grids.output_file_handles = defaultdict(dict)
 
-    cmc_to_crop = write_row_to_grids.cmc_to_crop[setup_id]
+    year_to_crop = write_row_to_grids.year_to_crop[setup_id]
 
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=float))
 
@@ -171,8 +171,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         missing = current_row - already
         if missing > 0:
             nodata_line = " ".join(["-9999"] * ncols) + "\n"
-            for _ in range(missing):
-                output_file.write(nodata_line)
+            output_file.write(nodata_line * missing)
             write_row_to_grids.file_rows_written[path_to_file] = current_row
 
         return output_file
@@ -188,7 +187,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
             if rcd_val == -9999:
                 continue
 
-            cmc_and_year_to_vals = defaultdict(lambda: defaultdict(list))
+            year_to_vals = defaultdict(lambda: defaultdict(list))
 
             for cell_data in rcd_val:
                 # if we got multiple datasets per cell, iterate over them and aggregate them in the following step
@@ -196,14 +195,14 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                     if is_phacelia(data.get("Crop")):
                         continue
 
-                    if "Crop" in data:
-                        c = str(data["Crop"]).strip()
-                        if c:
-                            cmc_to_crop[cm_count] = c
-
                     year = data.get("Year", None)
                     if year is None:
                         continue
+
+                    if "Crop" in data:
+                        c = str(data["Crop"]).strip()
+                        if c:
+                            year_to_crop[year] = c
 
                     for key in output_keys:
                         # only further process/store data we actually received
@@ -211,42 +210,42 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                             v = data[key]
                             if isinstance(v, list):
                                 for i, v_ in enumerate(v):
-                                    cmc_and_year_to_vals[(cm_count, year)][f"{key}_{i + 1}"].append(v_)
+                                    year_to_vals[year][f"{key}_{i + 1}"].append(v_)
                             else:
-                                cmc_and_year_to_vals[(cm_count, year)][key].append(v)
+                                year_to_vals[year][key].append(v)
                         # if a key is missing, because that monica event was never raised/reached, create the empty list
                         # so a no-data value is being produced
                         else:
-                            cmc_and_year_to_vals[(cm_count, year)][key]
+                            year_to_vals[year][key]
 
             # potentially aggregate multiple data per cell and finally store them for this row
-            for (cm_count, year), key_to_vals in cmc_and_year_to_vals.items():
+            for year, key_to_vals in year_to_vals.items():
                 for key, vals in key_to_vals.items():
                     if key not in output_grids:
                         continue
                     out = output_grids[key]["data"]
-                    out[(cm_count, year)][col] = (sum(vals) / len(vals)) if vals else -9999
+                    out[year][col] = (sum(vals) / len(vals)) if vals else -9999
 
     # iterate over all prepared data for a single row and write row
     for key, y2d_ in output_grids.items():
         y2d = y2d_["data"]
         digits = y2d_.get("digits", 0)
+        fmt = f"%.{digits}f"
 
-        mold = (lambda x: str(round(float(x), digits)))
-
-        for (cm_count, year), row_arr in y2d.items():
-            crop = str(cmc_to_crop.get(cm_count, "none")).strip() or "none"
+        for year, row_arr in y2d.items():
+            crop = str(year_to_crop.get(year, "none")).strip() or "none"
             if is_phacelia(crop):
                 continue
 
             crop = crop.replace("/", "").replace(" ", "")
             key2 = key.replace("/", "_")
-            path_to_file = f"{path_to_output_dir}{crop}_{key2}_{year}_{cm_count}.asc"
+            path_to_file = f"{path_to_output_dir}{crop}_{key2}_{year}.asc"
 
             output_file = ensure_file_ready(path_to_file, row)
 
-            rowstr = " ".join(["-9999" if int(x) == -9999 else mold(x) for x in row_arr])
-            output_file.write(rowstr + "\n")
+            nodata_mask = row_arr == -9999
+            formatted = np.where(nodata_mask, "-9999", np.char.mod(fmt, row_arr))
+            output_file.write(" ".join(formatted.tolist()) + "\n")
 
             write_row_to_grids.file_rows_written[path_to_file] += 1
 
@@ -270,8 +269,7 @@ def finalize_outputs(setup_id: int, total_rows: int, ncols: int):
             missing = total_rows - already
             if missing > 0:
                 output_file = output_file_handles[path_to_file]
-                for _ in range(missing):
-                    output_file.write(nodata_line)
+                output_file.write(nodata_line * missing)
                 write_row_to_grids.file_rows_written[path_to_file] = total_rows
     finally:
         for output_file in output_file_handles.values():
