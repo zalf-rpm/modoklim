@@ -125,7 +125,25 @@
 				["CM-count", "FIRST"],
 				["Year", "LAST"],
 				["Crop", "FIRST"],
-				["Yield", "LAST"]
+
+				["Yield", "LAST"],
+				["AbBiom", "LAST"],
+				
+				["SumNUp", "LAST"],
+				["NLeach", "SUM"],
+
+				["Precip", "SUM"],
+
+				["SOC|SOC_percent", [1, 20, "SUM"], "LAST"],
+				["SOC-X-Y|SOC_total", [1, 20, "SUM"], "LAST"],
+				["NEE", "SUM"],
+				["N2O","SUM"]
+			],
+			{"from": "xxxx-03-01", "to": "xxxx-05-31"}, [
+				["CM-count", "LAST"],
+				["Year", "LAST"],
+				["Crop", "LAST"],				
+				["Precip|Precip_spring", "SUM"]
 			]
 		],
 
