@@ -14,7 +14,7 @@
 			"tavg": "tavg",
 			"precip": "precip",
 			"relhumid": "relhumid",
-			"globrad": ["globrad"],
+			"globrad": ["globrad", "/", 100.0],
 			"wind": "wind"
         }
     },
