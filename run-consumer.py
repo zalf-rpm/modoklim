@@ -107,7 +107,7 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
         # "SumNUp": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # # # "AbBiomNc_last": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # # # "AbBiomNc_max": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "NLeach": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        # "NLeach": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
             
         # "PASW": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "PASW_30": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
