@@ -140,26 +140,34 @@ def make_intermediate_crop(template, latest_harvest_date, next_sowing_date):
         return None
 
     intermediate_crop = copy.deepcopy(template)
-    harvest_ws = next(ws for ws in intermediate_crop["worksteps"] if ws["type"].endswith("Harvest"))
+    harvest_ws = next((ws for ws in intermediate_crop["worksteps"] if ws["type"].endswith("Harvest")), None)
+    if harvest_ws is None:
+        return None
     harvest_ws["date"] = crop_dates[1]
     return intermediate_crop
 
 
-def add_intermediate_crops(rotation, intermediate_crop_template):
+def add_intermediate_crops(rotation, rotation_years, intermediate_crop_template):
     """Add an intermediate crop between main crops."""
-    for current_crop, next_crop in zip(rotation, rotation[1:]):
-        current_harvest = next(
-            (ws for ws in current_crop["worksteps"] if ws["type"].endswith("Harvest")), None)
-        next_sowing = next(
-            (ws for ws in next_crop["worksteps"] if ws["type"].endswith("Sowing")), None)
+    for i in range(len(rotation) - 1):
+        if rotation_years[i + 1] - rotation_years[i] != 1:
+            continue
+
+        current_crop, next_crop = rotation[i], rotation[i + 1]
+
+        current_harvest = next((ws for ws in current_crop["worksteps"] if ws["type"].endswith("Harvest")), None)
+        next_sowing = next((ws for ws in next_crop["worksteps"] if ws["type"].endswith("Sowing")), None)
 
         if current_harvest is None or next_sowing is None:
             continue
-        if "latest-date" not in current_harvest or "date" not in next_sowing:
+
+        _, harvest_date = get_ws_date(current_harvest)
+        _, sowing_date = get_ws_date(next_sowing)
+        if harvest_date is None or sowing_date is None:
             continue
 
-        intermediate_crop = make_intermediate_crop(
-            intermediate_crop_template, current_harvest["latest-date"], next_sowing["date"])
+        intermediate_crop = make_intermediate_crop(intermediate_crop_template, harvest_date.isoformat(),
+                                                   sowing_date.isoformat())
         if intermediate_crop is not None:
             current_crop["worksteps"].extend(intermediate_crop["worksteps"])
 
@@ -255,7 +263,7 @@ def run_producer(server={"server": None, "port": None}, shared_id=None):
         "start-row": "0",
         "end-row": "-1",
         "path_to_dem_grid": "",
-        "sim.json": "sim.json",
+        "sim.json": "sim_multicrop_cover.json",
         "crop.json": "crop_final.json",
         "site.json": "site.json",
         "setups-file": "sim_setups_modoklim_multicrop.csv",
@@ -713,7 +721,8 @@ def run_producer(server={"server": None, "port": None}, shared_id=None):
 
                 # Harvest earlier if next crop has to be sown already
                 fix_rotation_overlaps_by_earlier_harvest(env, setup, min_gap_days=7)
-                add_intermediate_crops(env["cropRotation"], intermediate_crop_template)
+                rotation_years = [crop_year for crop_year, _ in cell_crop_ids]
+                add_intermediate_crops(env["cropRotation"], rotation_years, intermediate_crop_template)
 
                 if len(soil_profile) == 0:
                     # print("row/col:", srow, "/", scol, "has unknown soil_id:", soil_id)

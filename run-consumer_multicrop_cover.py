@@ -88,23 +88,18 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
     if not hasattr(write_row_to_grids, "list_of_output_files"):
         write_row_to_grids.list_of_output_files = defaultdict(list)
 
-    if not hasattr(write_row_to_grids, "cmc_to_crop"):
-        write_row_to_grids.cmc_to_crop = defaultdict(dict)
-
     if not hasattr(write_row_to_grids, "file_rows_written"):
         write_row_to_grids.file_rows_written = defaultdict(int)
 
     if not hasattr(write_row_to_grids, "output_file_handles"):
         write_row_to_grids.output_file_handles = defaultdict(dict)
 
-    cmc_to_crop = write_row_to_grids.cmc_to_crop[setup_id]
-
     make_dict_nparr = lambda: defaultdict(lambda: np.full((ncols,), -9999, dtype=float))
 
     output_grids = {
         "Yield": {"data": make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
-        "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        # "AbBiom": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
+        # "LAI": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
         # "EffRootDep": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
 
         # "NFert": {"data" : make_dict_nparr(), "cast-to": "float", "digits": 1},
@@ -194,11 +189,6 @@ def write_row_to_grids(row_col_data, row, ncols, header, path_to_output_dir, pat
                 for cm_count, data in cell_data.items():
                     if is_phacelia(data.get("Crop")):
                         continue
-
-                    if "Crop" in data:
-                        c = str(data["Crop"]).strip()
-                        if c:
-                            cmc_to_crop[cm_count] = c
 
                     year = data.get("Year", None)
                     if year is None:
