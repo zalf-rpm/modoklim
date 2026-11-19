@@ -443,9 +443,13 @@ def run_consumer(leave_after_finished_run=True, server={"server": None, "port": 
 
                 data["next-row"] += 1  # move to next row (to be written)
 
-                if leave_after_finished_run \
-                        and ((data["end_row"] < 0 and data["next-row"] > data["nrows"] - 1)
-                             or (0 <= data["end_row"] < data["next-row"])):
+                setup_finished = (data["end_row"] < 0 and data["next-row"] > data["nrows"] - 1) \
+                                 or (0 <= data["end_row"] < data["next-row"])
+                if setup_finished and not data.get("finalized", False):
+                    finalize_outputs(setup_id, data["nrows"], data["ncols"])
+                    data["finalized"] = True
+
+                if leave_after_finished_run and setup_finished:
                     process_message.setup_count += 1
 
         elif write_normal_output_files:
